@@ -39,7 +39,7 @@ export function formatSingleTrickName(params: SingleTrickParameters): string {
     result = `${result} ${parts.join(' ')}`;
   }
 
-  return result.replace(/\s+/g, ' ').trim();
+  return result.replace(/\bfrontside\b/gi, 'FS').replace(/\bbackside\b/gi, 'BS').replace(/\s+/g, ' ').trim();
 }
 
 export function formatComboName(steps: ComboStep[]): string {
@@ -48,7 +48,8 @@ export function formatComboName(steps: ComboStep[]): string {
 }
 
 export function formatObstacleTrickName(data: ObstacleComponent): string {
-  return formatObstacleTrickCanonicalName(data);
+  const obstacleLabel = data.obstacleType.replace(/_/g, ' ').toUpperCase();
+  return `[${obstacleLabel}] ${formatObstacleTrickCanonicalName(data)}`;
 }
 
 export function explainObstacleTrick(data: ObstacleComponent): string[] {

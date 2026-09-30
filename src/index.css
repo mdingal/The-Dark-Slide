@@ -32,78 +32,133 @@
   }
 }
 
-/* Subtle animated gradient glow for colored elements */
-@keyframes subtleGlowEmerald {
+
+
+/* CUTTING MAT BACKGROUND START */
+.cutting-mat-page {
+  position: relative;
+  isolation: isolate;
+  --mat-ink: 105, 83, 47;
+}
+
+.dark .cutting-mat-page {
+  --mat-ink: 100, 175, 120;
+}
+
+.cutting-mat-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(to right, rgba(var(--mat-ink), 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(var(--mat-ink), 0.18) 1px, transparent 1px),
+    linear-gradient(to right, rgba(var(--mat-ink), 0.085) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(var(--mat-ink), 0.085) 1px, transparent 1px),
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 211px,
+      rgba(var(--mat-ink), 0.035) 211px,
+      rgba(var(--mat-ink), 0.035) 212px
+    );
+
+  background-size:
+    100px 100px,
+    100px 100px,
+    20px 20px,
+    20px 20px,
+    auto;
+
+  opacity: 0.65;
+  animation: cuttingMatBreathe 14s ease-in-out infinite;
+}
+
+@keyframes cuttingMatBreathe {
   0%, 100% {
-    box-shadow: 0 0 6px -1px rgba(16, 185, 129, 0.25), inset 0 0 3px rgba(16, 185, 129, 0.12);
+    opacity: 0.6;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
   }
   50% {
-    box-shadow: 0 0 13px 1px rgba(16, 185, 129, 0.45), inset 0 0 5px rgba(52, 211, 153, 0.2);
+    opacity: 0.95;
+    background-position: 8px 5px, 8px 5px, 8px 5px, 8px 5px, 8px 5px;
   }
 }
 
-@keyframes subtleGlowAmber {
-  0%, 100% {
-    box-shadow: 0 0 6px -1px rgba(245, 158, 11, 0.25), inset 0 0 3px rgba(245, 158, 11, 0.12);
+@media (prefers-reduced-motion: reduce) {
+  .cutting-mat-page::before {
+    animation: none;
+    opacity: 0.65;
   }
-  50% {
-    box-shadow: 0 0 13px 1px rgba(245, 158, 11, 0.45), inset 0 0 5px rgba(251, 191, 36, 0.2);
+}
+/* CUTTING MAT BACKGROUND END */
+
+
+/* Combined challenge and practice workspace */
+.trick-practice-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.trick-practice-workspace > div {
+  min-width: 0;
+  padding: 1.25rem;
+  background: transparent !important;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.trick-practice-workspace > div + div {
+  border-top: 1px solid #cdbda7;
+}
+
+.dark .trick-practice-workspace > div + div {
+  border-color: #262626;
+}
+
+@media (min-width: 1024px) {
+  .trick-practice-workspace:has(> div:nth-of-type(2)) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .trick-practice-workspace > div + div {
+    border-top: 0;
+    border-left: 1px solid #cdbda7;
   }
 }
 
-@keyframes subtleGlowRose {
-  0%, 100% {
-    box-shadow: 0 0 6px -1px rgba(244, 63, 94, 0.25), inset 0 0 3px rgba(244, 63, 94, 0.12);
-  }
-  50% {
-    box-shadow: 0 0 13px 1px rgba(244, 63, 94, 0.45), inset 0 0 5px rgba(251, 113, 133, 0.2);
-  }
+
+/* FLEXIBLE PRACTICE NOTES START */
+.trick-practice-workspace button[title="Stop timer and finalize practice session"] {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-@keyframes subtleGlowPurple {
-  0%, 100% {
-    box-shadow: 0 0 6px -1px rgba(168, 85, 247, 0.25), inset 0 0 3px rgba(168, 85, 247, 0.12);
-  }
-  50% {
-    box-shadow: 0 0 13px 1px rgba(168, 85, 247, 0.45), inset 0 0 5px rgba(192, 132, 252, 0.2);
-  }
+.trick-practice-workspace button[title="Stop timer and finalize practice session"] svg {
+  flex-shrink: 0;
 }
 
-@keyframes subtleGlowSky {
-  0%, 100% {
-    box-shadow: 0 0 6px -1px rgba(14, 165, 233, 0.25), inset 0 0 3px rgba(14, 165, 233, 0.12);
+@media (min-width: 1024px) {
+  .trick-practice-workspace > div:nth-of-type(2) {
+    display: flex;
+    flex-direction: column;
   }
-  50% {
-    box-shadow: 0 0 13px 1px rgba(14, 165, 233, 0.45), inset 0 0 5px rgba(56, 189, 248, 0.2);
-  }
-}
 
-@keyframes subtleGlowIndigo {
-  0%, 100% {
-    box-shadow: 0 0 6px -1px rgba(99, 102, 241, 0.25), inset 0 0 3px rgba(99, 102, 241, 0.12);
+  .trick-practice-workspace .session-notes-field {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
-  50% {
-    box-shadow: 0 0 13px 1px rgba(99, 102, 241, 0.45), inset 0 0 5px rgba(129, 140, 248, 0.2);
+
+  .trick-practice-workspace .session-notes-field textarea {
+    flex: 1;
+    width: 100%;
+    min-height: 5rem;
+    resize: none;
   }
 }
-
-/* Attach subtle pulse glow to badge, chip, and highlight colored elements */
-[class*="bg-emerald-"], [class*="border-emerald-"] {
-  animation: subtleGlowEmerald 3.5s ease-in-out infinite;
-}
-[class*="bg-amber-"], [class*="border-amber-"], [class*="bg-yellow-"], [class*="border-yellow-"] {
-  animation: subtleGlowAmber 3.5s ease-in-out infinite;
-}
-[class*="bg-rose-"], [class*="border-rose-"], [class*="bg-red-"], [class*="border-red-"] {
-  animation: subtleGlowRose 3.5s ease-in-out infinite;
-}
-[class*="bg-purple-"], [class*="border-purple-"], [class*="bg-violet-"], [class*="border-violet-"] {
-  animation: subtleGlowPurple 3.5s ease-in-out infinite;
-}
-[class*="bg-sky-"], [class*="border-sky-"], [class*="bg-blue-"], [class*="border-blue-"] {
-  animation: subtleGlowSky 3.5s ease-in-out infinite;
-}
-[class*="bg-indigo-"], [class*="border-indigo-"] {
-  animation: subtleGlowIndigo 3.5s ease-in-out infinite;
-}
-
+/* FLEXIBLE PRACTICE NOTES END */

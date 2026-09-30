@@ -85,7 +85,7 @@ export const LandingPage: React.FC = () => {
                 The ultimate fingerboard trick generator, combo transition engine, and session practice tracker.
               </p>
               <p className="leading-snug">
-                Build muscle memory, track landing rates, and analyze your deck hardware.
+                Build muscle memory, track landing rates, and analyze your progress.
               </p>
             </div>
           </div>
@@ -295,81 +295,55 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Roadmap Section */}
-      <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-6">
-        <div>
-          <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-            App Roadmap & Future Iterations
-          </h2>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-            What we are building next for The Dark Slide.
+      {/* About the Project */}
+      <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-4">
+        <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
+          About the Project
+        </h2>
+
+        <div className="w-full space-y-4 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+          <p>
+            The Dark Slide is a fingerboarding practice companion built for those
+            moments when you want to ride but aren't sure what to try next.
+            Generate a challenge, explore a new combo, or take your session to
+            a ledge or rail.
           </p>
-        </div>
 
-        <div className="space-y-4">
-          {/* Milestone 1 */}
-          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <div className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                Phase 1: Deterministic Engine & Local Session Tracking
-                <span className="text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-600 px-1.5 py-0.5 rounded">
-                  Completed
-                </span>
-              </div>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                Core catalog, compatibility validator, category locks, item pool filtering, combo transitions, obstacle mode, hardware setup snapshots, multi-select history, and canvas share card.
-              </p>
-            </div>
-          </div>
+          <p>
+            Make each challenge your own. Lock the tricks and parameters you want
+            to work on, choose what stays in your pool, and let the generator
+            mix up the rest. Whether you're dialing in the basics or chasing
+            something harder, there's always another line to explore.
+          </p>
 
-          {/* Milestone 2 */}
-          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200 dark:border-neutral-800">
-            <div className="w-5 h-5 rounded-full border-2 border-neutral-400 dark:border-neutral-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <div className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                Phase 2: Cloud Firestore Sync & Firebase Auth
-                <span className="text-[10px] font-mono uppercase bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded">
-                  In Design
-                </span>
-              </div>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                Replacing the localStorage service with Firebase Authentication and Cloud Firestore for seamless cross-device synchronization between mobile and desktop.
-              </p>
-            </div>
-          </div>
+          <p>
+            Track your attempts, landings, practice time, and setup to see how
+            your sessions develop. Use your history to revisit unfinished
+            challenges, spot patterns, and recognize the progress that's easy
+            to miss between tries.
+          </p>
 
-          {/* Milestone 3 */}
-          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200 dark:border-neutral-800">
-            <div className="w-5 h-5 rounded-full border-2 border-neutral-400 dark:border-neutral-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <div className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                Phase 3: Turn-Based Game of S.K.A.T.E. Mode
-                <span className="text-[10px] font-mono uppercase bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 px-1.5 py-0.5 rounded">
-                  Planned
-                </span>
-              </div>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                Digital referee mode for Game of S.K.A.T.E. with offensive/defensive rounds, trick validation, letter tracking (S-K-A-T-E), and offense challenge rolls.
-              </p>
-            </div>
-          </div>
-
-          {/* Milestone 4 */}
-          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200 dark:border-neutral-800">
-            <div className="w-5 h-5 rounded-full border-2 border-neutral-400 dark:border-neutral-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <div className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                Phase 4: Expanded Grind Catalog & Video Clip Logs
-                <span className="text-[10px] font-mono uppercase bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 px-1.5 py-0.5 rounded">
-                  Planned
-                </span>
-              </div>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                Support for advanced grinds (Crooked, Smith, Feeble, Overcrook, Bluntslides) and optional video clip attachment to practice records.
-              </p>
-            </div>
-          </div>
+          <p className="font-medium text-neutral-900 dark:text-neutral-200">
+            Pick a challenge. Put in the attempts.{' '}
+            <span className="relative inline-block pb-3 font-bold">
+              Find your next breakthrough.
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 300 20"
+                preserveAspectRatio="none"
+                className="absolute bottom-0 left-0 w-full h-3 text-[#D4A72C] pointer-events-none"
+              >
+                <path
+                  d="M4 12 C70 3, 190 3, 296 8 C215 7, 100 12, 20 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </p>
         </div>
       </section>
 

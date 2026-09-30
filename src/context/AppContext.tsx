@@ -45,9 +45,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
-    return localStorage.getItem('ktnk_auth_status') === 'logged_in';
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const [isFirstLogin, setIsFirstLogin] = useState<boolean>(() => {
     return localStorage.getItem('ktnk_rider_is_first_login') === 'true';
@@ -83,8 +81,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSessions(profileSessions);
 
     if (profileSessions.length > 0) {
-      const pending = profileSessions.find((s) => s.status === 'pending');
-      setCurrentSession(pending || profileSessions[0]);
+      const pending = profileSessions.find((s) => s.status === 'pending' && !s.sessionEndedAt);
+      setCurrentSession(pending || null);
     }
   }, []);
 
@@ -136,7 +134,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateSession = async (updated: PracticeSession): Promise<void> => {
-    if (!profile) return;
+    if (!profile) throw new Error('Profile missing');
     await storageService.saveSession(profile.id, updated);
     setSessions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
     if (currentSession?.id === updated.id) {
@@ -169,7 +167,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const resumeSession = (session: PracticeSession) => {
-    setCurrentSession(session);
+    if (session.status === 'pending' && session.sessionEndedAt) {
+      const resumed = { ...session, sessionEndedAt: undefined };
+      setCurrentSession(resumed);
+      void updateSession(resumed).catch(() => showToast('Could not save the resumed session.'));
+    } else {
+      setCurrentSession(session);
+    }
     setActiveTab('generator');
     showToast(`Resumed "${session.trickResult.canonicalName}"`);
   };
@@ -230,6 +234,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       };
       updateProfile(updated);
     }
+    setActiveTab('home');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      });
+    });
     showToast(isFirst ? `Welcome to the Dark Slide, ${riderDisplayName}.` : `Welcome back, ${riderDisplayName}.`);
   };
 

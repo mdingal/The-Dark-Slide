@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { getTransferChoices } from '../../domain/obstacleTransfers';
 import { useApp } from '../../context/AppContext';
 import {
+  PracticeSession,
   TrickMode,
   ParameterLocks,
   ParameterExclusions,
@@ -33,10 +35,13 @@ export const GeneratorPage: React.FC = () => {
     setActiveSetup,
     profile,
     currentSession,
+    setCurrentSession,
     startNewSession,
     updateSession,
     showToast,
   } = useApp();
+
+  const [finishedSession, setFinishedSession] = useState<PracticeSession | null>(null);
 
   const [mode, setMode] = useState<TrickMode>('single');
 
@@ -81,7 +86,7 @@ export const GeneratorPage: React.FC = () => {
   });
 
   const [selectedObstacle, setSelectedObstacle] = useState<ObstacleType>(
-    activeSetup?.obstacleType || 'flatground'
+    (activeSetup?.obstacleType && activeSetup.obstacleType !== 'flatground') ? activeSetup.obstacleType : 'ledge'
   );
 
   const [obstacleData, setObstacleData] = useState<ObstacleComponent>({
@@ -167,67 +172,68 @@ export const GeneratorPage: React.FC = () => {
 
       await startNewSession(result);
     } else if (mode === 'obstacle') {
-      if (selectedObstacle === 'flatground') {
-        const res = generateSingleTrick(singleLocks, singleExclusions);
-        if ('error' in res) {
-          setConflictError(res.error);
-          return;
-        }
-        const canonicalName = formatSingleTrickName(res.params);
-        const result: GeneratedTrickResult = {
-          mode: 'single',
-          canonicalName,
-          breakdown: res.breakdown,
-          singleTrick: res.params,
-          movements: res.params.movements,
-          catalogVersion: CATALOG_VERSION,
-        };
-        await startNewSession(result);
+      const pick = <T,>(items: T[]): T =>
+        items[Math.floor(Math.random() * items.length)];
+
+      const filterValues = <T extends string,>(
+        values: T[], excluded?: string[], locked?: string
+      ): T[] => values.filter(
+        (value) => !excluded?.includes(value) && (!locked || value === locked)
+      );
+
+      const typeLock = (obstacleLocks as ParameterLocks & {
+        obstacleType?: ObstacleType
+      }).obstacleType;
+
+      const candidates = (['ledge', 'rail'] as ObstacleType[])
+        .filter((type) =>
+          !obstacleExclusions.obstacles?.includes(type) &&
+          (!typeLock || type === typeLock)
+        )
+        .map((type) => ({
+          type,
+          tricks: getObstacleTricksForObstacle(type).filter((trick) =>
+            !obstacleExclusions.obstacleTrickIds?.includes(trick.id) &&
+            (!obstacleLocks.obstacleTrickId ||
+              obstacleLocks.obstacleTrickId === trick.id) &&
+            filterValues(trick.applicableApproaches,
+              obstacleExclusions.approaches, obstacleLocks.approach).some(approach =>
+                getTransferChoices(type, trick.id, approach, obstacleLocks, obstacleExclusions).length > 0) &&
+            filterValues(trick.allowedEntryTricks,
+              obstacleExclusions.entryTrickIds, obstacleLocks.entryTrickId).length > 0
+          )
+        }))
+        .filter((candidate) => candidate.tricks.length > 0);
+
+      if (!candidates.length) {
+        setConflictError('No compatible ledge or rail challenge matches your locks and exclusions.');
         return;
       }
 
-      // Generate obstacle trick respecting locks and exclusions
-      let availableTricks = getObstacleTricksForObstacle(selectedObstacle);
-      if (obstacleExclusions.obstacleTrickIds) {
-        availableTricks = availableTricks.filter(
-          (t) => !obstacleExclusions.obstacleTrickIds?.includes(t.id)
-        );
-      }
+      const chosenObstacle = pick(candidates);
+      const chosenTrick = pick(chosenObstacle.tricks);
+      const chosenApproach = pick(filterValues(
+        chosenTrick.applicableApproaches,
+        obstacleExclusions.approaches, obstacleLocks.approach
+      ).filter(approach => getTransferChoices(chosenObstacle.type, chosenTrick.id,
+        approach, obstacleLocks, obstacleExclusions).length > 0));
+      const chosenEntry = pick(filterValues(
+        chosenTrick.allowedEntryTricks,
+        obstacleExclusions.entryTrickIds, obstacleLocks.entryTrickId
+      ));
+      const chosenTransfer = pick(getTransferChoices(chosenObstacle.type,
+        chosenTrick.id, chosenApproach, obstacleLocks, obstacleExclusions));
+      const chosenExit = pick(chosenTransfer.exits);
 
-      if (availableTricks.length === 0) {
-        setConflictError(`All tricks for ${selectedObstacle} are excluded. Please include at least one.`);
-        return;
-      }
-
-      const chosenTrick = obstacleLocks.obstacleTrickId
-        ? OBSTACLE_TRICKS.find((t) => t.id === obstacleLocks.obstacleTrickId) || availableTricks[0]
-        : availableTricks[Math.floor(Math.random() * availableTricks.length)];
-
-      let approaches = (['frontside', 'backside'] as const).filter(
-        (a) => !obstacleExclusions.approaches?.includes(a)
-      );
-      if (approaches.length === 0) approaches = ['frontside'];
-      const chosenApproach = obstacleLocks.approach || approaches[Math.floor(Math.random() * approaches.length)];
-
-      let allowedEntries = chosenTrick.allowedEntryTricks.filter(
-        (id) => !obstacleExclusions.entryTrickIds?.includes(id)
-      );
-      if (allowedEntries.length === 0) allowedEntries = chosenTrick.allowedEntryTricks;
-      const chosenEntry = obstacleLocks.entryTrickId || allowedEntries[Math.floor(Math.random() * allowedEntries.length)];
-
-      let allowedExits = chosenTrick.allowedExitTricks.filter(
-        (e) => !obstacleExclusions.exitTricks?.includes(e)
-      );
-      if (allowedExits.length === 0) allowedExits = chosenTrick.allowedExitTricks;
-      const chosenExit = obstacleLocks.exitTrick || allowedExits[Math.floor(Math.random() * allowedExits.length)];
+      setSelectedObstacle(chosenObstacle.type);
 
       const comp: ObstacleComponent = {
-        obstacleType: selectedObstacle,
+        obstacleType: chosenObstacle.type,
         approach: chosenApproach,
         obstacleTrickId: chosenTrick.id,
         entryTrickId: chosenEntry,
         exitTrick: chosenExit,
-        transferTrickId: obstacleLocks.transferTrickId || obstacleData?.transferTrickId,
+        transferTrickId: chosenTransfer.id || undefined,
       };
 
       comp.mechanics = resolveObstacleMechanics(comp);
@@ -303,9 +309,13 @@ export const GeneratorPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <section
+        aria-label="Challenge and practice session"
+        className="trick-practice-workspace bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl"
+      >
       {/* 1. Main Trick Presentation */}
       <TrickDisplay
-        trickResult={currentSession?.trickResult || null}
+        trickResult={currentSession?.trickResult || finishedSession?.trickResult || null}
         mode={mode}
         onChangeMode={setMode}
         onGenerate={handleGenerate}
@@ -315,14 +325,23 @@ export const GeneratorPage: React.FC = () => {
       />
 
       {/* 2. Interactive Practice Tracking Panel */}
-      {currentSession && (
+      {(currentSession || finishedSession) && (
         <PracticePanel
-          session={currentSession}
+          key={(currentSession || finishedSession)!.id}
+          session={(currentSession || finishedSession)!}
+          onFinishSession={(finished) => {
+            setFinishedSession(finished);
+            setCurrentSession(null);
+            showToast('Session saved. Generate a new challenge when ready.');
+          }}
           onUpdateSession={updateSession}
           savedSetups={profile?.savedSetups || []}
           onSelectSetup={(s) => setActiveSetup(s)}
         />
       )}
+
+
+      </section>
 
       {/* 3. Controls & Lock Configuration */}
       {mode === 'single' && (

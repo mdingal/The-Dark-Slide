@@ -1,4 +1,5 @@
 import React from 'react';
+import { TRANSFER_OPTIONS } from '../../domain/obstacleTransfers';
 import {
   ObstacleType,
   ObstacleComponent,
@@ -40,10 +41,8 @@ export const ObstaclePicker: React.FC<ObstaclePickerProps> = ({
   onResetExclusions,
 }) => {
   const allObstacles: { id: ObstacleType; label: string }[] = [
-    { id: 'flatground', label: 'Flatground' },
     { id: 'ledge', label: 'Ledge' },
     { id: 'rail', label: 'Rail' },
-    { id: 'manual_pad', label: 'Manual Pad' },
   ];
 
   const currentAvailableTricks = getObstacleTricksForObstacle(selectedObstacle);
@@ -347,24 +346,45 @@ export const ObstaclePicker: React.FC<ObstaclePickerProps> = ({
 
           {/* 6. Combo Transfer (Optional) */}
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
                 Transfer to Second Grind / Slide (Optional)
               </label>
+              <div className="flex items-center gap-1 shrink-0">
+                <ItemPoolSelector
+                  label="Transfers"
+                  items={TRANSFER_OPTIONS}
+                  excludedIds={exclusions.transferTrickIds || []}
+                  onToggleExclude={(id) => onToggleExclude('transferTrickIds', id)}
+                  onResetExclusions={() => onResetExclusions('transferTrickIds')}
+                />
+                <button
+                  type="button"
+                  aria-label={locks.transferTrickId !== undefined ? 'Unlock transfer' : 'Lock transfer'}
+                  aria-pressed={locks.transferTrickId !== undefined}
+                  onClick={() => onToggleLock('transferTrickId',
+                    locks.transferTrickId !== undefined ? undefined : (obstacleData.transferTrickId || ''))}
+                  className={`p-1 rounded cursor-pointer ${locks.transferTrickId !== undefined
+                    ? 'text-amber-700 dark:text-amber-400 bg-amber-500/10'
+                    : 'text-neutral-600 dark:text-neutral-300 hover:text-neutral-900'}`}
+                >
+                  {locks.transferTrickId !== undefined ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                </button>
+              </div>
             </div>
             <select
-              value={obstacleData.transferTrickId || ''}
-              onChange={(e) => handleUpdateField('transferTrickId', e.target.value || undefined)}
+              value={locks.transferTrickId ?? obstacleData.transferTrickId ?? ''}
+              onChange={(e) => {
+                handleUpdateField('transferTrickId', e.target.value || undefined);
+                if (locks.transferTrickId !== undefined) onToggleLock('transferTrickId', e.target.value);
+              }}
               className="w-full text-xs font-medium bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-md px-2.5 py-1.5 text-neutral-900 dark:text-white"
             >
-              <option value="">None (Single Lock)</option>
-              <option value="50_50">to 50-50</option>
-              <option value="5_0">to 5-0</option>
-              <option value="nosegrind">to Nosegrind</option>
-              <option value="crooked">to Crooked Grind</option>
-              <option value="boardslide">to Boardslide</option>
-              <option value="tailslide">to Tailslide</option>
-              <option value="smith">to Smith Grind</option>
+              {TRANSFER_OPTIONS.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label} {exclusions.transferTrickIds?.includes(option.id) ? '(Excluded)' : ''}
+                </option>
+              ))}
             </select>
           </div>
         </div>

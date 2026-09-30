@@ -31,7 +31,7 @@ export const ItemPoolSelector: React.FC<ItemPoolSelectorProps> = ({
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [isOpen]);
 
-  const excludedCount = excludedIds.length;
+  const excludedCount = items.filter((item) => excludedIds.includes(item.id)).length;
   const includedCount = items.length - excludedCount;
 
   return (
@@ -55,20 +55,35 @@ export const ItemPoolSelector: React.FC<ItemPoolSelectorProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 z-50 w-56 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-lg p-2.5 text-xs animate-in fade-in zoom-in-95">
+        <div className="absolute right-0 mt-1 z-50 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-lg p-2.5 text-xs animate-in fade-in zoom-in-95">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-neutral-100 dark:border-neutral-800">
             <span className="font-semibold text-neutral-900 dark:text-white text-[11px]">
               Randomize In: {label}
             </span>
-            {excludedCount > 0 && (
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={onResetExclusions}
-                className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                disabled={excludedCount === 0}
+                className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer disabled:opacity-40 disabled:cursor-default"
               >
-                Include All
+                Select All
               </button>
-            )}
+              <button
+                type="button"
+                onClick={() => {
+                  items.forEach((item) => {
+                    if (!excludedIds.includes(item.id)) {
+                      onToggleExclude(item.id);
+                    }
+                  });
+                }}
+                disabled={includedCount === 0}
+                className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              >
+                Select None
+              </button>
+            </div>
           </div>
 
           <div className="max-h-48 overflow-y-auto space-y-1 pr-1">

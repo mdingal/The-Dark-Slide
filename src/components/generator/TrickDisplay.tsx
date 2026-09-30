@@ -30,9 +30,10 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
         <div className="flex items-center gap-1.5 p-1 bg-neutral-100 dark:bg-neutral-800/80 rounded-lg">
           <button
             onClick={() => onChangeMode('single')}
+              style={{ animation: "none", boxShadow: "none" }}
             className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
               mode === 'single'
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
+                ? 'bg-[#D4A72C] text-[#292524] font-semibold'
                 : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
@@ -40,9 +41,10 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
           </button>
           <button
             onClick={() => onChangeMode('combo')}
+              style={{ animation: "none", boxShadow: "none" }}
             className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
               mode === 'combo'
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
+                ? 'bg-[#D4A72C] text-[#292524] font-semibold'
                 : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
@@ -50,9 +52,10 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
           </button>
           <button
             onClick={() => onChangeMode('obstacle')}
+              style={{ animation: "none", boxShadow: "none" }}
             className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
               mode === 'obstacle'
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
+                ? 'bg-[#D4A72C] text-[#292524] font-semibold'
                 : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
@@ -60,11 +63,7 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
           </button>
         </div>
 
-        {activeSetupName && (
-          <div className="text-xs text-neutral-700 dark:text-neutral-300 font-mono">
-            Setup: <span className="text-neutral-900 dark:text-white font-medium">{activeSetupName}</span>
-          </div>
-        )}
+        
       </div>
 
       {/* Conflict Notice if locks conflict */}
@@ -96,7 +95,23 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white text-balance leading-tight">
-            {trickResult?.canonicalName || 'Click Generate to Begin'}
+            {(() => {
+              const name = trickResult?.canonicalName || 'Click Generate to Begin';
+              const match = trickResult?.mode === 'obstacle'
+                ? name.match(/^\[\s*([^\]]+?)\s*\]\s*(.*)$/)
+                : null;
+
+              if (!match) return name;
+
+              return (
+                <>
+                  <span className="font-normal text-[#8A6500] dark:text-[#D4A72C]">
+                    { '[' + match[1].trim() + ']' }
+                  </span>
+                  {' '}{match[2]}
+                </>
+              );
+            })()}
           </h1>
 
           {/* Stored Underlying Movements Badge */}

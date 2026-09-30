@@ -25,7 +25,8 @@ import QRCode from 'qrcode';
 
 interface PracticePanelProps {
   session: PracticeSession;
-  onUpdateSession: (updated: PracticeSession) => void;
+  onUpdateSession: (updated: PracticeSession) => Promise<void>;
+  onFinishSession?: (finished: PracticeSession) => void;
   savedSetups: SetupData[];
   onSelectSetup: (setup: SetupData) => void;
 }
@@ -35,17 +36,26 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
   onUpdateSession,
   savedSetups,
   onSelectSetup,
+  onFinishSession,
 }) => {
   // Local display time ticker
   const [displayDurationMs, setDisplayDurationMs] = useState<number>(() =>
     calculateActiveDurationMs(session.timerState)
   );
 
-  const [isSuccessPromptOpen, setIsSuccessPromptOpen] = useState(false);
+  const isFinished = Boolean(session.sessionEndedAt);
+  const [isFinishOpen, setIsFinishOpen] = useState(false);
+  const [finishStatus, setFinishStatus] = useState<SessionStatus>('pending');
+  const [finishRating, setFinishRating] = useState<number | null>(null);
+  const [recordMissingLanding, setRecordMissingLanding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [finishError, setFinishError] = useState('');
+  const [notesDraft, setNotesDraft] = useState(session.notes);
+  const finishTimeRef = useRef<number>(0);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareImageUri, setShareImageUri] = useState<string | null>(null);
   const [selectedRatio, setSelectedRatio] = useState<'1:1' | '4:5'>('1:1');
-  const notesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   // Tick local timer every 250ms when running without saving to storage every second
   useEffect(() => {
@@ -84,21 +94,49 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
     });
   };
 
-  // Stop Session button
+  // Opening confirmation does not mutate the saved session.
   const handleStopSession = () => {
-    const now = Date.now();
-    let stoppedTimer = session.timerState;
-    if (stoppedTimer.isRunning) {
-      stoppedTimer = stopTimer(stoppedTimer, now);
-    }
-    const finalDuration = calculateActiveDurationMs(stoppedTimer, now);
+    finishTimeRef.current = Date.now();
+    setFinishStatus(session.landingCount > 0 ? 'success' : 'pending');
+    setFinishRating(null);
+    setRecordMissingLanding(false);
+    setFinishError('');
+    setIsFinishOpen(true);
+  };
 
-    onUpdateSession({
+  const handleFinishSession = async () => {
+    if (isSaving || finishRating === null) return;
+    if (finishStatus === 'success' && session.landingCount === 0 && !recordMissingLanding) {
+      setFinishError('Record a landing or choose Pending or Failed.');
+      return;
+    }
+    setIsSaving(true);
+    setFinishError('');
+    const now = finishTimeRef.current;
+    const timerState = stopTimer(session.timerState, now);
+    const addLanding = finishStatus === 'success' && session.landingCount === 0;
+    const finished: PracticeSession = {
       ...session,
-      timerState: stoppedTimer,
+      status: finishStatus,
+      difficultyRating: finishRating,
+      notes: notesDraft,
+      timerState,
+      activeDurationMs: calculateActiveDurationMs(timerState, now),
       sessionEndedAt: new Date(now).toISOString(),
-      activeDurationMs: finalDuration,
-    });
+      attemptCount: session.attemptCount + (addLanding ? 1 : 0),
+      landingCount: session.landingCount + (addLanding ? 1 : 0),
+      firstLandingAttemptNumber: addLanding
+        ? session.attemptCount + 1 : session.firstLandingAttemptNumber,
+    };
+    try {
+      await onUpdateSession(finished);
+      setIsFinishOpen(false);
+      onFinishSession?.(finished);
+    } catch {
+      setFinishError('Could not save your session. Your session has not been cleared. Try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Add attempt (+1 attempt only)
@@ -181,75 +219,6 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
       status: lastAction.prevStatus,
       history: remainingHistory,
     });
-  };
-
-  // Status transitions
-  const handleSetStatus = (newStatus: SessionStatus) => {
-    if (newStatus === 'success' && session.landingCount === 0) {
-      setIsSuccessPromptOpen(true);
-      return;
-    }
-    applyStatusChange(newStatus);
-  };
-
-  const applyStatusChange = (newStatus: SessionStatus, autoRecordLanding = false) => {
-    const now = Date.now();
-    let newAttempts = session.attemptCount;
-    let newLandings = session.landingCount;
-    let firstLanding = session.firstLandingAttemptNumber;
-
-    if (autoRecordLanding) {
-      newAttempts += 1;
-      newLandings += 1;
-      if (firstLanding === undefined) {
-        firstLanding = newAttempts;
-      }
-    }
-
-    let finalTimer = session.timerState;
-    let endedAt = session.sessionEndedAt;
-    if (newStatus === 'success' || newStatus === 'failed') {
-      if (finalTimer.isRunning) {
-        finalTimer = stopTimer(finalTimer, now);
-      }
-      endedAt = new Date(now).toISOString();
-    } else if (newStatus === 'pending') {
-      endedAt = undefined;
-    }
-
-    const duration = calculateActiveDurationMs(finalTimer, now);
-
-    const historyItem: CounterActionHistoryItem = {
-      action: 'status_change',
-      timestamp: now,
-      prevAttemptCount: session.attemptCount,
-      prevLandingCount: session.landingCount,
-      prevFirstLandingAttemptNumber: session.firstLandingAttemptNumber,
-      prevStatus: session.status,
-    };
-
-    onUpdateSession({
-      ...session,
-      status: newStatus,
-      attemptCount: newAttempts,
-      landingCount: newLandings,
-      firstLandingAttemptNumber: firstLanding,
-      sessionEndedAt: endedAt,
-      timerState: finalTimer,
-      activeDurationMs: duration,
-      history: [historyItem, ...(session.history || [])],
-    });
-  };
-
-  const handleNotesChange = (text: string) => {
-    if (notesTimeoutRef.current) clearTimeout(notesTimeoutRef.current);
-    notesTimeoutRef.current = setTimeout(() => {
-      onUpdateSession({ ...session, notes: text });
-    }, 400);
-  };
-
-  const handleRatingChange = (rating: number) => {
-    onUpdateSession({ ...session, difficultyRating: rating });
   };
 
   const handleSetupSelect = (setupId: string) => {
@@ -493,10 +462,10 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
     <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-5">
       {/* Header with Title, Status and Setup Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800 gap-3">
-        <div>
-          <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-            Practice Session
-            <span
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 w-full">
+          <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 shrink-0">
+            {isFinished ? 'Saved Session' : 'Practice Session'}
+            {isFinished && <span
               className={`text-[11px] font-mono uppercase px-2 py-0.5 rounded ${
                 session.status === 'success'
                   ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
@@ -506,23 +475,24 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
               }`}
             >
               {session.status}
-            </span>
+            </span>}
           </h2>
 
           {/* Setup selector dropdown */}
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
             <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
               Setup Used:
             </span>
             {savedSetups.length > 0 ? (
               <select
+                disabled={isFinished}
                 value={session.setupSnapshot.id}
                 onChange={(e) => handleSetupSelect(e.target.value)}
                 className="text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-md px-2.5 py-1 text-neutral-900 dark:text-white focus:outline-none cursor-pointer"
               >
                 {savedSetups.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.name} ({s.deckWidthMm}mm · {s.wheelMaterial})
+                    {s.name} ({s.deckWidthMm}mm · {s.wheelMaterial.charAt(0).toUpperCase() + s.wheelMaterial.slice(1).toLowerCase()})
                   </option>
                 ))}
               </select>
@@ -534,62 +504,23 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           </div>
         </div>
 
-        {/* Actions & Status segmented controls */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleOpenShareModal}
-            title="Share session progress stats card"
-            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-lg transition-colors cursor-pointer border border-neutral-200 dark:border-neutral-700"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            Share Card
+        {isFinished && (
+          <button type="button" onClick={handleOpenShareModal}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white text-xs font-medium">
+            <Share2 className="w-3.5 h-3.5" /> Share Card
           </button>
-
-          <div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg">
-            <button
-              onClick={() => handleSetStatus('pending')}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                session.status === 'pending'
-                  ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-              }`}
-            >
-              Pending
-            </button>
-            <button
-              onClick={() => handleSetStatus('success')}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                session.status === 'success'
-                  ? 'bg-emerald-600 text-white shadow-xs font-semibold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-              }`}
-            >
-              Success
-            </button>
-            <button
-              onClick={() => handleSetStatus('failed')}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                session.status === 'failed'
-                  ? 'bg-rose-600 text-white shadow-xs font-semibold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-              }`}
-            >
-              Failed
-            </button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Timer and Primary Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-950/40 border border-neutral-200/80 dark:border-neutral-800/80">
+      <div className="grid grid-cols-2 sm:grid-cols-[minmax(190px,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-950/40 border border-neutral-200/80 dark:border-neutral-800/80">
         {/* Practice Timer */}
         <div>
           <div className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">Practice Timer</div>
           <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white tabular-nums mt-0.5">
             {formatDurationMs(displayDurationMs)}
           </div>
-          <div className="mt-2 flex items-center gap-1.5">
+          {!isFinished && <div className="mt-2 flex items-center gap-1.5">
             <button
               onClick={handleToggleTimer}
               className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md cursor-pointer transition-colors ${
@@ -616,9 +547,9 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
               className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
             >
               <Square className="w-3 h-3 fill-current" />
-              Stop
+              Stop Session
             </button>
-          </div>
+          </div>}
         </div>
 
         {/* Attempts */}
@@ -643,34 +574,15 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           </div>
         </div>
 
-        {/* Rating */}
-        <div>
-          <div className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">Difficulty Rating</div>
-          <div className="flex items-center gap-1 mt-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => handleRatingChange(star)}
-                title={`Rate ${star} star`}
-                className={`p-1 rounded cursor-pointer transition-colors ${
-                  star <= (session.difficultyRating || 3)
-                    ? 'text-amber-500'
-                    : 'text-neutral-300 dark:text-neutral-700 hover:text-amber-400'
-                }`}
-              >
-                <Star className="w-4 h-4 fill-current" />
-              </button>
-            ))}
-          </div>
-          <div className="text-[11px] text-neutral-700 dark:text-neutral-300 mt-1 font-mono">
-            Level {session.difficultyRating || 3} / 5
-          </div>
-        </div>
       </div>
+      {isFinished && (
+        <p className="text-xs text-neutral-600 dark:text-neutral-300">
+          Difficulty: {session.difficultyRating} / 5. Saved to your history.
+        </p>
+      )}
 
       {/* Interactive Counter Buttons */}
-      <div className="flex flex-wrap items-center gap-3">
+      {!isFinished && <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={handleAddAttempt}
@@ -699,48 +611,75 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           <Undo2 className="w-4 h-4" />
           <span className="text-xs font-medium">Undo</span>
         </button>
-      </div>
+      </div>}
 
       {/* Practice Session Notes */}
-      <div>
+      <div className="session-notes-field">
         <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
           Session Notes & Observations
         </label>
         <textarea
-          defaultValue={session.notes}
-          onChange={(e) => handleNotesChange(e.target.value)}
+          value={notesDraft}
+          readOnly={isFinished}
+          onChange={(e) => setNotesDraft(e.target.value)}
           placeholder="E.g. finger placement on concave, pop angle, smooth rollaway, catch timing..."
           rows={2}
           className="w-full text-xs font-normal bg-neutral-50 dark:bg-neutral-950/40 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white resize-none"
         />
       </div>
 
-      {/* Confirmation Modal for Zero Landing Success */}
       <Modal
-        isOpen={isSuccessPromptOpen}
-        onClose={() => setIsSuccessPromptOpen(false)}
-        title="Record Successful Landing?"
+        isOpen={isFinishOpen}
+        onClose={() => { if (!isSaving) setIsFinishOpen(false); }}
+        title="Finish this session?"
       >
         <div className="space-y-4">
           <p className="text-sm text-neutral-600 dark:text-neutral-300">
-            You selected <strong>Success</strong>, but have 0 successful landings recorded for this trick session.
-            Would you like to record 1 successful landing now and mark the session completed?
+            Are you sure you want to finish? Choose your result and difficulty.
+            Your session will be saved before the active practice session resets.
           </p>
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-neutral-200 dark:border-neutral-800">
-            <button
-              onClick={() => setIsSuccessPromptOpen(false)}
-              className="px-3.5 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => {
-                setIsSuccessPromptOpen(false);
-                applyStatusChange('success', true);
-              }}
-              className="px-4 py-2 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors font-semibold"
-            >
-              Record Landing & Complete
+          <fieldset disabled={isSaving} className="space-y-2">
+            <legend className="text-sm font-medium mb-2">Session status</legend>
+            <div className="flex gap-2">
+              {(['pending', 'success', 'failed'] as SessionStatus[]).map((status) => (
+                <button key={status} type="button" aria-pressed={finishStatus === status}
+                  onClick={() => { setFinishStatus(status); setFinishError(''); }}
+                  className={`px-3 py-2 rounded-md text-sm capitalize ${finishStatus === status
+                    ? 'bg-[#D4A72C] text-[#292524]' : 'bg-neutral-100 dark:bg-neutral-800'}`}>
+                  {status}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          {finishStatus === 'success' && session.landingCount === 0 && (
+            <label className="flex gap-2 text-sm">
+              <input type="checkbox" checked={recordMissingLanding} disabled={isSaving}
+                onChange={(e) => setRecordMissingLanding(e.target.checked)} />
+              Record one successful landing (+1 attempt and +1 landing).
+            </label>
+          )}
+          <fieldset disabled={isSaving} className="space-y-2">
+            <legend className="text-sm font-medium mb-2">Difficulty rating (required)</legend>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <button key={rating} type="button" aria-label={`Difficulty ${rating} of 5`}
+                  aria-pressed={finishRating === rating} onClick={() => setFinishRating(rating)}
+                  className={`px-3 py-2 rounded-md ${finishRating === rating
+                    ? 'bg-[#D4A72C] text-[#292524]' : 'bg-neutral-100 dark:bg-neutral-800'}`}>
+                  {rating}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-neutral-500">1 = Easy · 5 = Very difficult</p>
+          </fieldset>
+          {finishError && <p role="alert" className="text-sm text-rose-600">{finishError}</p>}
+          <div className="flex justify-end gap-3">
+            <button type="button" disabled={isSaving} onClick={() => setIsFinishOpen(false)}
+              className="px-3 py-2 rounded-md text-sm">Cancel</button>
+            <button type="button" disabled={isSaving || finishRating === null}
+              onClick={handleFinishSession}
+              className="px-4 py-2 rounded-md bg-[#D4A72C] text-[#292524] text-sm font-semibold disabled:opacity-40">
+              {isSaving ? 'Saving...' : 'Yes, Finish Session'}
             </button>
           </div>
         </div>

@@ -131,7 +131,7 @@ export function formatObstacleTrickCanonicalName(data: ObstacleComponent): strin
     result = `${result} ${exitString}`;
   }
 
-  return result.replace(/\s+/g, ' ').trim();
+  return result.replace(/\bfrontside\b/gi, 'FS').replace(/\bbackside\b/gi, 'BS').replace(/\s+/g, ' ').trim();
 }
 
 /**

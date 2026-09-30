@@ -21,6 +21,7 @@ export const TopBar: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setActiveTab('home')}
+              style={{ animation: "none", boxShadow: "none" }}
             className="text-left group cursor-pointer focus:outline-none"
           >
             <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900 dark:text-white group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
@@ -34,9 +35,10 @@ export const TopBar: React.FC = () => {
           <nav className="flex items-center gap-1 sm:gap-5" aria-label="Main Navigation">
             <button
               onClick={() => setActiveTab('home')}
+              style={{ animation: "none", boxShadow: "none" }}
               className={`text-xs sm:text-sm font-medium transition-colors py-1 cursor-pointer ${
                 activeTab === 'home'
-                  ? 'text-neutral-950 dark:text-white border-b-2 border-neutral-900 dark:border-white font-semibold'
+                  ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
               }`}
             >
@@ -44,9 +46,10 @@ export const TopBar: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('generator')}
+              style={{ animation: "none", boxShadow: "none" }}
               className={`text-xs sm:text-sm font-medium transition-colors py-1 cursor-pointer ${
                 activeTab === 'generator'
-                  ? 'text-neutral-950 dark:text-white border-b-2 border-neutral-900 dark:border-white font-semibold'
+                  ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
               }`}
             >
@@ -54,9 +57,10 @@ export const TopBar: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('history')}
+              style={{ animation: "none", boxShadow: "none" }}
               className={`text-xs sm:text-sm font-medium transition-colors py-1 cursor-pointer ${
                 activeTab === 'history'
-                  ? 'text-neutral-950 dark:text-white border-b-2 border-neutral-900 dark:border-white font-semibold'
+                  ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
               }`}
             >
@@ -64,9 +68,10 @@ export const TopBar: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('settings')}
+              style={{ animation: "none", boxShadow: "none" }}
               className={`text-xs sm:text-sm font-medium transition-colors py-1 cursor-pointer ${
                 activeTab === 'settings'
-                  ? 'text-neutral-950 dark:text-white border-b-2 border-neutral-900 dark:border-white font-semibold'
+                  ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
               }`}
             >
@@ -94,11 +99,13 @@ export const TopBar: React.FC = () => {
           <div className="flex items-center bg-neutral-100 dark:bg-neutral-800 p-0.5 rounded-md border border-neutral-200 dark:border-neutral-700">
             <button
               onClick={() => setTheme('light')}
+              style={{ animation: "none", boxShadow: "none" }}
               title="Light theme"
               aria-label="Light theme"
+              aria-pressed={theme === 'light'}
               className={`p-1.5 rounded transition-colors cursor-pointer ${
                 theme === 'light'
-                  ? 'bg-white text-neutral-900 shadow-xs'
+                  ? 'bg-[#D4A72C] text-[#292524]'
                   : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
               }`}
             >
@@ -106,11 +113,13 @@ export const TopBar: React.FC = () => {
             </button>
             <button
               onClick={() => setTheme('dark')}
+              style={{ animation: "none", boxShadow: "none" }}
               title="Dark theme"
               aria-label="Dark theme"
+              aria-pressed={theme === 'dark'}
               className={`p-1.5 rounded transition-colors cursor-pointer ${
                 theme === 'dark'
-                  ? 'bg-neutral-700 text-white shadow-xs'
+                  ? 'text-[#8A6500] dark:text-[#D4A72C]'
                   : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
               }`}
             >
@@ -118,11 +127,13 @@ export const TopBar: React.FC = () => {
             </button>
             <button
               onClick={() => setTheme('system')}
+              style={{ animation: "none", boxShadow: "none" }}
               title="System theme"
               aria-label="System theme"
+              aria-pressed={theme === 'system'}
               className={`p-1.5 rounded transition-colors cursor-pointer ${
                 theme === 'system'
-                  ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs'
+                  ? 'text-blue-600 dark:text-blue-400'
                   : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
               }`}
             >

@@ -93,6 +93,7 @@ export interface ParameterExclusions {
 }
 
 export interface ObstacleExclusions {
+  transferTrickIds?: string[];
   obstacles?: ObstacleType[];
   approaches?: ('frontside' | 'backside')[];
   obstacleTrickIds?: string[];
