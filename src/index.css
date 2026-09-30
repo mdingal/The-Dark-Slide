@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    @apply bg-[#e8dfd1] text-[#292524] transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-100;
+  }
+
+  /* Ergonomic darker warm tan palette for light mode */
+  :root:not(.dark) {
+    --bg-page: #e8dfd1;
+    --bg-card: #f0e7db;
+    --bg-subtle: #e4d8c7;
+    --border-warm: #cdbda7;
+  }
+
+  :root:not(.dark) .bg-white {
+    background-color: #f0e7db;
+  }
+  :root:not(.dark) .bg-neutral-50 {
+    background-color: #e4d8c7;
+  }
+  :root:not(.dark) .bg-neutral-100 {
+    background-color: #dbcebb;
+  }
+  :root:not(.dark) .border-neutral-200 {
+    border-color: #cdbda7;
+  }
+  :root:not(.dark) .border-neutral-300 {
+    border-color: #beac94;
+  }
+}
+
+/* Subtle animated gradient glow for colored elements */
+@keyframes subtleGlowEmerald {
+  0%, 100% {
+    box-shadow: 0 0 6px -1px rgba(16, 185, 129, 0.25), inset 0 0 3px rgba(16, 185, 129, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 13px 1px rgba(16, 185, 129, 0.45), inset 0 0 5px rgba(52, 211, 153, 0.2);
+  }
+}
+
+@keyframes subtleGlowAmber {
+  0%, 100% {
+    box-shadow: 0 0 6px -1px rgba(245, 158, 11, 0.25), inset 0 0 3px rgba(245, 158, 11, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 13px 1px rgba(245, 158, 11, 0.45), inset 0 0 5px rgba(251, 191, 36, 0.2);
+  }
+}
+
+@keyframes subtleGlowRose {
+  0%, 100% {
+    box-shadow: 0 0 6px -1px rgba(244, 63, 94, 0.25), inset 0 0 3px rgba(244, 63, 94, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 13px 1px rgba(244, 63, 94, 0.45), inset 0 0 5px rgba(251, 113, 133, 0.2);
+  }
+}
+
+@keyframes subtleGlowPurple {
+  0%, 100% {
+    box-shadow: 0 0 6px -1px rgba(168, 85, 247, 0.25), inset 0 0 3px rgba(168, 85, 247, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 13px 1px rgba(168, 85, 247, 0.45), inset 0 0 5px rgba(192, 132, 252, 0.2);
+  }
+}
+
+@keyframes subtleGlowSky {
+  0%, 100% {
+    box-shadow: 0 0 6px -1px rgba(14, 165, 233, 0.25), inset 0 0 3px rgba(14, 165, 233, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 13px 1px rgba(14, 165, 233, 0.45), inset 0 0 5px rgba(56, 189, 248, 0.2);
+  }
+}
+
+@keyframes subtleGlowIndigo {
+  0%, 100% {
+    box-shadow: 0 0 6px -1px rgba(99, 102, 241, 0.25), inset 0 0 3px rgba(99, 102, 241, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 13px 1px rgba(99, 102, 241, 0.45), inset 0 0 5px rgba(129, 140, 248, 0.2);
+  }
+}
+
+/* Attach subtle pulse glow to badge, chip, and highlight colored elements */
+[class*="bg-emerald-"], [class*="border-emerald-"] {
+  animation: subtleGlowEmerald 3.5s ease-in-out infinite;
+}
+[class*="bg-amber-"], [class*="border-amber-"], [class*="bg-yellow-"], [class*="border-yellow-"] {
+  animation: subtleGlowAmber 3.5s ease-in-out infinite;
+}
+[class*="bg-rose-"], [class*="border-rose-"], [class*="bg-red-"], [class*="border-red-"] {
+  animation: subtleGlowRose 3.5s ease-in-out infinite;
+}
+[class*="bg-purple-"], [class*="border-purple-"], [class*="bg-violet-"], [class*="border-violet-"] {
+  animation: subtleGlowPurple 3.5s ease-in-out infinite;
+}
+[class*="bg-sky-"], [class*="border-sky-"], [class*="bg-blue-"], [class*="border-blue-"] {
+  animation: subtleGlowSky 3.5s ease-in-out infinite;
+}
+[class*="bg-indigo-"], [class*="border-indigo-"] {
+  animation: subtleGlowIndigo 3.5s ease-in-out infinite;
+}
+

@@ -1,0 +1,6 @@
+{
+  "name": "Fingerboard Trick Generator & Practice Tracker",
+  "description": "Deterministic fingerboard trick generator, combo transition engine, and session practice tracker with statistics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
