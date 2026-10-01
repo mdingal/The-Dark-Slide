@@ -1,4 +1,7 @@
 import React from 'react';
+import { ChallengeActions } from '../common/ChallengeActions';
+import { getStreaks, MISS_TAGS } from '../../domain/progression';
+import { getChallengeComplexity } from '../../domain/complexity';
 import { PracticeSession } from '../../domain/types';
 import { Modal } from '../common/Modal';
 import { formatDurationMs } from '../../domain/timer';
@@ -141,6 +144,18 @@ export const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
           </div>
         </div>
 
+        <p className="text-neutral-600 dark:text-neutral-300">
+          Time to first landing: {session.firstLandingElapsedMs !== undefined
+            ? formatDurationMs(session.firstLandingElapsedMs) : 'Not recorded'} (active practice time; pauses excluded).
+        </p>
+        <div className="rounded-lg bg-neutral-50 dark:bg-neutral-800 p-3 text-xs space-y-1">
+          <p>Challenge complexity: <span className="capitalize">{getChallengeComplexity(session.trickResult)}</span> · Session difficulty: {session.difficultyRating} / 5</p>
+          <p>Current streak: {getStreaks(session).current} · Best recorded streak: {getStreaks(session).best} · Goal: {session.consistencyGoal || 3}</p>
+          <p>Miss tags: {MISS_TAGS.filter(t=>(session.missTagCounts?.[t.id]||0)>0).map(t=>`${t.label}: ${session.missTagCounts?.[t.id]}`).join(' · ')||'None recorded'}</p>
+          <p>Deck: {session.setupSnapshot.deckModel || 'Not recorded'} · Trucks: {session.setupSnapshot.truckModel || 'Not recorded'} · Wheel model: {session.setupSnapshot.wheelModel || 'Not recorded'}</p>
+        </div>
+        <ChallengeActions result={session.trickResult} />
+
         {/* Notes */}
         {session.notes && (
           <div>
@@ -165,7 +180,7 @@ export const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
             }}
             className="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-900 font-semibold rounded-md shadow-xs"
           >
-            Practice This Challenge
+            Open Saved Session
           </button>
         </div>
       </div>

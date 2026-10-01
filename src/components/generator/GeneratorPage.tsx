@@ -28,6 +28,9 @@ import { ParameterSelector } from './ParameterSelector';
 import { ComboStepEditor } from './ComboStepEditor';
 import { ObstaclePicker } from './ObstaclePicker';
 import { PracticePanel } from './PracticePanel';
+import { PoolPresets } from './PoolPresets';
+import { GeneratorPresetConfig, ComplexityFilter } from '../../domain/types';
+import { generateChallenge } from '../../domain/challengeGeneration';
 
 export const GeneratorPage: React.FC = () => {
   const {
@@ -44,6 +47,9 @@ export const GeneratorPage: React.FC = () => {
   const [finishedSession, setFinishedSession] = useState<PracticeSession | null>(null);
 
   const [mode, setMode] = useState<TrickMode>('single');
+  const [complexityFilter, setComplexityFilter] = useState<ComplexityFilter>('all');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const generationBusyRef = React.useRef(false);
 
   // Locks state
   const [singleLocks, setSingleLocks] = useState<ParameterLocks>({});
@@ -102,6 +108,7 @@ export const GeneratorPage: React.FC = () => {
   // Sync with currentSession if resuming
   useEffect(() => {
     if (currentSession) {
+      setFinishedSession(null);
       setMode(currentSession.trickResult.mode);
       if (currentSession.trickResult.singleTrick) {
         setActiveParams(currentSession.trickResult.singleTrick);
@@ -121,149 +128,19 @@ export const GeneratorPage: React.FC = () => {
     }
   }, [currentSession?.id]);
 
-  // Handle generating a new trick / combo / obstacle
-  const handleGenerate = useCallback(async () => {
-    setConflictError(null);
-
-    if (mode === 'single') {
-      const res = generateSingleTrick(singleLocks, singleExclusions);
-      if ('error' in res) {
-        setConflictError(res.error);
-        return;
-      }
-
-      setActiveParams(res.params);
-      const canonicalName = formatSingleTrickName(res.params);
-
-      const result: GeneratedTrickResult = {
-        mode: 'single',
-        canonicalName,
-        breakdown: res.breakdown,
-        singleTrick: res.params,
-        movements: res.params.movements,
-        catalogVersion: CATALOG_VERSION,
-      };
-
+  const handleGenerate = async () => {
+    if (generationBusyRef.current) return;
+    generationBusyRef.current = true;
+    setIsGenerating(true); setConflictError(null);
+    try {
+      const result = generateChallenge({ mode, complexityFilter,
+        singleLocks, singleExclusions, step1Locks, step2Locks, step1Exclusions, step2Exclusions,
+        obstacleLocks, obstacleExclusions, activeParams, step1Params, step2Params, selectedObstacle, obstacleData });
+      if ('error' in result) { setConflictError(result.error); return; }
       await startNewSession(result);
-    } else if (mode === 'combo') {
-      const res = generateTwoTrickCombo(step1Locks, step2Locks, step1Exclusions, step2Exclusions);
-      if ('error' in res) {
-        setConflictError(res.error);
-        return;
-      }
-
-      setStep1Params(res.steps[0].parameters);
-      setStep2Params(res.steps[1].parameters);
-
-      const canonicalName = formatComboName(res.steps);
-      const breakdown = [
-        `Step 1: ${res.steps[0].resolvedName} (${res.steps[0].breakdown})`,
-        `Transition: Lands in ${res.steps[0].landingState.resultStance} stance (${res.steps[0].landingState.boardPosition})`,
-        `Step 2: ${res.steps[1].resolvedName} (${res.steps[1].breakdown})`,
-      ];
-
-      const result: GeneratedTrickResult = {
-        mode: 'combo',
-        canonicalName,
-        breakdown,
-        comboSteps: res.steps,
-        catalogVersion: CATALOG_VERSION,
-      };
-
-      await startNewSession(result);
-    } else if (mode === 'obstacle') {
-      const pick = <T,>(items: T[]): T =>
-        items[Math.floor(Math.random() * items.length)];
-
-      const filterValues = <T extends string,>(
-        values: T[], excluded?: string[], locked?: string
-      ): T[] => values.filter(
-        (value) => !excluded?.includes(value) && (!locked || value === locked)
-      );
-
-      const typeLock = (obstacleLocks as ParameterLocks & {
-        obstacleType?: ObstacleType
-      }).obstacleType;
-
-      const candidates = (['ledge', 'rail'] as ObstacleType[])
-        .filter((type) =>
-          !obstacleExclusions.obstacles?.includes(type) &&
-          (!typeLock || type === typeLock)
-        )
-        .map((type) => ({
-          type,
-          tricks: getObstacleTricksForObstacle(type).filter((trick) =>
-            !obstacleExclusions.obstacleTrickIds?.includes(trick.id) &&
-            (!obstacleLocks.obstacleTrickId ||
-              obstacleLocks.obstacleTrickId === trick.id) &&
-            filterValues(trick.applicableApproaches,
-              obstacleExclusions.approaches, obstacleLocks.approach).some(approach =>
-                getTransferChoices(type, trick.id, approach, obstacleLocks, obstacleExclusions).length > 0) &&
-            filterValues(trick.allowedEntryTricks,
-              obstacleExclusions.entryTrickIds, obstacleLocks.entryTrickId).length > 0
-          )
-        }))
-        .filter((candidate) => candidate.tricks.length > 0);
-
-      if (!candidates.length) {
-        setConflictError('No compatible ledge or rail challenge matches your locks and exclusions.');
-        return;
-      }
-
-      const chosenObstacle = pick(candidates);
-      const chosenTrick = pick(chosenObstacle.tricks);
-      const chosenApproach = pick(filterValues(
-        chosenTrick.applicableApproaches,
-        obstacleExclusions.approaches, obstacleLocks.approach
-      ).filter(approach => getTransferChoices(chosenObstacle.type, chosenTrick.id,
-        approach, obstacleLocks, obstacleExclusions).length > 0));
-      const chosenEntry = pick(filterValues(
-        chosenTrick.allowedEntryTricks,
-        obstacleExclusions.entryTrickIds, obstacleLocks.entryTrickId
-      ));
-      const chosenTransfer = pick(getTransferChoices(chosenObstacle.type,
-        chosenTrick.id, chosenApproach, obstacleLocks, obstacleExclusions));
-      const chosenExit = pick(chosenTransfer.exits);
-
-      setSelectedObstacle(chosenObstacle.type);
-
-      const comp: ObstacleComponent = {
-        obstacleType: chosenObstacle.type,
-        approach: chosenApproach,
-        obstacleTrickId: chosenTrick.id,
-        entryTrickId: chosenEntry,
-        exitTrick: chosenExit,
-        transferTrickId: chosenTransfer.id || undefined,
-      };
-
-      comp.mechanics = resolveObstacleMechanics(comp);
-      setObstacleData(comp);
-      const canonicalName = formatObstacleTrickName(comp);
-      const breakdown = explainObstacleTrick(comp);
-
-      const result: GeneratedTrickResult = {
-        mode: 'obstacle',
-        canonicalName,
-        breakdown,
-        obstacleData: comp,
-        catalogVersion: CATALOG_VERSION,
-      };
-
-      await startNewSession(result);
-    }
-  }, [
-    mode,
-    singleLocks,
-    singleExclusions,
-    step1Locks,
-    step2Locks,
-    step1Exclusions,
-    step2Exclusions,
-    obstacleLocks,
-    obstacleExclusions,
-    selectedObstacle,
-    startNewSession,
-  ]);
+    } catch { setConflictError('Could not save the new challenge. Please try again.'); }
+    finally { generationBusyRef.current = false; setIsGenerating(false); }
+  };
 
   const handleToggleSingleLock = (key: keyof ParameterLocks, value?: any) => {
     setSingleLocks((prev) => {
@@ -307,6 +184,23 @@ export const GeneratorPage: React.FC = () => {
     }
   };
 
+  const presetConfig: GeneratorPresetConfig = {
+    mode, complexityFilter, singleLocks, singleExclusions, step1Locks, step2Locks,
+    step1Exclusions, step2Exclusions, obstacleLocks, obstacleExclusions,
+    activeParams, step1Params, step2Params, selectedObstacle, obstacleData,
+  };
+  const applyPreset = (config: GeneratorPresetConfig) => {
+    setMode(config.mode);
+    setComplexityFilter(config.complexityFilter || 'all');
+    setSingleLocks(config.singleLocks); setSingleExclusions(config.singleExclusions);
+    setStep1Locks(config.step1Locks); setStep2Locks(config.step2Locks);
+    setStep1Exclusions(config.step1Exclusions); setStep2Exclusions(config.step2Exclusions);
+    setObstacleLocks(config.obstacleLocks); setObstacleExclusions(config.obstacleExclusions);
+    setActiveParams(config.activeParams); setStep1Params(config.step1Params); setStep2Params(config.step2Params);
+    setSelectedObstacle(config.selectedObstacle); setObstacleData(config.obstacleData);
+    setConflictError(null);
+  };
+
   return (
     <div className="space-y-6">
       <section
@@ -316,9 +210,23 @@ export const GeneratorPage: React.FC = () => {
       {/* 1. Main Trick Presentation */}
       <TrickDisplay
         trickResult={currentSession?.trickResult || finishedSession?.trickResult || null}
+        complexityControl={
+      <div className="ml-auto shrink-0" title="Filters generated challenges by complexity; separate from your session difficulty rating.">
+        <div className="flex flex-col items-end gap-1">
+          <label htmlFor="challenge-complexity" className="text-[11px] font-semibold">Challenge Complexity</label>
+          <select id="challenge-complexity" value={complexityFilter} onChange={e => setComplexityFilter(e.target.value as ComplexityFilter)}
+            className="text-xs px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800">
+            <option value="all">All levels</option><option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option><option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <p className="sr-only">Based on catalog complexity, stance, modifiers, combos, and obstacle sequences. Your difficulty rating after practice stays separate.</p>
+      </div>
+        }
         mode={mode}
         onChangeMode={setMode}
         onGenerate={handleGenerate}
+        isGenerating={isGenerating}
         conflictError={conflictError}
         onClearLocks={handleClearLocks}
         activeSetupName={activeSetup?.name}
@@ -342,6 +250,10 @@ export const GeneratorPage: React.FC = () => {
 
 
       </section>
+
+
+      <PoolPresets config={presetConfig} onApply={applyPreset} />
+
 
       {/* 3. Controls & Lock Configuration */}
       {mode === 'single' && (

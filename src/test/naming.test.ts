@@ -134,7 +134,7 @@ describe('Evolved Trick Naming & Underlying Movements Engine', () => {
         landing: 'normal',
         revert: 'none',
       };
-      expect(formatSingleTrickName(params)).toBe('Frontside Flip');
+      expect(formatSingleTrickName(params)).toBe('FS Flip');
       const movements = resolveUnderlyingMovements(params);
       expect(movements.boardSpinDeg).toBe(180);
       expect(movements.boardSpinDir).toBe('frontside');
@@ -152,7 +152,7 @@ describe('Evolved Trick Naming & Underlying Movements Engine', () => {
         landing: 'normal',
         revert: 'none',
       };
-      expect(formatSingleTrickName(params)).toBe('Backside Flip');
+      expect(formatSingleTrickName(params)).toBe('BS Flip');
     });
 
     it('recognizes Heelflip + FS 180 ollie as Frontside Heelflip', () => {
@@ -164,7 +164,7 @@ describe('Evolved Trick Naming & Underlying Movements Engine', () => {
         landing: 'normal',
         revert: 'none',
       };
-      expect(formatSingleTrickName(params)).toBe('Frontside Heelflip');
+      expect(formatSingleTrickName(params)).toBe('FS Heelflip');
     });
 
     it('recognizes Heelflip + BS 180 ollie as Backside Heelflip', () => {
@@ -176,7 +176,7 @@ describe('Evolved Trick Naming & Underlying Movements Engine', () => {
         landing: 'normal',
         revert: 'none',
       };
-      expect(formatSingleTrickName(params)).toBe('Backside Heelflip');
+      expect(formatSingleTrickName(params)).toBe('BS Heelflip');
     });
 
     it('recognizes Kickflip + 180 body varial (no board shuvit) as Kickflip Body Varial / Sex Change', () => {
@@ -394,7 +394,7 @@ describe('Evolved Trick Naming & Underlying Movements Engine', () => {
         landing: 'normal',
         revert: 'none',
       };
-      expect(formatSingleTrickName(params)).toBe('Frontside Pop Shuvit');
+      expect(formatSingleTrickName(params)).toBe('FS Pop Shuvit');
     });
   });
 

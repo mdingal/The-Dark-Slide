@@ -19,6 +19,9 @@ export const ProfileSettingsPage: React.FC = () => {
     widthPreset: string;
     customWidth: string;
     wheelMaterial: WheelMaterial;
+    deckModel: string;
+    truckModel: string;
+    wheelModel: string;
     shape: DeckShape;
     mold: DeckMold;
     notes: string;
@@ -27,6 +30,7 @@ export const ProfileSettingsPage: React.FC = () => {
     widthPreset: '33.6',
     customWidth: '',
     wheelMaterial: 'urethane',
+    deckModel: '', truckModel: '', wheelModel: '',
     shape: 'popsicle',
     mold: 'medium',
     notes: '',
@@ -79,6 +83,7 @@ export const ProfileSettingsPage: React.FC = () => {
         widthPreset: isPreset ? setupToEdit.deckWidthMm.toString() : 'custom',
         customWidth: isPreset ? '' : setupToEdit.deckWidthMm.toString(),
         wheelMaterial: setupToEdit.wheelMaterial,
+        deckModel: setupToEdit.deckModel || '', truckModel: setupToEdit.truckModel || '', wheelModel: setupToEdit.wheelModel || '',
         shape: setupToEdit.shape || 'popsicle',
         mold: setupToEdit.mold || 'medium',
         notes: setupToEdit.notes || '',
@@ -90,6 +95,7 @@ export const ProfileSettingsPage: React.FC = () => {
         widthPreset: '33.6',
         customWidth: '',
         wheelMaterial: 'urethane',
+        deckModel: '', truckModel: '', wheelModel: '',
         shape: 'popsicle',
         mold: 'medium',
         notes: '',
@@ -120,6 +126,8 @@ export const ProfileSettingsPage: React.FC = () => {
     }
 
     const newSetup: SetupData = {
+      ...(editingSetup || {}),
+      deckModel: setupForm.deckModel.trim(), truckModel: setupForm.truckModel.trim(), wheelModel: setupForm.wheelModel.trim(),
       id: editingSetup?.id || `setup_${Date.now()}`,
       name: setupForm.name.trim(),
       deckWidthMm: deckWidth,
@@ -294,6 +302,9 @@ export const ProfileSettingsPage: React.FC = () => {
                         </>
                       )}
                     </div>
+                    {(setup.deckModel || setup.truckModel || setup.wheelModel) && <p className="text-[11px] text-neutral-600 dark:text-neutral-400">
+                      {[setup.deckModel && `Deck: ${setup.deckModel}`,setup.truckModel && `Trucks: ${setup.truckModel}`,setup.wheelModel && `Wheels: ${setup.wheelModel}`].filter(Boolean).join(' · ')}
+                    </p>}
                     {setup.notes && (
                       <div className="text-[11px] text-neutral-500 italic">
                         "{setup.notes}"
@@ -454,6 +465,19 @@ export const ProfileSettingsPage: React.FC = () => {
                 />
               </div>
             )}
+          </div>
+
+          <div className="space-y-3">
+            {([
+              ['deckModel','Deck brand / model','e.g. FlatFace G16'],
+              ['truckModel','Truck brand / model','e.g. Dynamic 34mm'],
+              ['wheelModel','Wheel brand / model','e.g. Piro Performance'],
+            ] as const).map(([key,label,placeholder]) => <label key={key} className="block">
+              <span className="block font-medium text-neutral-700 dark:text-neutral-300 mb-1">{label} (optional)</span>
+              <input type="text" aria-label={label} value={setupForm[key]} maxLength={100} placeholder={placeholder}
+                onChange={e => setSetupForm({...setupForm,[key]:e.target.value})}
+                className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded px-2.5 py-1.5 text-neutral-900 dark:text-white" />
+            </label>)}
           </div>
 
           {/* Shape & Mold Dropdowns */}

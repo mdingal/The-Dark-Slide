@@ -15,8 +15,8 @@ export const TopBar: React.FC = () => {
   const instagramUser = cleanInstagramHandle(profile?.instagramHandle);
 
   return (
-    <header className="border-b border-[#cdbda7] dark:border-neutral-800 bg-[#eee5d7]/95 dark:bg-neutral-900/95 backdrop-blur-md sticky top-0 z-30 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <header className="border-b border-[#cdbda7] dark:border-neutral-800 bg-[#eee5d7]/95 dark:bg-black backdrop-blur-md sticky top-0 z-30 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-3 flex flex-wrap gap-3 items-center justify-between">
         {/* Zone 1: Single text element wordmark */}
         <div className="flex items-center gap-3">
           <button
@@ -32,7 +32,7 @@ export const TopBar: React.FC = () => {
 
         {/* Zone 2: Navigation Links - Shown only when logged in */}
         {isLoggedIn && (
-          <nav className="flex items-center gap-1 sm:gap-5" aria-label="Main Navigation">
+          <nav className="order-last w-full lg:order-none lg:w-auto flex items-center justify-center gap-4 sm:gap-5 overflow-x-auto whitespace-nowrap" aria-label="Main Navigation">
             <button
               onClick={() => setActiveTab('home')}
               style={{ animation: "none", boxShadow: "none" }}
@@ -65,6 +65,13 @@ export const TopBar: React.FC = () => {
               }`}
             >
               Dashboard
+            </button>
+            <button onClick={() => setActiveTab('library')}
+              style={{ animation: 'none', boxShadow: 'none' }}
+              className={`text-xs sm:text-sm font-medium py-1 cursor-pointer whitespace-nowrap ${activeTab === 'library'
+                ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'}`}>
+              Trick Library
             </button>
             <button
               onClick={() => setActiveTab('settings')}

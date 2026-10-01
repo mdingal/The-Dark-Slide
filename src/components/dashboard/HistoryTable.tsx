@@ -3,6 +3,9 @@ import { PracticeSession } from '../../domain/types';
 import { formatDurationMs } from '../../domain/timer';
 import { Play, Eye, Trash2, ChevronDown, ChevronRight, CheckSquare, Square } from 'lucide-react';
 import { Modal } from '../common/Modal';
+import { ChallengeActions } from '../common/ChallengeActions';
+import { getStreaks, MISS_TAGS } from '../../domain/progression';
+import { getChallengeComplexity } from '../../domain/complexity';
 
 interface HistoryTableProps {
   sessions: PracticeSession[];
@@ -108,7 +111,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      <div className="history-table-fit">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/75 dark:bg-neutral-950/50 text-neutral-700 dark:text-neutral-300 font-semibold font-mono">
@@ -133,9 +136,13 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
               <th className="py-3 px-3">Setup</th>
               <th className="py-3 px-3 text-right">Attempts</th>
               <th className="py-3 px-3 text-right">Landed</th>
-              <th className="py-3 px-3 text-right">1st Land</th>
+              <th className="py-3 px-3 text-right">1st Land Attempt</th>
+              <th className="py-3 px-3 text-right whitespace-nowrap">Time to 1st Land</th>
               <th className="py-3 px-3 text-right">Active Time</th>
               <th className="py-3 px-3 text-center">Status</th>
+              <th className="py-3 px-3">Complexity</th>
+              <th className="py-3 px-3 text-right whitespace-nowrap">Best Streak</th>
+              <th className="py-3 px-3">Miss Tags</th>
               <th className="py-3 px-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -200,7 +207,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
                     {/* Trick Name */}
                     <td className="py-2.5 px-3 font-semibold text-neutral-900 dark:text-white">
                       <div className="flex items-center gap-1.5">
-                        <span className="truncate max-w-[200px]" title={session.trickResult.canonicalName}>
+                        <span className="min-w-0 break-words" title={session.trickResult.canonicalName}>
                           {session.trickResult.canonicalName}
                         </span>
                       </div>
@@ -238,6 +245,10 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
                       {session.firstLandingAttemptNumber ? `#${session.firstLandingAttemptNumber}` : '—'}
                     </td>
 
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums whitespace-nowrap">
+                      {session.firstLandingElapsedMs !== undefined ? formatDurationMs(session.firstLandingElapsedMs) : '—'}
+                    </td>
+
                     {/* Active Time */}
                     <td className="py-2.5 px-3 text-right font-mono tabular-nums text-neutral-900 dark:text-neutral-100 whitespace-nowrap">
                       {formatDurationMs(session.activeDurationMs)}
@@ -258,14 +269,19 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
                       </span>
                     </td>
 
+                    <td className="py-2.5 px-3 capitalize">{getChallengeComplexity(session.trickResult)}</td>
+                    <td className="py-2.5 px-3 text-right font-mono">{getStreaks(session).best}</td>
+                    <td className="py-2.5 px-3 min-w-40">{MISS_TAGS.filter(t=>(session.missTagCounts?.[t.id]||0)>0).map(t=>`${t.label}: ${session.missTagCounts?.[t.id]}`).join(', ')||'—'}</td>
+
                     {/* Action buttons */}
                     <td className="py-2.5 px-3 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex flex-wrap items-center justify-end gap-1">
+                        <ChallengeActions result={session.trickResult} compact />
                         <button
                           type="button"
                           onClick={() => onResume(session)}
-                          title="Practice or resume this trick session"
-                          aria-label={`Practice ${session.trickResult.canonicalName}`}
+                          title="Open saved session"
+                          aria-label={`Open session ${session.trickResult.canonicalName}`}
                           className="p-1.5 text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors cursor-pointer"
                         >
                           <Play className="w-3.5 h-3.5" />
@@ -295,7 +311,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
                   {/* Expandable Step Breakdown for combos */}
                   {isCombo && isExpanded && session.trickResult.comboSteps && (
                     <tr className="bg-neutral-50/60 dark:bg-neutral-950/40 border-b border-neutral-100 dark:border-neutral-800">
-                      <td colSpan={13} className="p-3 pl-12 text-xs">
+                      <td colSpan={17} className="p-3 pl-12 text-xs">
                         <div className="space-y-1.5">
                           <div className="text-[11px] font-mono font-semibold text-neutral-700 dark:text-neutral-300">
                             Combo Step Breakdown & Derived Transitions:

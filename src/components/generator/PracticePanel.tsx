@@ -22,6 +22,9 @@ import {
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 import QRCode from 'qrcode';
+import { getStreaks, MISS_TAGS } from '../../domain/progression';
+import { MissTag } from '../../domain/types';
+import { recordCounterAction, undoCounterAction } from '../../domain/practiceActions';
 
 interface PracticePanelProps {
   session: PracticeSession;
@@ -44,6 +47,9 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
   );
 
   const isFinished = Boolean(session.sessionEndedAt);
+  const [selectedMissTags, setSelectedMissTags] = useState<MissTag[]>([]);
+  const streaks = getStreaks(session);
+  const consistencyGoal = session.consistencyGoal || 3;
   const [isFinishOpen, setIsFinishOpen] = useState(false);
   const [finishStatus, setFinishStatus] = useState<SessionStatus>('pending');
   const [finishRating, setFinishRating] = useState<number | null>(null);
@@ -86,7 +92,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
     }
 
     const currentDuration = calculateActiveDurationMs(newTimerState, now);
-    onUpdateSession({
+    void saveCounter({
       ...session,
       timerState: newTimerState,
       sessionStartedAt: startedAt,
@@ -115,8 +121,10 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
     const now = finishTimeRef.current;
     const timerState = stopTimer(session.timerState, now);
     const addLanding = finishStatus === 'success' && session.landingCount === 0;
+    const completedCounters = addLanding ? recordCounterAction({ ...session, timerState,
+      sessionStartedAt: session.sessionStartedAt || new Date(now).toISOString() }, 'landing', now) : session;
     const finished: PracticeSession = {
-      ...session,
+      ...completedCounters,
       status: finishStatus,
       difficultyRating: finishRating,
       notes: notesDraft,
@@ -127,6 +135,8 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
       landingCount: session.landingCount + (addLanding ? 1 : 0),
       firstLandingAttemptNumber: addLanding
         ? session.attemptCount + 1 : session.firstLandingAttemptNumber,
+      firstLandingElapsedMs: addLanding
+        ? calculateActiveDurationMs(timerState, now) : session.firstLandingElapsedMs,
     };
     try {
       await onUpdateSession(finished);
@@ -139,93 +149,31 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
     }
   };
 
-  // Add attempt (+1 attempt only)
-  const handleAddAttempt = () => {
-    const now = Date.now();
-    let currentTimer = session.timerState;
-    let startedAt = session.sessionStartedAt;
-
-    if (!currentTimer.isRunning && currentTimer.accumulatedMs === 0) {
-      currentTimer = startTimer(currentTimer, now);
-      startedAt = new Date(now).toISOString();
-    }
-
-    const newAttempts = session.attemptCount + 1;
-    const historyItem: CounterActionHistoryItem = {
-      action: 'attempt',
-      timestamp: now,
-      prevAttemptCount: session.attemptCount,
-      prevLandingCount: session.landingCount,
-      prevFirstLandingAttemptNumber: session.firstLandingAttemptNumber,
-      prevStatus: session.status,
-    };
-
-    onUpdateSession({
-      ...session,
-      attemptCount: newAttempts,
-      sessionStartedAt: startedAt,
-      timerState: currentTimer,
-      activeDurationMs: calculateActiveDurationMs(currentTimer, now),
-      history: [historyItem, ...(session.history || [])],
-    });
+  // Serialize counter updates so fast clicks cannot overwrite another landing.
+  const counterBusyRef = useRef(false);
+  const [counterBusy, setCounterBusy] = useState(false);
+  const [counterError, setCounterError] = useState('');
+  const saveCounter = async (updated: PracticeSession) => {
+    if (counterBusyRef.current || isFinished) return false;
+    counterBusyRef.current = true;
+    setCounterBusy(true);
+    setCounterError('');
+    try { await onUpdateSession(updated); return true; }
+    catch { setCounterError('Could not save the update. Try again.'); return false; }
+    finally { counterBusyRef.current = false; setCounterBusy(false); }
   };
-
-  // Add successful landing (+1 attempt AND +1 landing)
-  const handleAddLanding = () => {
-    const now = Date.now();
-    let currentTimer = session.timerState;
-    let startedAt = session.sessionStartedAt;
-
-    if (!currentTimer.isRunning && currentTimer.accumulatedMs === 0) {
-      currentTimer = startTimer(currentTimer, now);
-      startedAt = new Date(now).toISOString();
-    }
-
-    const newAttempts = session.attemptCount + 1;
-    const newLandings = session.landingCount + 1;
-    const firstLanding = session.firstLandingAttemptNumber ?? newAttempts;
-
-    const historyItem: CounterActionHistoryItem = {
-      action: 'landing',
-      timestamp: now,
-      prevAttemptCount: session.attemptCount,
-      prevLandingCount: session.landingCount,
-      prevFirstLandingAttemptNumber: session.firstLandingAttemptNumber,
-      prevStatus: session.status,
-    };
-
-    onUpdateSession({
-      ...session,
-      attemptCount: newAttempts,
-      landingCount: newLandings,
-      firstLandingAttemptNumber: firstLanding,
-      sessionStartedAt: startedAt,
-      timerState: currentTimer,
-      activeDurationMs: calculateActiveDurationMs(currentTimer, now),
-      history: [historyItem, ...(session.history || [])],
-    });
+  const handleAddAttempt = async () => {
+    const saved = await saveCounter(recordCounterAction(session, 'attempt', Date.now(), selectedMissTags));
+    if (saved) setSelectedMissTags([]);
   };
-
-  // Undo last counter action
-  const handleUndo = () => {
-    if (!session.history || session.history.length === 0) return;
-
-    const [lastAction, ...remainingHistory] = session.history;
-    onUpdateSession({
-      ...session,
-      attemptCount: lastAction.prevAttemptCount,
-      landingCount: lastAction.prevLandingCount,
-      firstLandingAttemptNumber: lastAction.prevFirstLandingAttemptNumber,
-      status: lastAction.prevStatus,
-      history: remainingHistory,
-    });
-  };
+  const handleAddLanding = () => saveCounter(recordCounterAction(session, 'landing'));
+  const handleUndo = () => saveCounter(undoCounterAction(session));
 
   const handleSetupSelect = (setupId: string) => {
     const chosen = savedSetups.find((s) => s.id === setupId);
     if (chosen) {
       onSelectSetup(chosen);
-      onUpdateSession({
+      void saveCounter({
         ...session,
         setupSnapshot: { ...chosen },
       });
@@ -485,7 +433,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
             </span>
             {savedSetups.length > 0 ? (
               <select
-                disabled={isFinished}
+                disabled={isFinished || counterBusy}
                 value={session.setupSnapshot.id}
                 onChange={(e) => handleSetupSelect(e.target.value)}
                 className="text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-md px-2.5 py-1 text-neutral-900 dark:text-white focus:outline-none cursor-pointer"
@@ -522,6 +470,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           </div>
           {!isFinished && <div className="mt-2 flex items-center gap-1.5">
             <button
+              disabled={counterBusy}
               onClick={handleToggleTimer}
               className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md cursor-pointer transition-colors ${
                 session.timerState.isRunning
@@ -542,6 +491,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
 
             {/* Stop Session Button */}
             <button
+              disabled={counterBusy}
               onClick={handleStopSession}
               title="Stop timer and finalize practice session"
               className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
@@ -560,6 +510,8 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           </div>
           <div className="text-[11px] text-neutral-700 dark:text-neutral-300 mt-2 font-mono">
             First land: {session.firstLandingAttemptNumber ? `#${session.firstLandingAttemptNumber}` : '—'}
+            <div>Time to first land: {session.firstLandingElapsedMs !== undefined
+              ? formatDurationMs(session.firstLandingElapsedMs) : '—'}</div>
           </div>
         </div>
 
@@ -575,16 +527,43 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
         </div>
 
       </div>
+      {isFinished && <p className="text-xs text-neutral-600 dark:text-neutral-300">Miss tags: {MISS_TAGS.filter(t => (session.missTagCounts?.[t.id] || 0) > 0)
+        .map(t => `${t.label}: ${session.missTagCounts?.[t.id]}`).join(' · ') || 'None recorded'}</p>}
       {isFinished && (
         <p className="text-xs text-neutral-600 dark:text-neutral-300">
           Difficulty: {session.difficultyRating} / 5. Saved to your history.
         </p>
       )}
 
+      <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-3 space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs font-medium">Landing streak: <strong className="text-[#8A6500] dark:text-[#D4A72C]">{streaks.current}</strong> / {consistencyGoal} <span className="text-neutral-500">· Best: {streaks.best}</span></p>
+          <label className="flex items-center gap-2 text-xs">Goal
+            <select aria-label="Consistency goal" disabled={isFinished || counterBusy} value={consistencyGoal}
+              onChange={e => void saveCounter({ ...session, consistencyGoal: Number(e.target.value) })}
+              className="rounded-md bg-neutral-100 dark:bg-neutral-800 px-2 py-1">
+              {Array.from({length:20},(_,i)=>i+1).map(n => <option key={n} value={n}>{n} in a row</option>)}
+            </select>
+          </label>
+        </div>
+        {streaks.current >= consistencyGoal && <p role="status" className="text-xs text-emerald-600 dark:text-emerald-400">Consistency goal reached!</p>}
+        {!isFinished && <p className="text-[11px] text-neutral-500">Add Attempt records a miss and resets your current streak. Successful Landing extends it.</p>}
+      </div>
+      {!isFinished && <fieldset disabled={counterBusy} className="space-y-2">
+        <legend className="text-xs font-medium">Miss tags (optional, applied to your next Add Attempt)</legend>
+        <div className="flex flex-wrap gap-2">
+          {MISS_TAGS.map(tag => <label key={tag.id} className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800">
+            <input type="checkbox" checked={selectedMissTags.includes(tag.id)} onChange={() => setSelectedMissTags(tags =>
+              tags.includes(tag.id) ? tags.filter(t=>t!==tag.id) : [...tags,tag.id])} />{tag.label}
+          </label>)}
+        </div>
+      </fieldset>}
+
       {/* Interactive Counter Buttons */}
       {!isFinished && <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
+          disabled={counterBusy}
           onClick={handleAddAttempt}
           className="flex-1 min-w-[140px] py-3 px-4 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white font-medium text-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors active:scale-98"
         >
@@ -594,6 +573,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
 
         <button
           type="button"
+          disabled={counterBusy}
           onClick={handleAddLanding}
           className="flex-1 min-w-[180px] py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm active:scale-98"
         >
@@ -604,7 +584,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
         <button
           type="button"
           onClick={handleUndo}
-          disabled={!session.history || session.history.length === 0}
+          disabled={counterBusy || !session.history || session.history.length === 0}
           title="Undo last attempt or landing counter"
           className="py-3 px-3 border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white rounded-lg flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
@@ -612,6 +592,8 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           <span className="text-xs font-medium">Undo</span>
         </button>
       </div>}
+
+      {counterError && <p role="alert" className="text-xs text-rose-600">{counterError}</p>}
 
       {/* Practice Session Notes */}
       <div className="session-notes-field">

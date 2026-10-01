@@ -1,3 +1,4 @@
+import type { DashboardPreferences } from './dashboardAnalytics';
 export type Stance = 'regular' | 'fakie' | 'switch' | 'nollie';
 export type Direction = 'none' | 'frontside' | 'backside';
 export type BodyVarial = 'none' | 'frontside' | 'backside';
@@ -8,6 +9,11 @@ export type ObstacleType = 'flatground' | 'ledge' | 'rail' | 'manual_pad';
 export type WheelMaterial = 'plastic' | 'urethane' | 'resin';
 
 export type SessionStatus = 'pending' | 'success' | 'failed';
+export type ComplexityTier = 'beginner' | 'intermediate' | 'advanced';
+export type ComplexityFilter = 'all' | ComplexityTier;
+export type TrickLearningStatus = 'want_to_learn' | 'learning' | 'landed' | 'consistent';
+export type MissTag = 'underflip' | 'overflip' | 'missed_catch' | 'missed_lock_in' | 'slipped_out';
+export type MissTagCounts = Partial<Record<MissTag, number>>;
 
 export interface BaseTrickDefinition {
   id: string;
@@ -173,6 +179,7 @@ export interface ComboStep {
 export type TrickMode = 'single' | 'combo' | 'obstacle';
 
 export interface GeneratedTrickResult {
+  complexity?: ComplexityTier;
   mode: TrickMode;
   canonicalName: string;
   breakdown: string[];
@@ -184,6 +191,9 @@ export interface GeneratedTrickResult {
 }
 
 export interface SetupData {
+  deckModel?: string;
+  truckModel?: string;
+  wheelModel?: string;
   id: string;
   name: string;
   deckWidthMm: number; // 26, 29, 31, 32, 33, 33.6, 34, 36, or custom
@@ -203,10 +213,19 @@ export interface CounterActionHistoryItem {
   prevAttemptCount: number;
   prevLandingCount: number;
   prevFirstLandingAttemptNumber?: number;
+  prevFirstLandingElapsedMs?: number;
+  prevCurrentLandingStreak?: number;
+  prevBestLandingStreak?: number;
+  prevMissTagCounts?: MissTagCounts;
+  missTags?: MissTag[];
   prevStatus: SessionStatus;
 }
 
 export interface PracticeSession {
+  currentLandingStreak?: number;
+  bestLandingStreak?: number;
+  consistencyGoal?: number;
+  missTagCounts?: MissTagCounts;
   id: string;
   trickResult: GeneratedTrickResult;
   setupSnapshot: SetupData;
@@ -217,6 +236,7 @@ export interface PracticeSession {
   attemptCount: number;
   landingCount: number;
   firstLandingAttemptNumber?: number;
+  firstLandingElapsedMs?: number; // Active practice time at first landing; excludes pauses
   activeDurationMs: number;
   timerState: {
     isRunning: boolean;
@@ -228,7 +248,50 @@ export interface PracticeSession {
   history: CounterActionHistoryItem[];
 }
 
+export interface ChallengeBookmark {
+  id: string;
+  savedAt: string;
+  trickResult: GeneratedTrickResult;
+}
+
+export interface GeneratorPresetConfig {
+  complexityFilter?: ComplexityFilter;
+  mode: TrickMode;
+  singleLocks: ParameterLocks;
+  singleExclusions: ParameterExclusions;
+  step1Locks: ParameterLocks;
+  step2Locks: ParameterLocks;
+  step1Exclusions: ParameterExclusions;
+  step2Exclusions: ParameterExclusions;
+  obstacleLocks: ParameterLocks;
+  obstacleExclusions: ObstacleExclusions;
+  activeParams: SingleTrickParameters;
+  step1Params: SingleTrickParameters;
+  step2Params: SingleTrickParameters;
+  selectedObstacle: ObstacleType;
+  obstacleData: ObstacleComponent;
+}
+
+export interface PoolPreset {
+  id: string;
+  name: string;
+  savedAt: string;
+  config: GeneratorPresetConfig;
+}
+
+export interface TrickLibraryEntry {
+  id: string;
+  trickResult: GeneratedTrickResult;
+  status: TrickLearningStatus;
+  addedAt: string;
+  updatedAt: string;
+}
+
 export interface UserProfile {
+  dashboardPreferences?: DashboardPreferences;
+  trickLibrary?: TrickLibraryEntry[];
+  bookmarks?: ChallengeBookmark[];
+  poolPresets?: PoolPreset[];
   id: string;
   displayName: string;
   instagramHandle?: string;

@@ -69,7 +69,8 @@ export const LandingPage: React.FC = () => {
               THE DARK SLIDE
             </div>
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
-              {isFirstLogin ? `Welcome to the Dark Slide, ${riderDisplayName}.` : `Welcome back, ${riderDisplayName}.`}
+              {isFirstLogin ? 'Welcome to the Dark Slide,' : 'Welcome back,'}
+              <span className="block">{riderDisplayName}.</span>
             </h1>
             <p className="text-xl sm:text-2xl font-semibold text-neutral-800 dark:text-neutral-200 pt-1">
               What tricks are we cooking today?
@@ -118,7 +119,7 @@ export const LandingPage: React.FC = () => {
         <section
           ref={accountSectionRef}
           id="account-section"
-          className="max-w-md mx-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-7 shadow-sm transition-colors"
+          className="homepage-account-card max-w-md mx-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-7 shadow-sm transition-colors"
         >
           <div className="text-center mb-5">
             <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
@@ -199,14 +200,14 @@ export const LandingPage: React.FC = () => {
         </section>
       )}
 
-      {/* Lab Capabilities & Engine Features Section */}
+      {/* Everything You Need to Progress Section */}
       <section className="space-y-8">
         <div className="text-center max-w-xl mx-auto">
           <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            Lab Capabilities & Engine Features
+            Everything You Need to Progress
           </h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-            Engineered with realistic skateboarding physics, canonical terminology, and zero random string slop.
+            Find your next challenge, make every attempt count, and see how your riding evolves.
           </p>
         </div>
 
@@ -214,89 +215,89 @@ export const LandingPage: React.FC = () => {
         <TrickMatrixDemo onPromptAuth={handlePromptAuth} />
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-          {/* Feature 1 */}
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-2.5">
-            <div className="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-              <Dices className="w-5 h-5" />
+        <div className="homepage-feature-grid grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          {[
+            {
+              icon: Dices,
+              title: "Tricks That Make Sense",
+              description: "Generate valid flatground challenges across Regular, Fakie, Switch, and Nollie, with FS / BS variations, body varials, manuals, and reverts."
+            },
+            {
+              icon: Sliders,
+              title: "Locks, Pools & Presets",
+              description: "Lock any parameter, choose what stays in each pool, and use Select All or Select None. Save pool presets to return to your favorite practice mix."
+            },
+            {
+              icon: Layers,
+              title: "Combos & Obstacle Challenges",
+              description: "Build connected two-trick combos or practice grinds and slides on ledges and rails. Randomize or lock the obstacle, entry, transfer, and exit."
+            },
+            {
+              icon: Sparkles,
+              title: "Choose Your Challenge Level",
+              description: "Filter for Beginner, Intermediate, or Advanced challenges based on trick complexity. Rate how difficult the session felt separately when you finish."
+            },
+            {
+              icon: Clock,
+              title: "Every Attempt Counts",
+              description: "Track attempts, successful landings, active practice time, and session notes. Undo an entry, then finish with a Pending, Success, or Failed status and difficulty rating."
+            },
+            {
+              icon: CheckCircle2,
+              title: "First Lands & Consistency Goals",
+              description: "Record the attempt number and elapsed time at your first landing. Track current and best landing streaks, and set a goal for consecutive makes."
+            },
+            {
+              icon: Layers,
+              title: "Your Personal Trick Library",
+              description: "Organize tricks as Want to Learn, Learning, Landed, or Consistent. Keep each exact variation connected to its session history and progress."
+            },
+            {
+              icon: Dices,
+              title: "Repeat & Bookmark Challenges",
+              description: "Bookmark challenges worth keeping and repeat a saved trick or combo in a fresh session. Revisit unfinished goals without losing your earlier results."
+            },
+            {
+              icon: Sliders,
+              title: "Find Your Weak Points",
+              description: "Tag misses as underflip, overflip, missed catch, missed lock-in, or slipped out. See the most common issues for each trick in your library."
+            },
+            {
+              icon: Trophy,
+              title: "Personal Bests & Progress Dashboard",
+              description: "Track fewest attempts to first landing, highest landing rate, and longest streak per trick. Explore filtered history and charts, open session details, or delete individual and selected records."
+            },
+            {
+              icon: Layers,
+              title: "Compare Your Setups",
+              description: "Save deck sizes, wheel materials, and deck, truck, and wheel models. Compare landing rates across setups or components, with an exact-trick filter for focused comparisons."
+            },
+            {
+              icon: Share2,
+              title: "Share Your Progress",
+              description: "Export a share card after finishing a session. Keep your library, bookmarks, presets, setups, and history under your rider profile, saved in this browser, with Light, Dark, and System themes."
+            }
+          ].map(({ icon: Icon, title, description }) => (
+            <div
+              key={title}
+              className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 sm:p-7 space-y-4"
+            >
+              <div className="w-9 h-9 rounded-lg bg-[#D4A72C]/10 text-[#8A6500] dark:text-[#D4A72C] flex items-center justify-center">
+                <Icon className="w-5 h-5" aria-hidden="true" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white">
+                {title}
+              </h3>
+              <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                {description}
+              </p>
             </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-              Deterministic Trick Generation
-            </h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Curated trick catalog respecting true board rotations (e.g. Backside Pop Shuvit vs Frontside Pop Shuvit), body varials ("Sex Change" alias), and landing modifiers.
-            </p>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-2.5">
-            <div className="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <Sliders className="w-5 h-5" />
-            </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-              Category Locks & Item Pools
-            </h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Lock any parameter to a fixed value, or filter the item pool to exclude tricks you dislike (e.g. randomize only Regular and Nollie while excluding Switch and Fakie).
-            </p>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-2.5">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Layers className="w-5 h-5" />
-            </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-              Combo Transition Physics
-            </h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Step 2 stance is strictly derived from Step 1 rotation and landing mechanics. Landing in manual restricts follow-up tricks to cataloged pop-outs.
-            </p>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-2.5">
-            <div className="w-9 h-9 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-              <Clock className="w-5 h-5" />
-            </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-              Practice Timer & Counters
-            </h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Timestamp-based active duration timer (excluding paused time) that survives page reloads. Includes quick Attempt (+1), Landing (+1), Undo, and Stop Session.
-            </p>
-          </div>
-
-          {/* Feature 5 */}
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-2.5">
-            <div className="w-9 h-9 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-              <Trophy className="w-5 h-5" />
-            </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-              Batch History & Recharts
-            </h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Multi-select rows for batch deletion, deep filtering, and visual frequency histograms, status distribution donut charts, and timeline graphs.
-            </p>
-          </div>
-
-          {/* Feature 6 */}
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-2.5">
-            <div className="w-9 h-9 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
-              <Share2 className="w-5 h-5" />
-            </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-              Instant Share Card Generator
-            </h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Export high-resolution session graphic cards rendered via HTML5 canvas with your trick name, attempts, landing rate, and hardware specs.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* About the Project */}
-      <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-4">
+      <section className="homepage-about-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-4">
         <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
           About the Project
         </h2>

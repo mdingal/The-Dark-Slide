@@ -18,7 +18,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         exitTrick: 'clean',
       };
       const name = formatObstacleTrickCanonicalName(comp);
-      expect(name).toBe('Frontside 50-50');
+      expect(name).toBe('FS 50-50');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('both_trucks');
@@ -34,7 +34,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside 5-0');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS 5-0');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('rear_truck');
@@ -49,7 +49,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Frontside Nosegrind');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('FS Nosegrind');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('front_truck');
@@ -64,7 +64,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside Crooked Grind');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS Crooked Grind');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('front_truck');
@@ -80,7 +80,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Frontside Overcrook');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('FS Overcrook');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('front_truck');
@@ -98,7 +98,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside Smith Grind');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS Smith Grind');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('rear_truck');
@@ -114,7 +114,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Frontside Feeble Grind');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('FS Feeble Grind');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('rear_truck');
@@ -130,7 +130,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Frontside Suski Grind');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('FS Suski Grind');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('rear_truck');
@@ -145,7 +145,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside Salad Grind');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS Salad Grind');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('rear_truck');
@@ -160,7 +160,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Frontside Willy Grind');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('FS Willy Grind');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('front_truck');
@@ -175,7 +175,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside Overwilly');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS Overwilly');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('front_truck');
@@ -193,7 +193,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside Boardslide');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS Boardslide');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('center_deck');
@@ -208,7 +208,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Frontside Lipslide');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('FS Lipslide');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('center_deck');
@@ -223,7 +223,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(noseslideComp)).toBe('Frontside Noseslide');
+      expect(formatObstacleTrickCanonicalName(noseslideComp)).toBe('FS Noseslide');
 
       const tailslideComp: ObstacleComponent = {
         obstacleType: 'ledge',
@@ -232,7 +232,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(tailslideComp)).toBe('Backside Tailslide');
+      expect(formatObstacleTrickCanonicalName(tailslideComp)).toBe('BS Tailslide');
     });
 
     it('recognizes Bluntslide as board crossing over obstacle with tail edge lock', () => {
@@ -243,7 +243,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside Bluntslide');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS Bluntslide');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('tail_blunt');
@@ -258,7 +258,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Frontside Nosebluntslide');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('FS Nosebluntslide');
 
       const mechanics = resolveObstacleMechanics(comp);
       expect(mechanics.contactPoint).toBe('nose_blunt');
@@ -273,7 +273,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'kickflip',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(darkslideComp)).toBe('Kickflip Backside Darkslide');
+      expect(formatObstacleTrickCanonicalName(darkslideComp)).toBe('Kickflip BS Darkslide');
 
       const primoComp: ObstacleComponent = {
         obstacleType: 'ledge',
@@ -282,7 +282,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(primoComp)).toBe('Frontside Primo Slide');
+      expect(formatObstacleTrickCanonicalName(primoComp)).toBe('FS Primo Slide');
 
       const bananaComp: ObstacleComponent = {
         obstacleType: 'ledge',
@@ -291,7 +291,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(bananaComp)).toBe('Frontside Banana Slide');
+      expect(formatObstacleTrickCanonicalName(bananaComp)).toBe('FS Banana Slide');
     });
   });
 
@@ -362,7 +362,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'kickflip',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Kickflip Backside Boardslide');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('Kickflip BS Boardslide');
     });
 
     it('formats Heelflip into FS tailslide as Heelflip Frontside Tailslide', () => {
@@ -373,7 +373,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'heelflip',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Heelflip Frontside Tailslide');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('Heelflip FS Tailslide');
     });
 
     it('formats BS boardslide then change into BS 50-50 as Backside Boardslide to Backside 50-50', () => {
@@ -386,7 +386,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         transferApproach: 'backside',
         exitTrick: 'clean',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside Boardslide to Backside 50-50');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS Boardslide to BS 50-50');
     });
 
     it('formats BS crooked grind then nollie flip out as Backside Crooked Grind Nollie Flip Out', () => {
@@ -397,7 +397,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'nollie_flip_out',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Backside Crooked Grind Nollie Flip Out');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('BS Crooked Grind Nollie Flip Out');
     });
 
     it('formats FS tailslide then kickflip out as Frontside Tailslide Kickflip Out', () => {
@@ -408,7 +408,7 @@ describe('Obstacle Mode: Grinds, Slides, Mechanics & Nomenclature', () => {
         entryTrickId: 'ollie',
         exitTrick: 'kickflip_out',
       };
-      expect(formatObstacleTrickCanonicalName(comp)).toBe('Frontside Tailslide Kickflip Out');
+      expect(formatObstacleTrickCanonicalName(comp)).toBe('FS Tailslide Kickflip Out');
     });
   });
 

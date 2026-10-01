@@ -1,4 +1,6 @@
 import React from 'react';
+import { getChallengeComplexity } from '../../domain/complexity';
+import { ChallengeActions } from '../common/ChallengeActions';
 import { GeneratedTrickResult, TrickMode } from '../../domain/types';
 import { Sparkles, Dices, AlertTriangle, Layers, ShieldAlert, Cpu, Compass } from 'lucide-react';
 import { formatMovementsSummary } from '../../domain/movements';
@@ -9,9 +11,11 @@ interface TrickDisplayProps {
   mode: TrickMode;
   onChangeMode: (m: TrickMode) => void;
   onGenerate: () => void;
+  isGenerating?: boolean;
   conflictError?: string | null;
   onClearLocks: () => void;
   activeSetupName?: string;
+  complexityControl?: React.ReactNode;
 }
 
 export const TrickDisplay: React.FC<TrickDisplayProps> = ({
@@ -19,15 +23,19 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
   mode,
   onChangeMode,
   onGenerate,
+  isGenerating,
   conflictError,
   onClearLocks,
   activeSetupName,
+  complexityControl,
 }) => {
   return (
     <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
       {/* Mode Segmented Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-200 dark:border-neutral-800">
-        <div className="flex items-center gap-1.5 p-1 bg-neutral-100 dark:bg-neutral-800/80 rounded-lg">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-neutral-200 dark:border-neutral-800">
+        <div className="flex flex-col gap-1">
+          <span className="text-[11px] font-semibold">Session Mode</span>
+          <div className="flex items-center gap-1.5 p-1 bg-neutral-100 dark:bg-neutral-800/80 rounded-lg">
           <button
             onClick={() => onChangeMode('single')}
               style={{ animation: "none", boxShadow: "none" }}
@@ -59,11 +67,12 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
                 : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
-            Obstacle Mode
+            Obstacle
           </button>
         </div>
 
-        
+        </div>
+        {complexityControl}
       </div>
 
       {/* Conflict Notice if locks conflict */}
@@ -87,9 +96,9 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
         /* Trick Presentation Area */
         <div className="space-y-4">
           <div className="text-xs text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-mono font-medium">
-            {mode === 'single'
+            {(trickResult?.mode || mode) === 'single'
               ? 'Target Challenge'
-              : mode === 'combo'
+              : (trickResult?.mode || mode) === 'combo'
               ? 'Two-Step Combo Routine'
               : 'Obstacle Grind / Slide Sequence'}
           </div>
@@ -105,8 +114,8 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
 
               return (
                 <>
-                  <span className="font-normal text-[#8A6500] dark:text-[#D4A72C]">
-                    { '[' + match[1].trim() + ']' }
+                  <span className="inline-flex align-middle items-center rounded-md border border-[#8A6500]/40 dark:border-[#D4A72C]/40 bg-[#D4A72C]/10 px-3 py-1.5 mr-2 text-sm sm:text-base font-normal tracking-wide text-[#8A6500] dark:text-[#D4A72C] whitespace-nowrap">
+                    {match[1].trim().toUpperCase()}
                   </span>
                   {' '}{match[2]}
                 </>
@@ -154,6 +163,9 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
         </div>
       )}
 
+      {trickResult && <p className="text-xs text-neutral-600 dark:text-neutral-300">Complexity: <span className="capitalize font-medium text-[#8A6500] dark:text-[#D4A72C]">{getChallengeComplexity(trickResult)}</span></p>}
+      {trickResult && <ChallengeActions result={trickResult} />}
+
       {/* Main Action Bar */}
       <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 flex flex-wrap items-center justify-between gap-3">
         <div className="text-xs text-neutral-700 dark:text-neutral-300">
@@ -162,11 +174,12 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
 
         <button
           type="button"
+          disabled={isGenerating}
           onClick={onGenerate}
           className="px-6 py-3 bg-neutral-950 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-950 font-semibold text-sm rounded-xl flex items-center gap-2.5 transition-all shadow-md active:scale-98 cursor-pointer"
         >
           <Dices className="w-4 h-4" />
-          Generate New Challenge
+          {isGenerating ? 'Generating...' : 'Generate New Challenge'}
         </button>
       </div>
     </div>
