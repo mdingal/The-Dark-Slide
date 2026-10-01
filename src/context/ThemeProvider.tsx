@@ -11,9 +11,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    return (localStorage.getItem('fb_app_theme') as Theme) || 'system';
-  });
+  const [theme, setThemeState] = useState<Theme>('system');
 
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
 
@@ -49,9 +47,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [theme]);
 
+  useEffect(() => {
+    const apply = (event: Event) => setThemeState((event as CustomEvent<Theme>).detail);
+    window.addEventListener('rider-theme-loaded', apply);
+    return () => window.removeEventListener('rider-theme-loaded', apply);
+  }, []);
+
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem('fb_app_theme', newTheme);
+    window.dispatchEvent(new CustomEvent('rider-theme-change', { detail: newTheme }));
   };
 
   return (

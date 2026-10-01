@@ -1,0 +1,68 @@
+.history-table-fit .miss-tags-list { display: flex; flex-direction: column; gap: 6px; }
+.history-table-fit .miss-tag-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; line-height: 1.45; }
+.history-table-fit .miss-tag-row > span:first-child { word-break: normal; overflow-wrap: normal; white-space: normal; }
+.history-table-fit .miss-tag-count { flex: 0 0 auto; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+@media (min-width: 901px) {
+ .history-table-fit th:nth-child(16) { width: 112px !important; }
+ .history-table-fit td.miss-tags-cell { padding-left: 12px; padding-right: 12px; }
+ .history-table-fit .miss-tags-list { font-size: 11px; }
+}
+
+@media (min-width: 901px) {
+ .history-table-fit th:nth-child(14) { width: 106px !important; }
+ .history-table-fit th:nth-child(14), .history-table-fit td:nth-child(14) { padding-right: 18px !important; }
+ .history-table-fit th:nth-child(15) { width: 74px !important; text-align: center; }
+ .history-table-fit th:nth-child(15), .history-table-fit td:nth-child(15) { padding-left: 10px !important; padding-right: 14px !important; text-align: center; }
+}
+
+/* Explicit proportions prevent long fixed columns squeezing the metrics. */
+@media (min-width: 901px) {
+ .history-table-fit thead th { font-family: inherit; font-size: 10px; font-weight: 600; line-height: 1.5; vertical-align: middle; overflow-wrap: normal !important; word-break: normal; }
+ .history-table-fit thead th > span { white-space: nowrap; }
+ .history-table-fit th:nth-child(n+5):nth-child(-n+15), .history-table-fit td:nth-child(n+5):nth-child(-n+15) { padding-left: 4px !important; padding-right: 4px !important; }
+ .history-table-fit th:nth-child(8), .history-table-fit th:nth-child(9), .history-table-fit th:nth-child(13), .history-table-fit th:nth-child(14) { white-space: nowrap !important; }
+ .history-table-fit td:nth-child(13) > span { display: inline-flex; white-space: nowrap !important; word-break: normal; }
+ .history-table-fit th:nth-child(1) { width: 3% !important; }
+ .history-table-fit th:nth-child(2) { width: 1.5% !important; }
+ .history-table-fit th:nth-child(3) { width: 4.5% !important; }
+ .history-table-fit th:nth-child(4) { width: 15% !important; }
+ .history-table-fit th:nth-child(5) { width: 7% !important; }
+ .history-table-fit th:nth-child(6) { width: 5% !important; }
+ .history-table-fit th:nth-child(7) { width: 6% !important; }
+ .history-table-fit th:nth-child(8) { width: 5% !important; }
+ .history-table-fit th:nth-child(9) { width: 4% !important; }
+ .history-table-fit th:nth-child(10) { width: 5% !important; }
+ .history-table-fit th:nth-child(11) { width: 5% !important; }
+ .history-table-fit th:nth-child(12) { width: 5% !important; }
+ .history-table-fit th:nth-child(13) { width: 6% !important; }
+ .history-table-fit th:nth-child(14) { width: 7% !important; }
+ .history-table-fit th:nth-child(15) { width: 5% !important; }
+ .history-table-fit th:nth-child(16) { width: 8% !important; }
+ .history-table-fit th:nth-child(17) { width: 8% !important; }
+}
+
+/* Keep every history action centered in the same sized target. */
+.history-session-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 28px);
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+}
+.history-session-actions > .challenge-actions-compact { display: contents; }
+.history-session-actions > button,
+.history-session-actions > .challenge-actions-compact > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+.history-session-actions > button:last-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+@media (min-width: 901px) {
+  .history-table-fit thead th:last-child { text-align: center; }
+}

@@ -1,3 +1,4 @@
+import { AccountForm } from '../auth/AccountForm';
 import React, { useState, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
@@ -22,31 +23,12 @@ export const LandingPage: React.FC = () => {
     setActiveTab,
     isLoggedIn,
     isFirstLogin,
-    login,
     profile,
     isSignInModalOpen,
     setIsSignInModalOpen,
   } = useApp();
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
   const [isCreatingAccount, setIsCreatingAccount] = useState(true);
-
   const accountSectionRef = useRef<HTMLDivElement | null>(null);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    login(email.trim(), name.trim() || undefined, isCreatingAccount);
-    // After logging in or creating account, default page is the homepage
-    setActiveTab('home');
-    setIsSignInModalOpen(false);
-  };
-
-  const handleQuickDemoLogin = () => {
-    login('rider@fingerboardlab.local', 'Demo Rider', false);
-    setActiveTab('home');
-    setIsSignInModalOpen(false);
-  };
 
   const handlePromptAuth = () => {
     setIsCreatingAccount(true);
@@ -126,77 +108,11 @@ export const LandingPage: React.FC = () => {
               {isCreatingAccount ? 'Create Your Rider Account' : 'Sign In to Your Account'}
             </h2>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              Save personal hardware setups, practice streaks, and trick stats locally.
+              Save your setups, practice sessions, and progress securely to your account.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
-            {isCreatingAccount && (
-              <div>
-                <label
-                  htmlFor="rider-name-input"
-                  className="block font-medium text-neutral-700 dark:text-neutral-300 mb-1"
-                >
-                  Rider Display Name
-                </label>
-                <input
-                  id="rider-name-input"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Alex Rivers (Street Tech)"
-                  className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-500"
-                />
-              </div>
-            )}
-
-            <div>
-              <label
-                htmlFor="rider-email-input"
-                className="block font-medium text-neutral-700 dark:text-neutral-300 mb-1"
-              >
-                Email Address
-              </label>
-              <input
-                id="rider-email-input"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="rider@fingerboardlab.local"
-                className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2.5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5 cursor-pointer mt-1 text-xs"
-            >
-              {isCreatingAccount ? <UserPlus className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-              <span>{isCreatingAccount ? 'Create Account & Enter Lab' : 'Sign In'}</span>
-            </button>
-
-            <div className="pt-2 text-center space-y-2">
-              <button
-                type="button"
-                onClick={() => setIsCreatingAccount(!isCreatingAccount)}
-                className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline cursor-pointer"
-              >
-                {isCreatingAccount ? 'Already have an account? Sign In' : 'Need an account? Create one'}
-              </button>
-
-              <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800">
-                <button
-                  type="button"
-                  onClick={handleQuickDemoLogin}
-                  className="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Zap className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Instant Quick Sign In (Guest Demo Profile)</span>
-                </button>
-              </div>
-            </div>
-          </form>
+          <AccountForm onSuccess={() => setIsSignInModalOpen(false)} />
         </section>
       )}
 
@@ -357,78 +273,11 @@ export const LandingPage: React.FC = () => {
         <div className="space-y-4">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
             {isCreatingAccount
-              ? 'Save personal hardware setups, practice streaks, and trick stats locally.'
-              : 'Enter your email to sign back into your saved rider profile.'}
+              ? 'Save your setups, practice sessions, and progress securely to your account.'
+              : 'Sign in with your email and password to access your progress.'}
           </p>
 
-          <form
-            onSubmit={(e) => {
-              handleSubmit(e);
-              setIsSignInModalOpen(false);
-            }}
-            className="space-y-3.5 text-xs"
-          >
-            {isCreatingAccount && (
-              <div>
-                <label className="block font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                  Rider Display Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Alex Rivers (Street Tech)"
-                  className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-500"
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="block font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="rider@fingerboardlab.local"
-                className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2.5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5 cursor-pointer mt-1 text-xs"
-            >
-              {isCreatingAccount ? <UserPlus className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-              <span>{isCreatingAccount ? 'Create Account & Enter Lab' : 'Sign In'}</span>
-            </button>
-
-            <div className="pt-2 text-center space-y-2">
-              <button
-                type="button"
-                onClick={() => setIsCreatingAccount(!isCreatingAccount)}
-                className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline cursor-pointer"
-              >
-                {isCreatingAccount ? 'Already have an account? Sign In' : 'Need an account? Create one'}
-              </button>
-
-              <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleQuickDemoLogin();
-                    setIsSignInModalOpen(false);
-                  }}
-                  className="w-full py-2 px-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Zap className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Instant Quick Sign In (Guest Demo Profile)</span>
-                </button>
-              </div>
-            </div>
-          </form>
+          <AccountForm onSuccess={() => setIsSignInModalOpen(false)} />
         </div>
       </Modal>
     </div>

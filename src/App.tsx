@@ -12,7 +12,7 @@ import { LandingPage } from './components/landing/LandingPage';
 import { TrickLibraryPage } from './components/library/TrickLibraryPage';
 
 const AppContent: React.FC = () => {
-  const { activeTab, setActiveTab, isLoggedIn, profile } = useApp();
+  const { activeTab, setActiveTab, isLoggedIn, profile, authLoading, authError, refreshAccount } = useApp();
 
   const [infoPage, setInfoPage] = React.useState<InfoPageId | null>(readInfoPage);
   const previousTab = React.useRef(activeTab);
@@ -50,7 +50,9 @@ const AppContent: React.FC = () => {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {infoPage ? <InfoPage page={infoPage} onHome={() => { closeInfoPage(); setActiveTab('home'); }} /> : <>
-        {(!isLoggedIn || activeTab === 'home') && <LandingPage />}
+        {authLoading && <p role="status" className="text-center py-8">Loading your account…</p>}
+        {authError && <div role="alert" className="text-center py-4">{authError} <button className="underline" onClick={() => void refreshAccount()}>Retry</button></div>}
+        {(!authLoading && (!isLoggedIn || activeTab === 'home')) && <LandingPage />}
         {isLoggedIn && activeTab === 'generator' && <GeneratorPage key={profile?.id} />}
         {isLoggedIn && activeTab === 'history' && <HistoryDashboard key={profile?.id} />}
         {isLoggedIn && activeTab === 'library' && <TrickLibraryPage key={profile?.id} />}

@@ -222,6 +222,7 @@ export interface CounterActionHistoryItem {
 }
 
 export interface PracticeSession {
+  cloudRevision?: number;
   currentLandingStreak?: number;
   bestLandingStreak?: number;
   consistencyGoal?: number;
@@ -288,6 +289,8 @@ export interface TrickLibraryEntry {
 }
 
 export interface UserProfile {
+  cloudRevision?: number;
+  importedLocalProfiles?: string[];
   dashboardPreferences?: DashboardPreferences;
   trickLibrary?: TrickLibraryEntry[];
   bookmarks?: ChallengeBookmark[];

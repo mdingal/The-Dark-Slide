@@ -27,7 +27,7 @@ export const ChallengeActions: React.FC<{ result: GeneratedTrickResult; compact?
   };
   const button = 'inline-flex items-center justify-center gap-1.5 rounded-md p-2 text-xs font-medium disabled:opacity-40';
   return <>
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className={`flex flex-wrap items-center gap-1.5 ${compact ? 'challenge-actions-compact' : ''}`}>
       <button type="button" disabled={busy} onClick={repeat} title="Repeat challenge in a fresh session"
         aria-label={`Repeat ${result.canonicalName}`} className={`${button} bg-neutral-100 dark:bg-neutral-800`}>
         <Repeat2 className="w-3.5 h-3.5" />{!compact && 'Repeat Challenge'}

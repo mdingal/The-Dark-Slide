@@ -1,10 +1,12 @@
+import { auth, authReady } from '../services/firebase';
+import { User, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile as updateAuthProfile, sendEmailVerification, sendPasswordResetEmail, signOut, reload, getIdToken } from 'firebase/auth';
 import { DashboardPreferences, dashboardPreferences } from '../domain/dashboardAnalytics';
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { PracticeSession, UserProfile, SetupData, GeneratedTrickResult, SessionStatus, GeneratorPresetConfig, TrickLearningStatus } from '../domain/types';
 import { trickKey } from '../domain/progression';
 import { createPracticeSession, challengeKey } from '../domain/practiceActions';
-import { storageService } from '../services/localStorageService';
-import { createInitialTimerState, stopTimer } from '../domain/timer';
+import { storageService } from '../services/firebaseStorageService';
+import { stopTimer } from '../domain/timer';
 
 export const DEFAULT_FALLBACK_SETUP: SetupData = {
   id: 'setup_default',
@@ -39,13 +41,18 @@ interface AppContextType {
   deleteSessions: (ids: string[]) => Promise<void>;
   resumeSession: (session: PracticeSession) => void;
   updateProfile: (profile: UserProfile) => Promise<void>;
-  resetDemoData: () => Promise<void>;
+  authLoading: boolean;
+  authError: string | null;
+  authUser: User | null;
+  refreshAccount: () => Promise<void>;
+  resendVerification: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   isLoggedIn: boolean;
   isFirstLogin: boolean;
   isSignInModalOpen: boolean;
   setIsSignInModalOpen: (open: boolean) => void;
   openSignIn: () => void;
-  login: (email: string, name?: string, isNewAccount?: boolean) => Promise<void>;
+  login: (email: string, password: string, name?: string, isNewAccount?: boolean) => Promise<void>;
   logout: () => void;
   toast: string | null;
   showToast: (msg: string) => void;
@@ -56,10 +63,11 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  const [isFirstLogin, setIsFirstLogin] = useState<boolean>(() => {
-    return localStorage.getItem('ktnk_rider_is_first_login') === 'true';
-  });
-
+  const [isFirstLogin, setIsFirstLogin] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authUser, setAuthUser] = useState<User | null>(null);
+  const authEpoch = useRef(0);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'home' | 'generator' | 'history' | 'library' | 'settings'>('home');
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -77,29 +85,49 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }, 3200);
   }, []);
 
-  // Load initial profile & sessions
-  const loadData = useCallback(async () => {
-    const active = await storageService.getActiveProfile();
-    setProfile(active);
-
-    const defaultSetup =
-      active.savedSetups.find((s) => s.id === active.defaultSetupId) ||
-      active.savedSetups[0] ||
-      DEFAULT_FALLBACK_SETUP;
-    setActiveSetupState(defaultSetup);
-
-    const profileSessions = await storageService.getSessions(active.id);
-    setSessions(profileSessions);
-
-    if (profileSessions.length > 0) {
-      const pending = profileSessions.find((s) => s.status === 'pending' && !s.sessionEndedAt);
-      setCurrentSession(pending || null);
-    } else { setCurrentSession(null); }
+  const loadAccount = useCallback(async (user: User | null) => {
+    const epoch = ++authEpoch.current;
+    setAuthLoading(true); setAuthError(null); setIsLoggedIn(false);
+    profileRef.current = null; setProfile(null); setSessions([]); setCurrentSession(null); setActiveSetupState(null);
+    setAuthUser(user); setActiveTab('home');
+    try {
+      if (!user || !user.emailVerified) return;
+      let rider = await storageService.getProfile(user.uid);
+      const first = !rider;
+      if (!rider) {
+        rider = { id: user.uid, email: user.email || '', displayName: user.displayName || 'Rider', instagramHandle: '', preferredTheme: 'system', savedSetups: [], availableObstacles: ['ledge', 'rail'], bookmarks: [], poolPresets: [], trickLibrary: [] };
+        await storageService.saveProfile(rider);
+      }
+      const records = await storageService.getSessions(user.uid);
+      if (epoch !== authEpoch.current || auth.currentUser?.uid !== user.uid) return;
+      profileRef.current = rider; setProfile(rider); setSessions(records);
+      setActiveSetupState(rider.savedSetups.find(s => s.id === rider!.defaultSetupId) || rider.savedSetups[0] || DEFAULT_FALLBACK_SETUP);
+      setCurrentSession(records.find(s => s.status === 'pending' && !s.sessionEndedAt) || null);
+      window.dispatchEvent(new CustomEvent('rider-theme-loaded', { detail: rider.preferredTheme || 'system' }));
+      setIsFirstLogin(first); setIsLoggedIn(true);
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    } catch {
+      if (epoch === authEpoch.current) setAuthError('Could not load cloud records. Check your connection and Firebase rules, then retry.');
+    } finally { if (epoch === authEpoch.current) setAuthLoading(false); }
   }, []);
-
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    let unsubscribe: (() => void) | undefined; let cancelled = false;
+    authReady.then(() => { if (!cancelled) unsubscribe = onAuthStateChanged(auth, user => { void loadAccount(user); }); })
+      .catch(() => { setAuthError('Could not initialize authentication.'); setAuthLoading(false); });
+    return () => { cancelled = true; unsubscribe?.(); ++authEpoch.current; };
+  }, [loadAccount]);
+  const refreshAccount = async () => {
+    if (auth.currentUser) { await reload(auth.currentUser); await getIdToken(auth.currentUser, true); }
+    await loadAccount(auth.currentUser);
+  };
+  const resendVerification = async () => {
+    if (!auth.currentUser) throw new Error('Sign in first.');
+    await sendEmailVerification(auth.currentUser); showToast('Verification email sent.');
+  };
+  const resetPassword = async (email: string) => {
+    await authReady; await sendPasswordResetEmail(auth, email.trim());
+    showToast('If an account exists for that email, a reset link will be sent.');
+  };
 
   const setActiveSetup = (setup: SetupData) => {
     setActiveSetupState(setup);
@@ -120,6 +148,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     const newSession = createPracticeSession(result, currentSetupSnapshot);
     await storageService.saveSession(profile.id, newSession);
+    if (auth.currentUser?.uid !== profile.id) throw new Error("Account changed.");
     const paused = previous;
     setSessions(prev => [newSession, ...prev.map(s => s.id === paused?.id ? paused! : s)]);
     setCurrentSession(newSession);
@@ -129,6 +158,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const updateSession = async (updated: PracticeSession): Promise<void> => {
     if (!profile) throw new Error('Profile missing');
     await storageService.saveSession(profile.id, updated);
+    if (auth.currentUser?.uid !== profile.id) return;
     setSessions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
     if (currentSession?.id === updated.id) {
       setCurrentSession(updated);
@@ -148,14 +178,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const current = profileRef.current;
     if (!current || current.id !== riderId || !isLoggedIn) throw new Error('Sign in to save your practice tools.');
     const updated = change(current);
-    // LocalStorage saves synchronously before this promise resolves.
+    // Only update the interface after the cloud write succeeds.
     await storageService.saveProfile(updated);
+    if (auth.currentUser?.uid !== riderId) return;
     profileRef.current = updated;
     setProfile(updated);
     });
     savedToolsQueue.current = task;
     return task;
   };
+  useEffect(() => {
+    const save = (event: Event) => {
+      if (auth.currentUser?.emailVerified && profileRef.current) void mutateSavedTools(current => ({ ...current, preferredTheme: (event as CustomEvent<'light'|'dark'|'system'>).detail })).catch(() => showToast('Could not save theme preference.'));
+    };
+    window.addEventListener('rider-theme-change', save);
+    return () => window.removeEventListener('rider-theme-change', save);
+  });
   const toggleBookmark = async (result: GeneratedTrickResult) => {
     await mutateSavedTools(current => {
       const bookmarks = current.bookmarks || [];
@@ -205,6 +243,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const deleteSession = async (id: string): Promise<void> => {
     if (!profile) return;
     await storageService.deleteSession(profile.id, id);
+    if (auth.currentUser?.uid !== profile.id) return;
     const remaining = sessions.filter((s) => s.id !== id);
     setSessions(remaining);
     if (currentSession?.id === id) {
@@ -218,6 +257,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     for (const id of ids) {
       await storageService.deleteSession(profile.id, id);
     }
+    if (auth.currentUser?.uid !== profile.id) return;
     const remaining = sessions.filter((s) => !ids.includes(s.id));
     setSessions(remaining);
     if (currentSession && ids.includes(currentSession.id)) {
@@ -239,67 +279,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateProfile = async (updatedProfile: UserProfile): Promise<void> => {
-    await storageService.saveProfile(updatedProfile);
-    profileRef.current = updatedProfile;
-    setProfile(updatedProfile);
-    setActiveSetupState(current => updatedProfile.savedSetups.find(s => s.id === current?.id)
-      || updatedProfile.savedSetups.find(s => s.id === updatedProfile.defaultSetupId)
-      || updatedProfile.savedSetups[0] || DEFAULT_FALLBACK_SETUP);
+    if (!profile || updatedProfile.id !== profile.id) throw new Error('Account mismatch.');
+    const changes = Object.fromEntries(Object.entries(updatedProfile).filter(([key, value]) => JSON.stringify(value) !== JSON.stringify((profile as unknown as Record<string, unknown>)[key])));
+    await mutateSavedTools(current => ({ ...current, ...changes }));
+    const saved = profileRef.current;
+    if (!saved) return;
+    setActiveSetupState(current => saved.savedSetups.find(s => s.id === current?.id)
+      || saved.savedSetups.find(s => s.id === saved.defaultSetupId)
+      || saved.savedSetups[0] || DEFAULT_FALLBACK_SETUP);
     showToast('Profile updated.');
   };
 
-  const resetDemoData = async (): Promise<void> => {
-    if (!profile) return;
-    await storageService.resetToDemoSeed(profile.id);
-    const userSessions = await storageService.getSessions(profile.id);
-    setSessions(userSessions);
-    setCurrentSession(userSessions[0] || null);
-    showToast('Reset to default sample data.');
+  const login = async (email: string, password: string, name?: string, isNewAccount = false) => {
+    await authReady;
+    if (isNewAccount) {
+      if (!name?.trim() || name.trim().length > 80) throw new Error('Enter a rider name between 1 and 80 characters.');
+      const credential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await updateAuthProfile(credential.user, { displayName: name.trim() });
+      try { await sendEmailVerification(credential.user); }
+      catch { showToast('Account created. Use Resend verification to request your email.'); }
+      setAuthUser(credential.user);
+    } else {
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+    }
   };
-
-  const login = async (email: string, name?: string, isNewAccount = false) => {
-    try {
-      const cleanEmail = email.toLowerCase().trim();
-      const profiles = await storageService.getProfiles();
-      const existing = profiles.find(p => p.email?.toLowerCase().trim() === cleanEmail);
-      const isFirst = !existing;
-      if (isNewAccount && existing) {
-        showToast('This rider already exists. Use Sign In.');
-        return;
-      }
-      const rider: UserProfile = existing || {
-        id: `profile_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-        displayName: name?.trim() || 'Rider', email: cleanEmail, instagramHandle: '',
-        preferredTheme: profile?.preferredTheme || 'system', savedSetups: [],
-        availableObstacles: ['flatground', 'ledge', 'rail', 'manual_pad'],
-        bookmarks: [], poolPresets: [],
-      };
-      if (!existing) await storageService.saveProfile(rider);
-      await storageService.switchProfile(rider.id);
-      const riderSessions = await storageService.getSessions(rider.id);
-      profileRef.current = rider;
-      setProfile(rider);
-      setActiveSetupState(rider.savedSetups.find(s => s.id === rider.defaultSetupId)
-        || rider.savedSetups[0] || DEFAULT_FALLBACK_SETUP);
-      setSessions(riderSessions);
-      setCurrentSession(riderSessions.find(s => s.status === 'pending' && !s.sessionEndedAt) || null);
-      setIsLoggedIn(true);
-      setIsFirstLogin(isFirst);
-      localStorage.setItem('ktnk_auth_status', 'logged_in');
-      localStorage.setItem('ktnk_rider_is_first_login', String(isFirst));
-      setActiveTab('home');
-      requestAnimationFrame(() => requestAnimationFrame(() =>
-        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })));
-      showToast(isFirst ? `Welcome to the Dark Slide, ${rider.displayName}.`
-        : `Welcome back, ${rider.displayName}.`);
-    } catch { showToast('Could not load this rider. Please try again.'); }
-  };
-
   const logout = () => {
-    setIsLoggedIn(false);
-    localStorage.setItem('ktnk_auth_status', 'logged_out');
-    setActiveTab('home');
-    showToast('Signed out. Switched to guest mode.');
+    void signOut(auth).catch(() => showToast('Could not sign out. Try again.'));
   };
 
   const openSignIn = useCallback(() => {
@@ -346,7 +351,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteSessions,
         resumeSession,
         updateProfile,
-        resetDemoData,
+        authLoading, authError, authUser, refreshAccount, resendVerification, resetPassword,
         isLoggedIn,
         isFirstLogin,
         isSignInModalOpen,

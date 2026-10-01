@@ -113,4 +113,4 @@ export class LocalStorageService implements IStorageService {
   }
 }
 
-export const storageService = new LocalStorageService();
+// Retained only for legacy unit tests; the app uses firebaseStorageService.

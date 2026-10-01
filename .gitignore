@@ -8,3 +8,15 @@ coverage/
 !.env.example
 
 *.bak
+
+backups/
+update-*.cjs
+*.patch
+*-code.txt
+transfer-latest.json
+*.zip
+.env
+.env.*
+*service-account*.json
+*firebase-adminsdk*.json
+*debug.log

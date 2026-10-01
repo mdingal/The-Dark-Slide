@@ -13,7 +13,7 @@ export const SiteFooter: React.FC<{ currentPage: InfoPageId | null }> = ({ curre
       </div>
       <div className="border-t border-neutral-200 dark:border-neutral-800 pt-5 flex flex-col sm:flex-row sm:justify-between gap-2 text-xs text-neutral-600 dark:text-neutral-400">
         <p>© {new Date().getFullYear()} The Dark Slide.</p>
-        <p>Your practice data is saved in this browser.</p>
+        <p>Your practice data stays with your account.</p>
       </div>
     </div>
   </footer>

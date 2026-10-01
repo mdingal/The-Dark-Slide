@@ -1,0 +1,25 @@
+.cutting-mat-page :is(a, button, [role="button"]) { cursor: pointer; }
+.cutting-mat-page :is(button:disabled, [aria-disabled="true"]) { cursor: not-allowed; }
+.account-actions .account-action-button {
+ display: inline-flex; align-items: center; justify-content: center;
+ border: 1px solid rgb(163 163 163 / .45); border-radius: 8px;
+ padding: 8px 12px; background: rgb(245 245 245 / .8); color: #292524;
+ font-weight: 500; line-height: 1.4; text-decoration: none; cursor: pointer;
+ transition: background-color 140ms ease, border-color 140ms ease;
+}
+.dark .account-actions .account-action-button { background: rgb(38 38 38 / .8); border-color: rgb(115 115 115 / .5); color: #e5e5e5; }
+.account-actions .account-action-button:hover:not(:disabled) { background: #e5e5e5; border-color: #8a6500; }
+.dark .account-actions .account-action-button:hover:not(:disabled) { background: #333; border-color: #d4a72c; }
+.account-actions .account-action-button:focus-visible { outline: 2px solid #d4a72c; outline-offset: 3px; }
+.account-actions .account-action-button:disabled { opacity: .5; cursor: not-allowed; }
+.account-actions input::placeholder { color: #737373; opacity: 1; }
+.dark .account-actions input::placeholder { color: #a3a3a3; }
+.account-actions input[type="file"]::file-selector-button { border: 1px solid #737373; border-radius: 8px; padding: 8px 12px; margin-right: 12px; background: #e5e5e5; color: #292524; cursor: pointer; }
+.dark .account-actions input[type="file"]::file-selector-button { background: #262626; color: #e5e5e5; }
+@media (prefers-reduced-motion: reduce) { .account-actions .account-action-button { transition: none; } }
+
+.account-actions .account-text-link { background: none; border: 0; padding: 3px 0; color: #8a6500; font-weight: 600; cursor: pointer; }
+.dark .account-actions .account-text-link { color: #d4a72c; }
+.account-actions .account-text-link:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 4px; }
+.account-actions .account-text-link:focus-visible { outline: 2px solid #d4a72c; outline-offset: 4px; border-radius: 2px; }
+.account-actions .account-text-link:disabled { opacity: .5; cursor: not-allowed; }

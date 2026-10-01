@@ -1,3 +1,4 @@
+import './HistoryTable.css';
 import React, { useState } from 'react';
 import { PracticeSession } from '../../domain/types';
 import { formatDurationMs } from '../../domain/timer';
@@ -131,17 +132,17 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
               <th className="py-3 px-2 w-6"></th>
               <th className="py-3 px-3">Date</th>
               <th className="py-3 px-3">Trick / Routine</th>
-              <th className="py-3 px-3">Mode & Obstacle</th>
+              <th className="py-3 px-3">Mode &amp;<br />Obstacle</th>
               <th className="py-3 px-3">Stance</th>
               <th className="py-3 px-3">Setup</th>
               <th className="py-3 px-3 text-right">Attempts</th>
               <th className="py-3 px-3 text-right">Landed</th>
-              <th className="py-3 px-3 text-right">1st Land Attempt</th>
-              <th className="py-3 px-3 text-right whitespace-nowrap">Time to 1st Land</th>
-              <th className="py-3 px-3 text-right">Active Time</th>
+              <th className="py-3 px-3 text-right" title="Attempt number at the first successful landing"><span>1st land</span><br /><span>Attempt</span></th>
+              <th className="py-3 px-3 text-right whitespace-nowrap" title="Elapsed active time at the first successful landing"><span>1st land</span><br /><span>Time</span></th>
+              <th className="py-3 px-3 text-right">Active<br />Time</th>
               <th className="py-3 px-3 text-center">Status</th>
               <th className="py-3 px-3">Complexity</th>
-              <th className="py-3 px-3 text-right whitespace-nowrap">Best Streak</th>
+              <th className="py-3 px-3 text-right whitespace-nowrap">Best<br />Streak</th>
               <th className="py-3 px-3">Miss Tags</th>
               <th className="py-3 px-3 text-right">Actions</th>
             </tr>
@@ -271,11 +272,15 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
 
                     <td className="py-2.5 px-3 capitalize">{getChallengeComplexity(session.trickResult)}</td>
                     <td className="py-2.5 px-3 text-right font-mono">{getStreaks(session).best}</td>
-                    <td className="py-2.5 px-3 min-w-40">{MISS_TAGS.filter(t=>(session.missTagCounts?.[t.id]||0)>0).map(t=>`${t.label}: ${session.missTagCounts?.[t.id]}`).join(', ')||'—'}</td>
+                    <td className="py-2.5 px-3 miss-tags-cell">
+                      {MISS_TAGS.some(t => (session.missTagCounts?.[t.id] || 0) > 0) ? <div className="miss-tags-list">
+                        {MISS_TAGS.filter(t => (session.missTagCounts?.[t.id] || 0) > 0).map(t => <div key={t.id} className="miss-tag-row"><span>{t.label}</span><span className="miss-tag-count">{session.missTagCounts?.[t.id]}</span></div>)}
+                      </div> : <span aria-label="No miss tags">{'\u2014'}</span>}
+                    </td>
 
                     {/* Action buttons */}
                     <td className="py-2.5 px-3 text-right whitespace-nowrap">
-                      <div className="flex flex-wrap items-center justify-end gap-1">
+                      <div className="history-session-actions">
                         <ChallengeActions result={session.trickResult} compact />
                         <button
                           type="button"

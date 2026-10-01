@@ -1,3 +1,4 @@
+import { CloudAccountSettings } from '../auth/CloudAccountSettings';
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { SetupData, WheelMaterial, DeckShape, DeckMold, ObstacleType } from '../../domain/types';
@@ -7,7 +8,9 @@ import { Plus, Trash2, Instagram, AlertCircle, ExternalLink } from 'lucide-react
 const DECK_WIDTH_PRESETS = [26, 29, 31, 32, 33, 33.6, 34, 36];
 
 export const ProfileSettingsPage: React.FC = () => {
-  const { profile, updateProfile, resetDemoData, showToast } = useApp();
+  const { profile, updateProfile: saveProfile, showToast } = useApp();
+
+  const updateProfile = (value: Parameters<typeof saveProfile>[0]) => saveProfile(value).catch(error => showToast(error instanceof Error ? error.message : 'Could not save profile.'));
 
   const [editingSetup, setEditingSetup] = useState<SetupData | null>(null);
   const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
@@ -384,24 +387,7 @@ export const ProfileSettingsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Reset Seed Data */}
-      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-sm font-semibold text-neutral-900 dark:text-white">
-            Reset Sample Data
-          </h2>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Restore initial realistic sessions and setups.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={resetDemoData}
-          className="px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-md transition-colors cursor-pointer"
-        >
-          Reset to Sample Seed
-        </button>
-      </div>
+      <CloudAccountSettings />
 
       {/* Setup Modal */}
       <Modal
