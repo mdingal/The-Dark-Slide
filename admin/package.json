@@ -1,0 +1,14 @@
+{
+  "name": "dark-slide-local-admin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "node setup.mjs",
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "react-example": "file:.."
+  }
+}

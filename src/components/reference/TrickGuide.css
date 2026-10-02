@@ -1,0 +1,45 @@
+.trick-guide .guide-pill{display:inline-flex;align-items:center;border:1px solid #d4a72c55;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600;color:#8a6500}
+.dark .trick-guide .guide-pill{color:#d4a72c}
+.trick-guide .guide-filter{border:1px solid #a3a3a355;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.trick-guide .guide-selected{color:#8a6500;border-color:#d4a72c;background:#d4a72c15}
+.dark .trick-guide .guide-selected{color:#d4a72c}
+.trick-guide button:focus-visible,.trick-guide summary:focus-visible{outline:2px solid #d4a72c;outline-offset:4px}
+.trick-guide .guide-card:hover,.trick-guide .guide-filter:hover{border-color:#d4a72c88}
+.trick-guide .guide-heading{font-size:14px;font-weight:700}
+.trick-guide .guide-copy{font-size:14px;line-height:1.8;margin-top:8px;color:#525252}
+.dark .trick-guide .guide-copy{color:#d4d4d4}
+.trick-guide .guide-step{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;border:1px solid #d4a72c66;border-radius:50%;color:#8a6500;font-size:12px;font-weight:700}
+.dark .trick-guide .guide-step{color:#d4a72c}
+.guide-motion-stage{height:180px;position:relative;overflow:hidden;perspective:500px}
+.guide-motion-ground{position:absolute;left:8%;right:8%;bottom:30px;height:1px;background:currentColor;opacity:.2}
+.guide-motion-board{position:absolute;left:calc(50% - 60px);bottom:36px;width:120px;height:36px;border-radius:20px;background:#d4a72c;border:2px solid #8a6500;transform-origin:center}
+.guide-motion-board span{position:absolute;top:8px;width:4px;height:16px;border-top:3px solid #292524;border-bottom:3px solid #292524}
+.guide-motion-board span:first-child{left:24px}.guide-motion-board span:last-child{right:24px}
+.guide-motion-ledge{position:absolute;left:40%;width:35%;bottom:30px;height:25px;background:currentColor;opacity:.2;border-radius:3px}
+.guide-motion-playing{animation:guide-ollie 3s ease-in-out both}
+.guide-motion-kickflip.guide-motion-playing{animation-name:guide-kickflip}
+.guide-motion-heelflip.guide-motion-playing{animation-name:guide-heelflip}
+.guide-motion-pop-shuvit.guide-motion-playing{animation-name:guide-shuvit}
+.guide-motion-50-50.guide-motion-playing{animation-name:guide-grind}
+@keyframes guide-ollie{0%,15%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-35px) rotate(-15deg)}50%,65%{transform:translateY(-75px) rotate(0)}85%{transform:translateY(0)}}
+@keyframes guide-kickflip{0%,15%{transform:translateY(0) rotateX(0)}30%{transform:translateY(-45px) rotateX(0)}60%{transform:translateY(-75px) rotateX(360deg)}75%{transform:translateY(-45px) rotateX(360deg)}90%,100%{transform:translateY(0) rotateX(360deg)}}
+@keyframes guide-heelflip{0%,15%{transform:translateY(0) rotateX(0)}30%{transform:translateY(-45px) rotateX(0)}60%{transform:translateY(-75px) rotateX(-360deg)}75%{transform:translateY(-45px) rotateX(-360deg)}90%,100%{transform:translateY(0) rotateX(-360deg)}}
+@keyframes guide-shuvit{0%,15%{transform:translateY(0) rotate(0)}30%{transform:translateY(-45px) rotate(0)}60%{transform:translateY(-75px) rotate(180deg)}75%{transform:translateY(-45px) rotate(180deg)}90%,100%{transform:translateY(0) rotate(180deg)}}
+@keyframes guide-grind{0%,10%{transform:translate(-75px,0)}30%{transform:translate(-40px,-65px)}45%{transform:translate(-20px,-25px)}70%{transform:translate(50px,-25px)}80%{transform:translate(75px,-45px)}100%{transform:translate(95px,0)}}
+.guide-reduced-motion{display:none}
+@media(prefers-reduced-motion:reduce){.guide-motion-playing{animation:none!important}.guide-reduced-motion{display:block}}
+.trick-guide .guide-outline-button{border:1px solid #8a6500;background:transparent;color:#8a6500;cursor:pointer;transition:background-color .15s,color .15s}
+.dark .trick-guide .guide-outline-button{border-color:#d4a72c;color:#d4a72c}
+.trick-guide .guide-outline-button:hover:not(:disabled){background:#d4a72c;border-color:#d4a72c;color:#171717}
+.trick-guide .guide-outline-button:disabled{cursor:not-allowed}
+.trick-guide .guide-landed{display:inline-flex;align-items:center;gap:5px;border:1px solid #15803d66;border-radius:999px;padding:4px 9px;font-size:11px;font-weight:600;color:#166534;background:#15803d0a}
+.dark .trick-guide .guide-landed{color:#86efac;border-color:#86efac44;background:#86efac0a}
+@media(prefers-reduced-motion:reduce){.trick-guide .guide-outline-button{transition:none}}
+
+.trick-guide .guide-difficulty{display:inline-flex;align-items:center;border:1px solid;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600}
+.trick-guide .guide-difficulty-beginner{color:#166534;border-color:#15803d66;background:#dcfce7}
+.trick-guide .guide-difficulty-intermediate{color:#92400e;border-color:#b4530966;background:#fef3c7}
+.trick-guide .guide-difficulty-advanced{color:#9f1239;border-color:#be123c66;background:#ffe4e6}
+.dark .trick-guide .guide-difficulty-beginner{color:#86efac;border-color:#86efac55;background:#14532d33}
+.dark .trick-guide .guide-difficulty-intermediate{color:#fcd34d;border-color:#fcd34d55;background:#78350f33}
+.dark .trick-guide .guide-difficulty-advanced{color:#fda4af;border-color:#fda4af55;background:#88133733}

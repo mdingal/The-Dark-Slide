@@ -1,3 +1,10 @@
+import {SharedChallengeBar} from '../common/SharedChallengeBar';
+import {ChallengeSessionStatus} from '../common/ChallengeCompletionPanel';
+import {MilestoneMoment} from '../common/MilestonePanel';
+import { SelectedTrickPool, PoolSource } from './SelectedTrickPool';
+import { baseChallengePool, uniqueChallenges, selectPoolChallenge, expandSelectedVariations } from '../../domain/selectedChallengePool';
+import { trickKey } from '../../domain/progression';
+import { getChallengeComplexity } from '../../domain/complexity';
 import React, { useState, useEffect, useCallback } from 'react';
 import { getTransferChoices } from '../../domain/obstacleTransfers';
 import { useApp } from '../../context/AppContext';
@@ -34,6 +41,7 @@ import { generateChallenge } from '../../domain/challengeGeneration';
 
 export const GeneratorPage: React.FC = () => {
   const {
+    sessions,
     activeSetup,
     setActiveSetup,
     profile,
@@ -46,6 +54,14 @@ export const GeneratorPage: React.FC = () => {
 
   const [finishedSession, setFinishedSession] = useState<PracticeSession | null>(null);
 
+  const [stances,setStances] = useState<SingleTrickParameters['stance'][]>(['regular','nollie','fakie','switch']);
+  const [stanceVariations,setStanceVariations] = useState(false);
+  const [rotationVariations,setRotationVariations] = useState(false);
+  const [rotations,setRotations] = useState<('none'|'frontside'|'backside')[]>(['none','frontside','backside']);
+  const [poolSource,setPoolSource] = useState<PoolSource>('parameters');
+  const [customSelection,setCustomSelection] = useState<string[]>([]);
+  const [librarySelection,setLibrarySelection] = useState<string[]>([]);
+  const [libraryStatus,setLibraryStatus] = useState('all');
   const [mode, setMode] = useState<TrickMode>('single');
   const [complexityFilter, setComplexityFilter] = useState<ComplexityFilter>('all');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -128,12 +144,16 @@ export const GeneratorPage: React.FC = () => {
     }
   }, [currentSession?.id]);
 
+  const libraryPool = (profile?.trickLibrary || []).filter(t=>libraryStatus==='all'||t.status===libraryStatus).map(t=>t.trickResult);
+  const customPool = uniqueChallenges([...baseChallengePool(),...sessions.map(s=>s.trickResult),...(profile?.bookmarks || []).map(b=>b.trickResult),...(profile?.trickLibrary || []).map(t=>t.trickResult)]);
+  const poolItems = (poolSource==='library'?libraryPool:customPool).filter(t=>t.mode===mode&&(poolSource==='custom'||complexityFilter==='all'||getChallengeComplexity(t)===complexityFilter));
+  const poolSelection = poolSource==='library'?librarySelection:customSelection;
   const handleGenerate = async () => {
     if (generationBusyRef.current) return;
     generationBusyRef.current = true;
     setIsGenerating(true); setConflictError(null);
     try {
-      const result = generateChallenge({ mode, complexityFilter,
+      const result = poolSource !== 'parameters' ? selectPoolChallenge(expandSelectedVariations(poolItems.filter(t=>poolSelection.includes(trickKey(t))),poolSource==='custom'&&stanceVariations,poolSource==='custom'&&rotationVariations?rotations:null,stances),mode,complexityFilter) : generateChallenge({ mode, complexityFilter,
         singleLocks, singleExclusions, step1Locks, step2Locks, step1Exclusions, step2Exclusions,
         obstacleLocks, obstacleExclusions, activeParams, step1Params, step2Params, selectedObstacle, obstacleData });
       if ('error' in result) { setConflictError(result.error); return; }
@@ -203,6 +223,7 @@ export const GeneratorPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <SharedChallengeBar />
       <section
         aria-label="Challenge and practice session"
         className="trick-practice-workspace bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl"
@@ -252,11 +273,14 @@ export const GeneratorPage: React.FC = () => {
       </section>
 
 
-      <PoolPresets config={presetConfig} onApply={applyPreset} />
+      <ChallengeSessionStatus session={currentSession || finishedSession} />
+      <MilestoneMoment sessionId={(currentSession || finishedSession)?.id} />
+      <SelectedTrickPool stances={stances} onStances={setStances} stanceVariations={stanceVariations} onStanceVariations={setStanceVariations} rotationVariations={rotationVariations} onRotationVariations={setRotationVariations} rotations={rotations} onRotations={setRotations} source={poolSource} onSource={setPoolSource} items={poolItems} selected={poolSelection} onSelected={poolSource==='library'?setLibrarySelection:setCustomSelection} status={libraryStatus} onStatus={setLibraryStatus} />
+      {poolSource === 'parameters' && <PoolPresets config={presetConfig} onApply={applyPreset} />}
 
 
       {/* 3. Controls & Lock Configuration */}
-      {mode === 'single' && (
+      {poolSource === 'parameters' && mode === 'single' && (
         <ParameterSelector
           locks={singleLocks}
           exclusions={singleExclusions}
@@ -269,7 +293,7 @@ export const GeneratorPage: React.FC = () => {
         />
       )}
 
-      {mode === 'combo' && (
+      {poolSource === 'parameters' && mode === 'combo' && (
         <ComboStepEditor
           steps={currentSession?.trickResult?.comboSteps}
           step1Locks={step1Locks}
@@ -315,7 +339,7 @@ export const GeneratorPage: React.FC = () => {
         />
       )}
 
-      {mode === 'obstacle' && (
+      {poolSource === 'parameters' && mode === 'obstacle' && (
         <ObstaclePicker
           selectedObstacle={selectedObstacle}
           onChangeObstacle={(obs) => {

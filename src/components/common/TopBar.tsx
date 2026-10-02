@@ -1,10 +1,12 @@
 import React from 'react';
+import { BrandLogo } from './BrandLogo';
 import { useApp } from '../../context/AppContext';
 import { useTheme } from '../../context/ThemeProvider';
 import { Sun, Moon, Monitor, Instagram, LogIn, LogOut, ExternalLink } from 'lucide-react';
 
-export const TopBar: React.FC = () => {
-  const { activeTab, setActiveTab, profile, isLoggedIn, logout, openSignIn } = useApp();
+type MainTab = 'home' | 'history' | 'generator' | 'library' | 'settings';
+export const TopBar: React.FC<{ currentPage: string | null; onNavigate: (tab: MainTab) => void }> = ({ currentPage, onNavigate }) => {
+  const { activeTab, profile, isLoggedIn, logout, openSignIn } = useApp();
   const { theme, setTheme } = useTheme();
 
   const cleanInstagramHandle = (handle?: string) => {
@@ -20,72 +22,39 @@ export const TopBar: React.FC = () => {
         {/* Zone 1: Single text element wordmark */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setActiveTab('home')}
+            onClick={() => onNavigate('home')}
               style={{ animation: "none", boxShadow: "none" }}
-            className="text-left group cursor-pointer focus:outline-none"
+            className="text-left group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A72C]"
           >
-            <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900 dark:text-white group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
-              THE DARK SLIDE
-            </span>
+            {!isLoggedIn && activeTab === 'home' ? (
+              <img src="/dark-slide-monogram.svg" alt="Dark Slide" width={285} height={150} className="block w-14 h-auto dark:invert" draggable={false} />
+            ) : (
+              <BrandLogo className="w-36 sm:w-40" />
+            )}
           </button>
         </div>
 
-        {/* Zone 2: Navigation Links - Shown only when logged in */}
-        {isLoggedIn && (
-          <nav className="order-last w-full lg:order-none lg:w-auto flex items-center justify-center gap-4 sm:gap-5 overflow-x-auto whitespace-nowrap" aria-label="Main Navigation">
-            <button
-              onClick={() => setActiveTab('home')}
-              style={{ animation: "none", boxShadow: "none" }}
-              className={`text-xs sm:text-sm font-medium transition-colors py-1 cursor-pointer ${
-                activeTab === 'home'
-                  ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
-              }`}
-            >
-              Home
-            </button>
-            <button
-              onClick={() => setActiveTab('generator')}
-              style={{ animation: "none", boxShadow: "none" }}
-              className={`text-xs sm:text-sm font-medium transition-colors py-1 cursor-pointer ${
-                activeTab === 'generator'
-                  ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
-              }`}
-            >
-              Trick Lab
-            </button>
-            <button
-              onClick={() => setActiveTab('history')}
-              style={{ animation: "none", boxShadow: "none" }}
-              className={`text-xs sm:text-sm font-medium transition-colors py-1 cursor-pointer ${
-                activeTab === 'history'
-                  ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
-              }`}
-            >
-              Dashboard
-            </button>
-            <button onClick={() => setActiveTab('library')}
+        {/* Main navigation */}
+        {isLoggedIn && <nav className="order-last w-full lg:order-none lg:w-auto flex items-center justify-center gap-4 sm:gap-5 overflow-x-auto whitespace-nowrap" aria-label="Main Navigation">
+          {(isLoggedIn ? [
+            { id: 'home', label: 'Home' },
+            { id: 'history', label: 'Dashboard' },
+            { id: 'generator', label: 'Trick Lab' },
+            { id: 'library', label: 'Trick Library' },
+            { id: 'trick-guide', label: 'Trick Guides' },
+            { id: 'settings', label: 'Rider Profile' },
+          ] : [{ id: 'home', label: 'Home' }, { id: 'trick-guide', label: 'Trick Guides' }]).map(tab => {
+            const selected = tab.id === 'trick-guide' ? currentPage === 'trick-guide' : !currentPage && activeTab === tab.id;
+            return <button key={tab.id} type="button" aria-current={selected ? 'page' : undefined}
+              onClick={() => tab.id === 'trick-guide' ? window.location.hash = '/trick-guide' : onNavigate(tab.id as MainTab)}
               style={{ animation: 'none', boxShadow: 'none' }}
-              className={`text-xs sm:text-sm font-medium py-1 cursor-pointer whitespace-nowrap ${activeTab === 'library'
+              className={`text-xs sm:text-sm font-medium py-1 cursor-pointer whitespace-nowrap ${selected
                 ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
                 : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'}`}>
-              Trick Library
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              style={{ animation: "none", boxShadow: "none" }}
-              className={`text-xs sm:text-sm font-medium transition-colors py-1 cursor-pointer ${
-                activeTab === 'settings'
-                  ? 'text-[#8A6500] dark:text-[#D4A72C] border-b-2 border-[#8A6500] dark:border-[#D4A72C] font-semibold'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
-              }`}
-            >
-              Rider Profile
-            </button>
-          </nav>
-        )}
+              {tab.label}
+            </button>;
+          })}
+        </nav>}
 
         {/* Zone 3: Actions, Instagram, Auth & Theme Selector */}
         <div className="flex items-center gap-2 sm:gap-3">

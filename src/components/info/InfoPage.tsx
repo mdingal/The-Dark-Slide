@@ -1,16 +1,28 @@
 import React from 'react';
+import { TrickGuide } from '../reference/TrickGuide';
+import { ChangelogEntries } from './ChangelogEntries';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
-export type InfoPageId = 'about' | 'terms' | 'privacy' | 'contact';
+export type InfoPageId = 'about' | 'terms' | 'privacy' | 'contact' | 'changelog' | 'trick-guide';
 export const INFO_LINKS: { id: InfoPageId; label: string }[] = [
   { id: 'about', label: 'About' }, { id: 'terms', label: 'Terms & Conditions' },
-  { id: 'privacy', label: 'Privacy Policy' }, { id: 'contact', label: 'Contact & Feedback' },
+  { id: 'changelog', label: 'Changelog' }, { id: 'privacy', label: 'Privacy Policy' }, { id: 'contact', label: 'Contact & Feedback' },
 ];
 export function readInfoPage(): InfoPageId | null {
   const id = window.location.hash.replace(/^#\/?/, '');
-  return INFO_LINKS.some(link => link.id === id) ? id as InfoPageId : null;
+  return (id === 'trick-guide' || INFO_LINKS.some(link => link.id === id)) ? id as InfoPageId : null;
 }
 const pages: Record<InfoPageId, { title: string; intro: string; sections: { title: string; text: string[] }[] }> = {
+  'trick-guide': {
+    title: 'Trick Guides',
+    intro: 'Understand the motion. Find your starting point. Work through the next step.',
+    sections: [],
+  },
+  changelog: {
+    title: 'Changelog',
+    intro: 'What changed in The Dark Slide. Published entries follow the repository commits; Unreleased covers changes prepared after the latest GitHub update.',
+    sections: [],
+  },
   about: {
     title: 'About The Dark Slide',
     intro: 'A fingerboarding practice companion created by @ktnk.fb. Find a challenge, put in the attempts, and see your progress take shape.',
@@ -82,6 +94,8 @@ export const InfoPage: React.FC<{ page: InfoPageId; onHome: () => void }> = ({ p
           {(page === 'terms' || page === 'privacy') && <p className="text-xs text-neutral-600 dark:text-neutral-400">Last updated: October 1, 2026</p>}
           <p className="text-base leading-relaxed text-neutral-700 dark:text-neutral-300">{content.intro}</p>
         </div>
+        {page === 'changelog' && <ChangelogEntries />}
+        {page === 'trick-guide' && <TrickGuide />}
         {content.sections.map(section => <section key={section.title} className="space-y-3">
           <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-100">{section.title}</h2>
           {section.text.map(text => <p key={text} className="text-sm sm:text-base leading-7 text-neutral-700 dark:text-neutral-300">{text}</p>)}

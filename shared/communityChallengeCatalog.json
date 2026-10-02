@@ -1,0 +1,2944 @@
+{
+  "daily": [
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "ollie",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Ollie",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: 0° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: Standard Ollie ➔ Ollie"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "ollie",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Ollie",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: 0° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: Standard Ollie ➔ Fakie Ollie"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "switch",
+        "direction": "none",
+        "baseTrickId": "ollie",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Switch Ollie",
+      "breakdown": [
+        "Stance: Switch",
+        "Movements: 0° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: Standard Ollie ➔ Switch Ollie"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "nollie",
+        "direction": "none",
+        "baseTrickId": "ollie",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Nollie Ollie",
+      "breakdown": [
+        "Stance: Nollie",
+        "Movements: 0° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: Standard Ollie ➔ Nollie Ollie"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "kickflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Kickflip",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: 0° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Axial Kickflip ➔ Kickflip",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "kickflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Kickflip",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: 0° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Axial Kickflip ➔ Fakie Kickflip",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "switch",
+        "direction": "none",
+        "baseTrickId": "kickflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Switch Kickflip",
+      "breakdown": [
+        "Stance: Switch",
+        "Movements: 0° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Axial Kickflip ➔ Switch Kickflip",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "nollie",
+        "direction": "none",
+        "baseTrickId": "kickflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Nollie Kickflip",
+      "breakdown": [
+        "Stance: Nollie",
+        "Movements: 0° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Axial Kickflip ➔ Nollie Kickflip",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "heelflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "heelflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Heelflip",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: 0° Board Spin + Heelflip + 0° Body Rotation",
+        "Formula: Axial Heelflip ➔ Heelflip",
+        "Board Flip: Heelflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "heelflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "heelflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "heelflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Heelflip",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: 0° Board Spin + Heelflip + 0° Body Rotation",
+        "Formula: Axial Heelflip ➔ Fakie Heelflip",
+        "Board Flip: Heelflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "heelflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "switch",
+        "direction": "none",
+        "baseTrickId": "heelflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "heelflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Switch Heelflip",
+      "breakdown": [
+        "Stance: Switch",
+        "Movements: 0° Board Spin + Heelflip + 0° Body Rotation",
+        "Formula: Axial Heelflip ➔ Switch Heelflip",
+        "Board Flip: Heelflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "heelflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "nollie",
+        "direction": "none",
+        "baseTrickId": "heelflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 0,
+          "boardSpinDir": "none",
+          "boardFlip": "heelflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Nollie Heelflip",
+      "breakdown": [
+        "Stance: Nollie",
+        "Movements: 0° Board Spin + Heelflip + 0° Body Rotation",
+        "Formula: Axial Heelflip ➔ Nollie Heelflip",
+        "Board Flip: Heelflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 0,
+        "boardSpinDir": "none",
+        "boardFlip": "heelflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "pop_shuvit",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "backside",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Pop Shuvit",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: BS 180° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: BS 180° Shuvit ➔ Pop Shuvit",
+        "Board Spin: Backside 180°"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "backside",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "pop_shuvit",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "backside",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Pop Shuvit",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: BS 180° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: BS 180° Shuvit ➔ Fakie Pop Shuvit",
+        "Board Spin: Backside 180°"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "backside",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "switch",
+        "direction": "none",
+        "baseTrickId": "pop_shuvit",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "backside",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Switch Pop Shuvit",
+      "breakdown": [
+        "Stance: Switch",
+        "Movements: BS 180° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: BS 180° Shuvit ➔ Switch Pop Shuvit",
+        "Board Spin: Backside 180°"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "backside",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "nollie",
+        "direction": "none",
+        "baseTrickId": "pop_shuvit",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "backside",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Nollie Pop Shuvit",
+      "breakdown": [
+        "Stance: Nollie",
+        "Movements: BS 180° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: BS 180° Shuvit ➔ Nollie Pop Shuvit",
+        "Board Spin: Backside 180°"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "backside",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "frontside_pop_shuvit",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "FS Pop Shuvit",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: FS 180° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: FS 180° Shuvit ➔ Frontside Pop Shuvit",
+        "Board Spin: Frontside 180°"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "frontside_pop_shuvit",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie FS Pop Shuvit",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: FS 180° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: FS 180° Shuvit ➔ Fakie Frontside Pop Shuvit",
+        "Board Spin: Frontside 180°"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "switch",
+        "direction": "none",
+        "baseTrickId": "frontside_pop_shuvit",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Switch FS Pop Shuvit",
+      "breakdown": [
+        "Stance: Switch",
+        "Movements: FS 180° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: FS 180° Shuvit ➔ Switch Frontside Pop Shuvit",
+        "Board Spin: Frontside 180°"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "nollie",
+        "direction": "none",
+        "baseTrickId": "frontside_pop_shuvit",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "none",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Nollie FS Pop Shuvit",
+      "breakdown": [
+        "Stance: Nollie",
+        "Movements: FS 180° Board Spin + No Flip + 0° Body Rotation",
+        "Formula: FS 180° Shuvit ➔ Nollie Frontside Pop Shuvit",
+        "Board Spin: Frontside 180°"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "none",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "varial_kickflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "backside",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Varial Kickflip",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: BS 180° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Kickflip + BS 180° Shuvit ➔ Varial Kickflip",
+        "Board Spin: Backside 180°",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "backside",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "varial_kickflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "backside",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Varial Kickflip",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: BS 180° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Kickflip + BS 180° Shuvit ➔ Fakie Varial Kickflip",
+        "Board Spin: Backside 180°",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "backside",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "switch",
+        "direction": "none",
+        "baseTrickId": "varial_kickflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "backside",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Switch Varial Kickflip",
+      "breakdown": [
+        "Stance: Switch",
+        "Movements: BS 180° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Kickflip + BS 180° Shuvit ➔ Switch Varial Kickflip",
+        "Board Spin: Backside 180°",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "backside",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "nollie",
+        "direction": "none",
+        "baseTrickId": "varial_kickflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "backside",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Nollie Varial Kickflip",
+      "breakdown": [
+        "Stance: Nollie",
+        "Movements: BS 180° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Kickflip + BS 180° Shuvit ➔ Nollie Varial Kickflip",
+        "Board Spin: Backside 180°",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "backside",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "varial_heelflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "heelflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Varial Heelflip",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: FS 180° Board Spin + Heelflip + 0° Body Rotation",
+        "Formula: Heelflip + FS 180° Shuvit ➔ Varial Heelflip",
+        "Board Spin: Frontside 180°",
+        "Board Flip: Heelflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "heelflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "varial_heelflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "heelflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Varial Heelflip",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: FS 180° Board Spin + Heelflip + 0° Body Rotation",
+        "Formula: Heelflip + FS 180° Shuvit ➔ Fakie Varial Heelflip",
+        "Board Spin: Frontside 180°",
+        "Board Flip: Heelflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "heelflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "switch",
+        "direction": "none",
+        "baseTrickId": "varial_heelflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "heelflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Switch Varial Heelflip",
+      "breakdown": [
+        "Stance: Switch",
+        "Movements: FS 180° Board Spin + Heelflip + 0° Body Rotation",
+        "Formula: Heelflip + FS 180° Shuvit ➔ Switch Varial Heelflip",
+        "Board Spin: Frontside 180°",
+        "Board Flip: Heelflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "heelflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "nollie",
+        "direction": "none",
+        "baseTrickId": "varial_heelflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "heelflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Nollie Varial Heelflip",
+      "breakdown": [
+        "Stance: Nollie",
+        "Movements: FS 180° Board Spin + Heelflip + 0° Body Rotation",
+        "Formula: Heelflip + FS 180° Shuvit ➔ Nollie Varial Heelflip",
+        "Board Spin: Frontside 180°",
+        "Board Flip: Heelflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "heelflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "hardflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Hardflip",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: FS 180° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Kickflip + FS 180° Shuvit ➔ Hardflip",
+        "Board Spin: Frontside 180°",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "hardflip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 180,
+          "boardSpinDir": "frontside",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Hardflip",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: FS 180° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Kickflip + FS 180° Shuvit ➔ Fakie Hardflip",
+        "Board Spin: Frontside 180°",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 180,
+        "boardSpinDir": "frontside",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "tre_flip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 360,
+          "boardSpinDir": "backside",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Tre Flip",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip",
+        "Board Spin: Backside 360°",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 360,
+        "boardSpinDir": "backside",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "tre_flip",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 360,
+          "boardSpinDir": "backside",
+          "boardFlip": "kickflip",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Tre Flip",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation",
+        "Formula: Fakie BS 360° Shuvit + Kickflip ➔ Fakie Tre Flip",
+        "Board Spin: Backside 360°",
+        "Board Flip: Kickflip"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 360,
+        "boardSpinDir": "backside",
+        "boardFlip": "kickflip",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "regular",
+        "direction": "none",
+        "baseTrickId": "impossible",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 360,
+          "boardSpinDir": "none",
+          "boardFlip": "vertical_wrap",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Impossible",
+      "breakdown": [
+        "Stance: Regular",
+        "Movements: 360° Board Spin + Vertical Wrap + 0° Body Rotation",
+        "Formula: Vertical Wrap 360° ➔ Impossible",
+        "Board Spin: 360°",
+        "Board Flip: Vertical Wrap"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 360,
+        "boardSpinDir": "none",
+        "boardFlip": "vertical_wrap",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    },
+    {
+      "mode": "single",
+      "singleTrick": {
+        "stance": "fakie",
+        "direction": "none",
+        "baseTrickId": "impossible",
+        "bodyVarial": "none",
+        "landing": "normal",
+        "revert": "none",
+        "movements": {
+          "boardSpinDeg": 360,
+          "boardSpinDir": "none",
+          "boardFlip": "vertical_wrap",
+          "bodyRotationDeg": 0,
+          "bodyRotationDir": "none",
+          "isLateRotation": false,
+          "lateRotationDeg": 0,
+          "lateRotationDir": "none",
+          "isBodyVarialOnly": false,
+          "landingPosition": "normal",
+          "revertDirection": "none"
+        }
+      },
+      "canonicalName": "Fakie Impossible",
+      "breakdown": [
+        "Stance: Fakie",
+        "Movements: 360° Board Spin + Vertical Wrap + 0° Body Rotation",
+        "Formula: Vertical Wrap 360° ➔ Fakie Impossible",
+        "Board Spin: 360°",
+        "Board Flip: Vertical Wrap"
+      ],
+      "catalogVersion": "1.1.0",
+      "movements": {
+        "boardSpinDeg": 360,
+        "boardSpinDir": "none",
+        "boardFlip": "vertical_wrap",
+        "bodyRotationDeg": 0,
+        "bodyRotationDir": "none",
+        "isLateRotation": false,
+        "lateRotationDeg": 0,
+        "lateRotationDir": "none",
+        "isBodyVarialOnly": false,
+        "landingPosition": "normal",
+        "revertDirection": "none"
+      }
+    }
+  ],
+  "weekly": [
+    {
+      "primary": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "kickflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Kickflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "heelflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "heelflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Heelflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Heelflip + 0° Body Rotation · Formula: Axial Heelflip ➔ Heelflip · Board Flip: Heelflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "heelflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Kickflip ➔ Heelflip",
+        "breakdown": [
+          "Step 1: Kickflip (Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Heelflip (Stance: Regular · Movements: 0° Board Spin + Heelflip + 0° Body Rotation · Formula: Axial Heelflip ➔ Heelflip · Board Flip: Heelflip)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      }
+    },
+    {
+      "primary": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "ollie",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "none",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Ollie",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "none",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "kickflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Kickflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Ollie ➔ Kickflip",
+        "breakdown": [
+          "Step 1: Ollie (Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Kickflip (Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      }
+    },
+    {
+      "primary": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "pop_shuvit",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 180,
+                "boardSpinDir": "backside",
+                "boardFlip": "none",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Pop Shuvit",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: BS 180° Board Spin + No Flip + 0° Body Rotation · Formula: BS 180° Shuvit ➔ Pop Shuvit · Board Spin: Backside 180°",
+            "movements": {
+              "boardSpinDeg": 180,
+              "boardSpinDir": "backside",
+              "boardFlip": "none",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "kickflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Kickflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Pop Shuvit ➔ Kickflip",
+        "breakdown": [
+          "Step 1: Pop Shuvit (Stance: Regular · Movements: BS 180° Board Spin + No Flip + 0° Body Rotation · Formula: BS 180° Shuvit ➔ Pop Shuvit · Board Spin: Backside 180°)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Kickflip (Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      }
+    },
+    {
+      "primary": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "heelflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "heelflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Heelflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Heelflip + 0° Body Rotation · Formula: Axial Heelflip ➔ Heelflip · Board Flip: Heelflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "heelflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "pop_shuvit",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 180,
+                "boardSpinDir": "backside",
+                "boardFlip": "none",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Pop Shuvit",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: BS 180° Board Spin + No Flip + 0° Body Rotation · Formula: BS 180° Shuvit ➔ Pop Shuvit · Board Spin: Backside 180°",
+            "movements": {
+              "boardSpinDeg": 180,
+              "boardSpinDir": "backside",
+              "boardFlip": "none",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Heelflip ➔ Pop Shuvit",
+        "breakdown": [
+          "Step 1: Heelflip (Stance: Regular · Movements: 0° Board Spin + Heelflip + 0° Body Rotation · Formula: Axial Heelflip ➔ Heelflip · Board Flip: Heelflip)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Pop Shuvit (Stance: Regular · Movements: BS 180° Board Spin + No Flip + 0° Body Rotation · Formula: BS 180° Shuvit ➔ Pop Shuvit · Board Spin: Backside 180°)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      }
+    },
+    {
+      "primary": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "tre_flip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 360,
+                "boardSpinDir": "backside",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Tre Flip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 360,
+              "boardSpinDir": "backside",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "ollie",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "none",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Ollie",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "none",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Tre Flip ➔ Ollie",
+        "breakdown": [
+          "Step 1: Tre Flip (Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Ollie (Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "advanced"
+      }
+    },
+    {
+      "primary": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "impossible",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 360,
+                "boardSpinDir": "none",
+                "boardFlip": "vertical_wrap",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Impossible",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 360° Board Spin + Vertical Wrap + 0° Body Rotation · Formula: Vertical Wrap 360° ➔ Impossible · Board Spin: 360° · Board Flip: Vertical Wrap",
+            "movements": {
+              "boardSpinDeg": 360,
+              "boardSpinDir": "none",
+              "boardFlip": "vertical_wrap",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "kickflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Kickflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Impossible ➔ Kickflip",
+        "breakdown": [
+          "Step 1: Impossible (Stance: Regular · Movements: 360° Board Spin + Vertical Wrap + 0° Body Rotation · Formula: Vertical Wrap 360° ➔ Impossible · Board Spin: 360° · Board Flip: Vertical Wrap)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Kickflip (Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "advanced"
+      }
+    },
+    {
+      "primary": {
+        "mode": "obstacle",
+        "obstacleData": {
+          "obstacleType": "ledge",
+          "approach": "frontside",
+          "obstacleTrickId": "50_50",
+          "entryTrickId": "ollie",
+          "exitTrick": "clean",
+          "mechanics": {
+            "approach": "frontside",
+            "entryRotation": "none",
+            "whichTruckCrosses": "none",
+            "contactPoint": "both_trucks",
+            "boardAngle": "parallel",
+            "isSpecialRotationalEntry": false
+          }
+        },
+        "canonicalName": "[LEDGE] FS 50-50",
+        "breakdown": [
+          "Obstacle: Ledge",
+          "Approach: Frontside (Front/Chest Facing)",
+          "Mechanics: FS Approach (Chest Facing) · Both Trucks Contact · Parallel to Obstacle",
+          "Lock Position: 50-50 (Both trucks grinding, board roughly parallel to the obstacle.)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "beginner"
+      },
+      "alternative": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "kickflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Kickflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "heelflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "heelflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Heelflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Heelflip + 0° Body Rotation · Formula: Axial Heelflip ➔ Heelflip · Board Flip: Heelflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "heelflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Kickflip ➔ Heelflip",
+        "breakdown": [
+          "Step 1: Kickflip (Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Heelflip (Stance: Regular · Movements: 0° Board Spin + Heelflip + 0° Body Rotation · Formula: Axial Heelflip ➔ Heelflip · Board Flip: Heelflip)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      }
+    },
+    {
+      "primary": {
+        "mode": "obstacle",
+        "obstacleData": {
+          "obstacleType": "ledge",
+          "approach": "frontside",
+          "obstacleTrickId": "boardslide",
+          "entryTrickId": "ollie",
+          "exitTrick": "clean",
+          "mechanics": {
+            "approach": "frontside",
+            "entryRotation": "none",
+            "whichTruckCrosses": "front_truck",
+            "contactPoint": "center_deck",
+            "boardAngle": "perpendicular",
+            "isSpecialRotationalEntry": false
+          }
+        },
+        "canonicalName": "[LEDGE] FS Boardslide",
+        "breakdown": [
+          "Obstacle: Ledge",
+          "Approach: Frontside (Front/Chest Facing)",
+          "Mechanics: FS Approach (Chest Facing) · Center Deck Contact · Perpendicular Across Lip · Front Truck Crosses",
+          "Lock Position: Boardslide (Center of deck sliding across the obstacle; front truck passes over during entry.)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "beginner"
+      },
+      "alternative": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "ollie",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "none",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Ollie",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "none",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "kickflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Kickflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Ollie ➔ Kickflip",
+        "breakdown": [
+          "Step 1: Ollie (Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Kickflip (Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      }
+    },
+    {
+      "primary": {
+        "mode": "obstacle",
+        "obstacleData": {
+          "obstacleType": "ledge",
+          "approach": "frontside",
+          "obstacleTrickId": "5_0",
+          "entryTrickId": "ollie",
+          "exitTrick": "clean",
+          "mechanics": {
+            "approach": "frontside",
+            "entryRotation": "none",
+            "whichTruckCrosses": "none",
+            "contactPoint": "rear_truck",
+            "boardAngle": "parallel",
+            "isSpecialRotationalEntry": false
+          }
+        },
+        "canonicalName": "[LEDGE] FS 5-0",
+        "breakdown": [
+          "Obstacle: Ledge",
+          "Approach: Frontside (Front/Chest Facing)",
+          "Mechanics: FS Approach (Chest Facing) · Rear Truck Contact · Parallel to Obstacle",
+          "Lock Position: 5-0 (Rear truck grinding, front truck lifted.)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      },
+      "alternative": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "pop_shuvit",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 180,
+                "boardSpinDir": "backside",
+                "boardFlip": "none",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Pop Shuvit",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: BS 180° Board Spin + No Flip + 0° Body Rotation · Formula: BS 180° Shuvit ➔ Pop Shuvit · Board Spin: Backside 180°",
+            "movements": {
+              "boardSpinDeg": 180,
+              "boardSpinDir": "backside",
+              "boardFlip": "none",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "kickflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Kickflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Pop Shuvit ➔ Kickflip",
+        "breakdown": [
+          "Step 1: Pop Shuvit (Stance: Regular · Movements: BS 180° Board Spin + No Flip + 0° Body Rotation · Formula: BS 180° Shuvit ➔ Pop Shuvit · Board Spin: Backside 180°)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Kickflip (Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      }
+    },
+    {
+      "primary": {
+        "mode": "obstacle",
+        "obstacleData": {
+          "obstacleType": "rail",
+          "approach": "frontside",
+          "obstacleTrickId": "50_50",
+          "entryTrickId": "ollie",
+          "exitTrick": "clean",
+          "mechanics": {
+            "approach": "frontside",
+            "entryRotation": "none",
+            "whichTruckCrosses": "none",
+            "contactPoint": "both_trucks",
+            "boardAngle": "parallel",
+            "isSpecialRotationalEntry": false
+          }
+        },
+        "canonicalName": "[RAIL] FS 50-50",
+        "breakdown": [
+          "Obstacle: Rail",
+          "Approach: Frontside (Front/Chest Facing)",
+          "Mechanics: FS Approach (Chest Facing) · Both Trucks Contact · Parallel to Obstacle",
+          "Lock Position: 50-50 (Both trucks grinding, board roughly parallel to the obstacle.)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "beginner"
+      },
+      "alternative": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "heelflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "heelflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Heelflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Heelflip + 0° Body Rotation · Formula: Axial Heelflip ➔ Heelflip · Board Flip: Heelflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "heelflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "pop_shuvit",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 180,
+                "boardSpinDir": "backside",
+                "boardFlip": "none",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Pop Shuvit",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: BS 180° Board Spin + No Flip + 0° Body Rotation · Formula: BS 180° Shuvit ➔ Pop Shuvit · Board Spin: Backside 180°",
+            "movements": {
+              "boardSpinDeg": 180,
+              "boardSpinDir": "backside",
+              "boardFlip": "none",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Heelflip ➔ Pop Shuvit",
+        "breakdown": [
+          "Step 1: Heelflip (Stance: Regular · Movements: 0° Board Spin + Heelflip + 0° Body Rotation · Formula: Axial Heelflip ➔ Heelflip · Board Flip: Heelflip)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Pop Shuvit (Stance: Regular · Movements: BS 180° Board Spin + No Flip + 0° Body Rotation · Formula: BS 180° Shuvit ➔ Pop Shuvit · Board Spin: Backside 180°)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      }
+    },
+    {
+      "primary": {
+        "mode": "obstacle",
+        "obstacleData": {
+          "obstacleType": "rail",
+          "approach": "frontside",
+          "obstacleTrickId": "boardslide",
+          "entryTrickId": "ollie",
+          "exitTrick": "clean",
+          "mechanics": {
+            "approach": "frontside",
+            "entryRotation": "none",
+            "whichTruckCrosses": "front_truck",
+            "contactPoint": "center_deck",
+            "boardAngle": "perpendicular",
+            "isSpecialRotationalEntry": false
+          }
+        },
+        "canonicalName": "[RAIL] FS Boardslide",
+        "breakdown": [
+          "Obstacle: Rail",
+          "Approach: Frontside (Front/Chest Facing)",
+          "Mechanics: FS Approach (Chest Facing) · Center Deck Contact · Perpendicular Across Lip · Front Truck Crosses",
+          "Lock Position: Boardslide (Center of deck sliding across the obstacle; front truck passes over during entry.)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "beginner"
+      },
+      "alternative": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "tre_flip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 360,
+                "boardSpinDir": "backside",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Tre Flip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 360,
+              "boardSpinDir": "backside",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "ollie",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "none",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Ollie",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "none",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Tre Flip ➔ Ollie",
+        "breakdown": [
+          "Step 1: Tre Flip (Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Ollie (Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "advanced"
+      }
+    },
+    {
+      "primary": {
+        "mode": "obstacle",
+        "obstacleData": {
+          "obstacleType": "rail",
+          "approach": "frontside",
+          "obstacleTrickId": "5_0",
+          "entryTrickId": "ollie",
+          "exitTrick": "clean",
+          "mechanics": {
+            "approach": "frontside",
+            "entryRotation": "none",
+            "whichTruckCrosses": "none",
+            "contactPoint": "rear_truck",
+            "boardAngle": "parallel",
+            "isSpecialRotationalEntry": false
+          }
+        },
+        "canonicalName": "[RAIL] FS 5-0",
+        "breakdown": [
+          "Obstacle: Rail",
+          "Approach: Frontside (Front/Chest Facing)",
+          "Mechanics: FS Approach (Chest Facing) · Rear Truck Contact · Parallel to Obstacle",
+          "Lock Position: 5-0 (Rear truck grinding, front truck lifted.)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "intermediate"
+      },
+      "alternative": {
+        "mode": "combo",
+        "comboSteps": [
+          {
+            "stepNumber": 1,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "impossible",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 360,
+                "boardSpinDir": "none",
+                "boardFlip": "vertical_wrap",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Impossible",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 360° Board Spin + Vertical Wrap + 0° Body Rotation · Formula: Vertical Wrap 360° ➔ Impossible · Board Spin: 360° · Board Flip: Vertical Wrap",
+            "movements": {
+              "boardSpinDeg": 360,
+              "boardSpinDir": "none",
+              "boardFlip": "vertical_wrap",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          },
+          {
+            "stepNumber": 2,
+            "parameters": {
+              "stance": "regular",
+              "direction": "none",
+              "baseTrickId": "kickflip",
+              "bodyVarial": "none",
+              "landing": "normal",
+              "revert": "none",
+              "movements": {
+                "boardSpinDeg": 0,
+                "boardSpinDir": "none",
+                "boardFlip": "kickflip",
+                "bodyRotationDeg": 0,
+                "bodyRotationDir": "none",
+                "isLateRotation": false,
+                "lateRotationDeg": 0,
+                "lateRotationDir": "none",
+                "isBodyVarialOnly": false,
+                "landingPosition": "normal",
+                "revertDirection": "none"
+              }
+            },
+            "resolvedName": "Kickflip",
+            "landingState": {
+              "resultStance": "regular",
+              "travelDirection": "forward",
+              "boardPosition": "normal"
+            },
+            "breakdown": "Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip",
+            "movements": {
+              "boardSpinDeg": 0,
+              "boardSpinDir": "none",
+              "boardFlip": "kickflip",
+              "bodyRotationDeg": 0,
+              "bodyRotationDir": "none",
+              "isLateRotation": false,
+              "lateRotationDeg": 0,
+              "lateRotationDir": "none",
+              "isBodyVarialOnly": false,
+              "landingPosition": "normal",
+              "revertDirection": "none"
+            }
+          }
+        ],
+        "canonicalName": "Impossible ➔ Kickflip",
+        "breakdown": [
+          "Step 1: Impossible (Stance: Regular · Movements: 360° Board Spin + Vertical Wrap + 0° Body Rotation · Formula: Vertical Wrap 360° ➔ Impossible · Board Spin: 360° · Board Flip: Vertical Wrap)",
+          "Transition: Lands in regular stance (normal)",
+          "Step 2: Kickflip (Stance: Regular · Movements: 0° Board Spin + Kickflip + 0° Body Rotation · Formula: Axial Kickflip ➔ Kickflip · Board Flip: Kickflip)"
+        ],
+        "catalogVersion": "1.1.0",
+        "complexity": "advanced"
+      }
+    }
+  ]
+}

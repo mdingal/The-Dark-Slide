@@ -1,3 +1,4 @@
+import {RiderShowcase} from './RiderShowcase';
 import { CloudAccountSettings } from '../auth/CloudAccountSettings';
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
@@ -168,6 +169,7 @@ export const ProfileSettingsPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <RiderShowcase />
       {/* Rider Profile & Instagram Link */}
       <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800 gap-3">

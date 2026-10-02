@@ -1,3 +1,5 @@
+import {ChallengeCompletionPanel} from '../common/ChallengeCompletionPanel';
+import {MilestonePanel} from '../common/MilestonePanel';
 import React, { useState, useMemo } from 'react';
 import { BookmarksPanel } from '../generator/BookmarksPanel';
 import { SetupComparisons } from './SetupComparisons';
@@ -153,6 +155,8 @@ export const HistoryDashboard:React.FC=()=>{
       <p className="text-xs text-neutral-600 dark:text-neutral-400">{filteredSessions.length} matching records · shared filters apply to every view. Dates use session start, with generation date as a fallback.</p>
     </section>
     {preferences.view==='overview'&&<>
+      <MilestonePanel />
+      <ChallengeCompletionPanel />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{[
         ['Landing rate',totals.rate===null?'—':`${totals.rate}%`,`${totals.landings} landings / ${totals.attempts} attempts`],
         ['Active practice',formatDurationMs(totals.time),'Excludes paused time'],

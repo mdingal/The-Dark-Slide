@@ -46,7 +46,9 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="cutting-mat-page min-h-screen flex flex-col bg-[#e8dfd1] dark:bg-neutral-950 text-[#292524] dark:text-neutral-100 transition-colors">
-      <div className="contents" onClickCapture={(event) => { if (infoPage && (event.target as HTMLElement).closest('button')) closeInfoPage(); }}><TopBar /></div>
+      <div className="sticky top-0 z-30">
+      <TopBar currentPage={infoPage} onNavigate={(tab) => { closeInfoPage(); setActiveTab(tab); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} />
+      </div>
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {infoPage ? <InfoPage page={infoPage} onHome={() => { closeInfoPage(); setActiveTab('home'); }} /> : <>

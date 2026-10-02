@@ -5,15 +5,54 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid
         && request.auth.token.email_verified == true;
     }
+    function highlightList(values) {
+      return values is list && values.size() <= 3
+        && (values.size() < 1 || (values[0] is string && values[0].size() <= 12000))
+        && (values.size() < 2 || (values[1] is string && values[1].size() <= 12000))
+        && (values.size() < 3 || (values[2] is string && values[2].size() <= 12000));
+    }
+    function validShowcase(s) {
+      return s is map && s.keys().hasOnly(['bio','goal','accent','featuredTricks','featuredMilestones','featuredSetupId','showStats'])
+        && s.bio is string && s.bio.size() <= 280 && s.goal is string && s.goal.size() <= 140
+        && s.accent in ['mustard','blue','purple','green'] && s.showStats is bool
+        && s.featuredSetupId is string && s.featuredSetupId.size() <= 1200
+        && highlightList(s.featuredTricks)
+        && highlightList(s.featuredMilestones);
+    }
+    // Username/email lookup is private; only the trusted Worker and local Admin SDK manage it.
+    match /usernames/{username} { allow read, write: if false; }
+    match /usernameOwners/{uid} { allow read, write: if false; }
+    match /communityChallenges/{challengeId} {
+      allow get: if resource == null || resource.data.published == true;
+      allow list: if resource.data.published == true;
+      allow write: if false;
+      match /submissions/{uid} {
+        function validSubmission() {
+          let c = get(/databases/$(database)/documents/communityChallenges/$(challengeId)).data;
+          let s = get(/databases/$(database)/documents/users/$(uid)/sessions/$(request.resource.data.sessionId)).data;
+          return request.resource.data.keys().hasOnly(['sessionId'])
+            && c.published == true && s.sharedChallenge.id == challengeId
+            && s.generatedAt >= c.startsAt && s.generatedAt < c.endsAt
+            && s.sessionEndedAt >= s.generatedAt && s.sessionEndedAt < c.endsAt
+            && s.landingCount >= c.targetLandings
+            && ((s.sharedChallenge.variant == 'primary' && s.trickResult == c.primary)
+              || (s.sharedChallenge.variant == 'alternative' && 'alternative' in c && s.trickResult == c.alternative));
+        }
+        allow read: if get(/databases/$(database)/documents/communityChallenges/$(challengeId)).data.published == true;
+        allow create, update: if owns(uid) && validSubmission();
+        allow delete: if owns(uid);
+      }
+    }
     match /users/{uid} {
       allow read: if owns(uid);
       allow create, update: if owns(uid)
         && request.resource.data.id == uid
         && request.resource.data.email == request.auth.token.email
-        && request.resource.data.keys().hasOnly(['id', 'email', 'displayName', 'instagramHandle', 'preferredTheme', 'defaultSetupId', 'availableObstacles', 'dashboardPreferences', 'toolIds', 'importedLocalProfiles', 'cloudRevision', 'preferredDifficultyRange'])
+        && request.resource.data.keys().hasOnly(['id', 'email', 'displayName', 'instagramHandle', 'preferredTheme', 'defaultSetupId', 'availableObstacles', 'dashboardPreferences', 'showcase', 'toolIds', 'importedLocalProfiles', 'cloudRevision', 'preferredDifficultyRange'])
         && request.resource.data.displayName is string
         && request.resource.data.displayName.size() > 0
-        && request.resource.data.displayName.size() <= 80;
+        && request.resource.data.displayName.size() <= 80
+        && (!('showcase' in request.resource.data) || validShowcase(request.resource.data.showcase));
       match /{bucket}/{recordId} {
         allow read, delete: if owns(uid) && bucket in ['sessions', 'savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary'];
         allow create, update: if owns(uid)

@@ -1,3 +1,4 @@
+import type {SharedChallengeLink} from './communityChallenges';
 import type { DashboardPreferences } from './dashboardAnalytics';
 export type Stance = 'regular' | 'fakie' | 'switch' | 'nollie';
 export type Direction = 'none' | 'frontside' | 'backside';
@@ -222,6 +223,7 @@ export interface CounterActionHistoryItem {
 }
 
 export interface PracticeSession {
+  sharedChallenge?: SharedChallengeLink;
   cloudRevision?: number;
   currentLandingStreak?: number;
   bestLandingStreak?: number;
@@ -288,7 +290,10 @@ export interface TrickLibraryEntry {
   updatedAt: string;
 }
 
+export interface RiderShowcaseSettings { bio:string; goal:string; accent:'mustard'|'blue'|'purple'|'green'; featuredTricks:string[]; featuredMilestones:string[]; featuredSetupId:string; showStats:boolean; }
+
 export interface UserProfile {
+  showcase?: RiderShowcaseSettings;
   cloudRevision?: number;
   importedLocalProfiles?: string[];
   dashboardPreferences?: DashboardPreferences;

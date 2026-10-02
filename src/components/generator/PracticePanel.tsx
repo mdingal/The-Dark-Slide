@@ -461,18 +461,18 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
       </div>
 
       {/* Timer and Primary Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-[minmax(190px,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-950/40 border border-neutral-200/80 dark:border-neutral-800/80">
+      <div className="grid grid-cols-2 lg:grid-cols-[minmax(190px,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-950/40 border border-neutral-200/80 dark:border-neutral-800/80">
         {/* Practice Timer */}
-        <div>
+        <div className="col-span-2 lg:col-span-1 min-w-0">
           <div className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">Practice Timer</div>
           <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white tabular-nums mt-0.5">
             {formatDurationMs(displayDurationMs)}
           </div>
-          {!isFinished && <div className="mt-2 flex items-center gap-1.5">
+          {!isFinished && <div className="mt-2 flex flex-wrap items-center gap-2">
             <button
               disabled={counterBusy}
               onClick={handleToggleTimer}
-              className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md cursor-pointer transition-colors ${
+              className={`inline-flex shrink-0 whitespace-nowrap items-center gap-1 px-3 py-2 text-xs font-medium rounded-md cursor-pointer transition-colors ${
                 session.timerState.isRunning
                   ? 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20'
                   : 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90'
@@ -494,7 +494,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
               disabled={counterBusy}
               onClick={handleStopSession}
               title="Stop timer and finalize practice session"
-              className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
+              className="inline-flex shrink-0 whitespace-nowrap items-center gap-1 px-3 py-2 text-xs font-medium rounded-md bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
             >
               <Square className="w-3 h-3 fill-current" />
               Stop Session
@@ -503,7 +503,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
         </div>
 
         {/* Attempts */}
-        <div>
+        <div className="min-w-0">
           <div className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">Attempts</div>
           <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white tabular-nums mt-0.5">
             {session.attemptCount}
@@ -516,7 +516,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
         </div>
 
         {/* Landed */}
-        <div>
+        <div className="min-w-0">
           <div className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">Successful Landings</div>
           <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums mt-0.5">
             {session.landingCount}
@@ -575,7 +575,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           type="button"
           disabled={counterBusy}
           onClick={handleAddLanding}
-          className="flex-1 min-w-[180px] py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm active:scale-98"
+          className="flex-1 min-w-[220px] whitespace-nowrap py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm active:scale-98"
         >
           <CheckCircle2 className="w-4 h-4" />
           Successful Landing (+1)

@@ -20,3 +20,12 @@ transfer-latest.json
 *service-account*.json
 *firebase-adminsdk*.json
 *debug.log
+
+# Local administrator secrets and credentials
+.admin/
+*serviceAccount*.json
+admin/node_modules/
+
+username-worker/node_modules/
+username-worker/.wrangler/
+.dev.vars*

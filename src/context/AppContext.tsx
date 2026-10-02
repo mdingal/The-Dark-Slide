@@ -1,5 +1,8 @@
+import {SharedChallengeLink} from '../domain/communityChallenges';
+import {newlyEarnedMilestones} from '../domain/milestones';
+import { claimUsername, normalizeUsername, resolveUsernameLogin, usernameConfigured } from '../services/usernameService';
 import { auth, authReady } from '../services/firebase';
-import { User, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile as updateAuthProfile, sendEmailVerification, sendPasswordResetEmail, signOut, reload, getIdToken } from 'firebase/auth';
+import { User, onAuthStateChanged, createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile as updateAuthProfile, sendEmailVerification, sendPasswordResetEmail, signOut, reload, getIdToken } from 'firebase/auth';
 import { DashboardPreferences, dashboardPreferences } from '../domain/dashboardAnalytics';
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { PracticeSession, UserProfile, SetupData, GeneratedTrickResult, SessionStatus, GeneratorPresetConfig, TrickLearningStatus } from '../domain/types';
@@ -29,7 +32,7 @@ interface AppContextType {
   sessions: PracticeSession[];
   currentSession: PracticeSession | null;
   setCurrentSession: (session: PracticeSession | null) => void;
-  startNewSession: (result: GeneratedTrickResult) => Promise<PracticeSession>;
+  startNewSession: (result: GeneratedTrickResult, sharedChallenge?: SharedChallengeLink) => Promise<PracticeSession>;
   updateSession: (updated: PracticeSession) => Promise<void>;
   repeatChallenge: (result: GeneratedTrickResult) => Promise<void>;
   toggleBookmark: (result: GeneratedTrickResult) => Promise<void>;
@@ -52,7 +55,7 @@ interface AppContextType {
   isSignInModalOpen: boolean;
   setIsSignInModalOpen: (open: boolean) => void;
   openSignIn: () => void;
-  login: (email: string, password: string, name?: string, isNewAccount?: boolean) => Promise<void>;
+  login: (email: string, password: string, name?: string, isNewAccount?: boolean, username?: string) => Promise<void>;
   logout: () => void;
   toast: string | null;
   showToast: (msg: string) => void;
@@ -133,7 +136,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setActiveSetupState(setup);
   };
 
-  const startNewSession = async (result: GeneratedTrickResult): Promise<PracticeSession> => {
+  const startNewSession = async (result: GeneratedTrickResult, sharedChallenge?: SharedChallengeLink): Promise<PracticeSession> => {
     if (!profile) {
       throw new Error('Profile missing');
     }
@@ -147,6 +150,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await storageService.saveSession(profile.id, previous);
     }
     const newSession = createPracticeSession(result, currentSetupSnapshot);
+    if(sharedChallenge)newSession.sharedChallenge=structuredClone(sharedChallenge);
     await storageService.saveSession(profile.id, newSession);
     if (auth.currentUser?.uid !== profile.id) throw new Error("Account changed.");
     const paused = previous;
@@ -159,6 +163,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!profile) throw new Error('Profile missing');
     await storageService.saveSession(profile.id, updated);
     if (auth.currentUser?.uid !== profile.id) return;
+    const earned = newlyEarnedMilestones(sessions, sessions.map(s=>s.id===updated.id?updated:s));
+    if(earned.length){const m=earned.find(m=>m.kind==='first')||earned.find(m=>m.kind==='rate')||earned[0];showToast(`${m.title}: ${m.trickName} · ${m.detail}`);}
     setSessions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
     if (currentSession?.id === updated.id) {
       setCurrentSession(updated);
@@ -290,17 +296,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Profile updated.');
   };
 
-  const login = async (email: string, password: string, name?: string, isNewAccount = false) => {
+  const login = async (email: string, password: string, name?: string, isNewAccount = false, username?: string) => {
     await authReady;
     if (isNewAccount) {
       if (!name?.trim() || name.trim().length > 80) throw new Error('Enter a rider name between 1 and 80 characters.');
+      if (!usernameConfigured()) throw new Error('Username service setup is required before creating new accounts.');
+      const normalized = normalizeUsername(username);
       const credential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      try { await claimUsername(normalized); }
+      catch (error) {
+        try { await deleteUser(credential.user); }
+        catch { throw new Error('Account created, but username setup failed. Sign in with email and choose a username in Rider Profile.'); }
+        throw error;
+      }
       await updateAuthProfile(credential.user, { displayName: name.trim() });
       try { await sendEmailVerification(credential.user); }
       catch { showToast('Account created. Use Resend verification to request your email.'); }
       setAuthUser(credential.user);
     } else {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
+      const identifier = email.trim();
+      const loginEmail = identifier.includes('@') ? identifier : await resolveUsernameLogin(identifier, password);
+      await signInWithEmailAndPassword(auth, loginEmail, password);
     }
   };
   const logout = () => {

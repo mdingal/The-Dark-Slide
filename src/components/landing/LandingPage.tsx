@@ -1,3 +1,5 @@
+import { FeatureVisual } from './FeatureVisual';
+import { BrandLogo } from '../common/BrandLogo';
 import { AccountForm } from '../auth/AccountForm';
 import React, { useState, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
@@ -27,11 +29,14 @@ export const LandingPage: React.FC = () => {
     isSignInModalOpen,
     setIsSignInModalOpen,
   } = useApp();
-  const [isCreatingAccount, setIsCreatingAccount] = useState(true);
+  const [accountMode, setAccountMode] = useState<'signup'|'signin'|'reset'>('signup');
+  const accountTitle = accountMode === 'signup' ? 'Create Your Rider Account' : accountMode === 'reset' ? 'Reset Your Password' : 'Sign In to Your Rider Account';
+  const accountDescription = accountMode === 'signup' ? <>Save your setups, practice sessions, and progress<span className="block">securely to your account.</span></> : accountMode === 'reset' ? 'Enter your account email to receive a password reset link.' : <>Sign in with your username or email and password to<span className="block">access your saved progress.</span></>;
+  const [featureGroup, setFeatureGroup] = useState('Generate & Learn');
   const accountSectionRef = useRef<HTMLDivElement | null>(null);
 
   const handlePromptAuth = () => {
-    setIsCreatingAccount(true);
+    setAccountMode('signup');
     accountSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
     const nameInput = document.getElementById('rider-name-input');
     if (nameInput) {
@@ -47,9 +52,7 @@ export const LandingPage: React.FC = () => {
       <section className="text-center max-w-4xl mx-auto space-y-4">
         {isLoggedIn ? (
           <div className="space-y-3">
-            <div className="text-xs sm:text-sm font-mono font-bold tracking-widest uppercase text-neutral-500 dark:text-neutral-400">
-              THE DARK SLIDE
-            </div>
+            <p className="text-xs sm:text-sm tracking-widest text-neutral-600 dark:text-neutral-400">THE DARK SLIDE {'\u00b7'} FINGERBOARD LAB</p>
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
               {isFirstLogin ? 'Welcome to the Dark Slide,' : 'Welcome back,'}
               <span className="block">{riderDisplayName}.</span>
@@ -60,9 +63,7 @@ export const LandingPage: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-neutral-950 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
-              THE DARK SLIDE
-            </h1>
+            <h1><BrandLogo className="w-full max-w-[540px] mx-auto" /></h1>
             <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto space-y-1">
               <p className="leading-snug">
                 The ultimate fingerboard trick generator, combo transition engine, and session practice tracker.
@@ -105,14 +106,14 @@ export const LandingPage: React.FC = () => {
         >
           <div className="text-center mb-5">
             <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-              {isCreatingAccount ? 'Create Your Rider Account' : 'Sign In to Your Account'}
+              {accountTitle}
             </h2>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              Save your setups, practice sessions, and progress securely to your account.
+              {accountDescription}
             </p>
           </div>
 
-          <AccountForm onSuccess={() => setIsSignInModalOpen(false)} />
+          <AccountForm mode={accountMode} onModeChange={setAccountMode} onSuccess={() => setIsSignInModalOpen(false)} />
         </section>
       )}
 
@@ -130,114 +131,172 @@ export const LandingPage: React.FC = () => {
         {/* Interactive Trick Generator Sandbox Demo */}
         <TrickMatrixDemo onPromptAuth={handlePromptAuth} />
 
-        {/* Feature Grid */}
-        <div className="homepage-feature-grid grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        {/* Feature groups keep the homepage easy to scan. */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" role="group" aria-label="Explore features">
+            {['Generate & Learn', 'Make It Yours', 'Track Sessions', 'Review Progress'].map(group => (
+              <button key={group} type="button" aria-pressed={featureGroup === group}
+                aria-controls="homepage-feature-panel" onClick={() => setFeatureGroup(group)}
+                className={`px-3 py-3 rounded-lg border text-sm font-semibold cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A72C] ${featureGroup === group
+                  ? 'border-[#8A6500] dark:border-[#D4A72C] text-[#8A6500] dark:text-[#D4A72C] bg-[#D4A72C]/10'
+                  : 'border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 bg-transparent hover:text-neutral-950 dark:hover:text-white'}`}>
+                {group}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <h3 id="homepage-feature-group-heading" className="text-base font-semibold text-neutral-900 dark:text-neutral-100">{featureGroup}</h3>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">4 groups · 16 features</p>
+          </div>
+        <div id="homepage-feature-panel" role="region" aria-labelledby="homepage-feature-group-heading" className="homepage-feature-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 pt-2">
           {[
             {
               icon: Dices,
+              group: 'Generate & Learn',
               title: "Tricks That Make Sense",
-              description: "Generate valid flatground challenges across Regular, Fakie, Switch, and Nollie, with FS / BS variations, body varials, manuals, and reverts."
+              description: "Generate valid tricks in Regular, Fakie, Switch, or Nollie, with FS / BS rotations, body varials, manuals, and reverts."
             },
             {
               icon: Sliders,
-              title: "Locks, Pools & Presets",
-              description: "Lock any parameter, choose what stays in each pool, and use Select All or Select None. Save pool presets to return to your favorite practice mix."
+              group: 'Make It Yours',
+              title: "Locks, Pools & Saved Challenges",
+              description: "Lock parameters, customize item pools, and save presets. Bookmark exact challenges or repeat them in a fresh session."
             },
             {
               icon: Layers,
+              group: 'Generate & Learn',
               title: "Combos & Obstacle Challenges",
-              description: "Build connected two-trick combos or practice grinds and slides on ledges and rails. Randomize or lock the obstacle, entry, transfer, and exit."
+              description: "Build two-trick combos or ledge and rail challenges. Customize the entry, grind or slide, transfer, and exit."
             },
             {
               icon: Sparkles,
+              group: 'Generate & Learn',
               title: "Choose Your Challenge Level",
-              description: "Filter for Beginner, Intermediate, or Advanced challenges based on trick complexity. Rate how difficult the session felt separately when you finish."
+              description: "Choose Beginner, Intermediate, or Advanced complexity. Rate how difficult the session felt separately after practicing."
             },
             {
               icon: Clock,
-              title: "Every Attempt Counts",
-              description: "Track attempts, successful landings, active practice time, and session notes. Undo an entry, then finish with a Pending, Success, or Failed status and difficulty rating."
+              group: 'Track Sessions',
+              title: "Sessions & Share Cards",
+              description: "Log attempts, landings, time, miss tags, and notes. Finish with a status and difficulty rating, then export a share card."
             },
             {
               icon: CheckCircle2,
+              group: 'Track Sessions',
               title: "First Lands & Consistency Goals",
-              description: "Record the attempt number and elapsed time at your first landing. Track current and best landing streaks, and set a goal for consecutive makes."
+              description: "Track your first landing’s attempt number and time, your best streak, and goals for consecutive landings."
             },
             {
               icon: Layers,
+              group: 'Make It Yours',
               title: "Your Personal Trick Library",
-              description: "Organize tricks as Want to Learn, Learning, Landed, or Consistent. Keep each exact variation connected to its session history and progress."
+              description: "Track Want to Learn, Learning, Landed, and Consistent tricks. Link exact session histories and shuffle selected library challenges by learning status."
             },
             {
               icon: Dices,
-              title: "Repeat & Bookmark Challenges",
-              description: "Bookmark challenges worth keeping and repeat a saved trick or combo in a fresh session. Revisit unfinished goals without losing your earlier results."
+              group: 'Make It Yours',
+              title: "Your Rider Showcase",
+              description: "Make your profile yours: add a bio and practice goal, choose an accent, and feature your setup, tricks, and earned milestones."
             },
             {
               icon: Sliders,
+              group: 'Track Sessions',
               title: "Find Your Weak Points",
-              description: "Tag misses as underflip, overflip, missed catch, missed lock-in, or slipped out. See the most common issues for each trick in your library."
+              description: "Tag missed attempts and identify your most common issues, from underflips to missed catches and lock-ins."
             },
             {
               icon: Trophy,
+              group: 'Review Progress',
               title: "Personal Bests & Progress Dashboard",
-              description: "Track fewest attempts to first landing, highest landing rate, and longest streak per trick. Explore filtered history and charts, open session details, or delete individual and selected records."
+              description: "Explore session history and personal bests for first landings, landing rates, and consecutive successes."
             },
             {
               icon: Layers,
+              group: 'Review Progress',
               title: "Compare Your Setups",
-              description: "Save deck sizes, wheel materials, and deck, truck, and wheel models. Compare landing rates across setups or components, with an exact-trick filter for focused comparisons."
+              description: "Compare decks, trucks, and wheels, with an exact-trick filter to focus your setup comparisons."
+            },
+            {
+              icon: Layers,
+              group: 'Generate & Learn',
+              title: "Learn with Trick Guides",
+              description: "Explore 48 guides with prerequisites, finger positioning, technique tips, tutorial links, and recorded landing markers. Start practicing from any guide."
+            },
+            {
+              icon: CheckCircle2,
+              group: 'Make It Yours',
+              title: "Your Selected Trick Pool",
+              description: "Shuffle only the tricks you select, such as Kickflip, Tre Flip, or Impossible. Choose valid Regular, Nollie, Fakie, Switch, and None / FS / BS variations."
+            },
+            {
+              icon: Sliders,
+              group: 'Review Progress',
+              title: "Your Dashboard, Your Focus",
+              description: "Pin insights and filter history by trick, date, or setup. Sign in by username or email to sync across devices, and import or export your records."
+            },
+            {
+              icon: Layers,
+              group: 'Review Progress',
+              title: "Milestones Worth Celebrating",
+              description: "Celebrate first landings, new streak records, landing-rate improvements, and completed community challenges. Feature your favorites on your rider profile."
             },
             {
               icon: Share2,
-              title: "Share Your Progress",
-              description: "Export a share card after finishing a session. Keep your library, bookmarks, presets, setups, and history under your rider profile, saved in this browser, with Light, Dark, and System themes."
+              group: 'Track Sessions',
+              title: "Daily & Weekly Challenges",
+              description: "Join the shared daily or weekly challenge in Trick Lab. Track completion and submission totals, with a flatground alternative for obstacle weeks."
             }
-          ].map(({ icon: Icon, title, description }) => (
+          ].filter(feature => feature.group === featureGroup).map(({ title, description }) => (
             <div
               key={title}
-              className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 sm:p-7 space-y-4"
+              className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 space-y-4"
             >
-              <div className="w-9 h-9 rounded-lg bg-[#D4A72C]/10 text-[#8A6500] dark:text-[#D4A72C] flex items-center justify-center">
-                <Icon className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white">
+              <FeatureVisual title={title} />
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
                 {title}
               </h3>
-              <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
+              <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 {description}
               </p>
             </div>
           ))}
+        </div>
         </div>
       </section>
 
       {/* About the Project */}
       <section className="homepage-about-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-4">
         <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-          About the Project
+          DARK SLIDE · Fingerboard Lab
         </h2>
 
         <div className="w-full space-y-4 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
           <p>
-            The Dark Slide is a fingerboarding practice companion built for those
-            moments when you want to ride but aren't sure what to try next.
-            Generate a challenge, explore a new combo, or take your session to
-            a ledge or rail.
+            DARK SLIDE started with a familiar question: what should I try next?
+            It's easy to fall back on the same comfortable tricks, lose track of
+            what you've been working on, or overlook the small improvements
+            between a missed catch and a clean landing.
           </p>
 
           <p>
-            Make each challenge your own. Lock the tricks and parameters you want
-            to work on, choose what stays in your pool, and let the generator
-            mix up the rest. Whether you're dialing in the basics or chasing
-            something harder, there's always another line to explore.
+            The idea is to give practice a little direction without taking away
+            the freedom that makes fingerboarding fun. A new challenge can push
+            you out of a routine. Returning to one can show you how much has
+            changed. Neither has to turn every session into a test.
           </p>
 
           <p>
-            Track your attempts, landings, practice time, and setup to see how
-            your sessions develop. Use your history to revisit unfinished
-            challenges, spot patterns, and recognize the progress that's easy
-            to miss between tries.
+            Progress isn't always a new trick. Sometimes it's a cleaner catch,
+            fewer attempts, or landing something three times in a row. DARK SLIDE
+            exists to make those moments easier to notice, remember, and build on
+            — at your own pace, on your own setup.
+          </p>
+
+          <p>
+            Built by a fingerboarder, for fingerboarders, this project is a place
+            to stay curious, work through the frustrating attempts, and give the
+            small wins the credit they deserve. It keeps growing around that
+            same purpose: helping you enjoy the process and keep coming back.
           </p>
 
           <p className="font-medium text-neutral-900 dark:text-neutral-200">
@@ -268,16 +327,14 @@ export const LandingPage: React.FC = () => {
       <Modal
         isOpen={isSignInModalOpen}
         onClose={() => setIsSignInModalOpen(false)}
-        title={isCreatingAccount ? 'Create Your Rider Account' : 'Sign In to Your Account'}
+        title={accountTitle}
       >
         <div className="space-y-4">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            {isCreatingAccount
-              ? 'Save your setups, practice sessions, and progress securely to your account.'
-              : 'Sign in with your email and password to access your progress.'}
+            {accountDescription}
           </p>
 
-          <AccountForm onSuccess={() => setIsSignInModalOpen(false)} />
+          <AccountForm mode={accountMode} onModeChange={setAccountMode} onSuccess={() => setIsSignInModalOpen(false)} />
         </div>
       </Modal>
     </div>

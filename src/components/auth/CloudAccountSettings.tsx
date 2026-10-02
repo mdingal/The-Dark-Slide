@@ -1,3 +1,4 @@
+import { UsernameSettings } from './UsernameSettings';
 import './AccountActions.css';
 import { fetchRiderExport, downloadRiderExport } from '../../services/dataExport';
 import React, { useState } from 'react';
@@ -16,6 +17,7 @@ export const CloudAccountSettings: React.FC = () => {
     <p className="text-xs text-neutral-500">Your records are saved to Firebase. An internet connection is required to save changes. Your sign-in persistence follows the authentication settings for this app.</p>
     <button disabled={busy} className="account-action-button text-sm mr-3 mb-2" onClick={() => void run(refreshAccount)}>Reload cloud data</button>
     <button className="account-action-button text-sm" disabled={busy} onClick={() => void run(async () => { await resetPassword(profile.email!); setMessage('Password reset requested. Check your email.'); })}>Change password by email</button>
+    <UsernameSettings />
     <div className="space-y-3 border-t border-neutral-200 dark:border-neutral-800 pt-4">
       <h3 className="font-medium">Export your data</h3>
       <p className="text-xs">JSON includes your profile, sessions, setups, bookmarks, presets, library entries, and preferences. CSV includes all session records for spreadsheets. Exports read your saved cloud data; save current edits first.</p>

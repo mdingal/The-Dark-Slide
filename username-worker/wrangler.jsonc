@@ -1,0 +1,16 @@
+{
+ "name":"dark-slide-usernames",
+ "main":"worker.mjs",
+ "compatibility_date":"2026-10-02",
+ "workers_dev":true,
+ "vars":{
+  "PROJECT_ID":"the-dark-slide-fe8a4",
+  "FIREBASE_API_KEY":"AIzaSyDVEKNgNjCUyGl0NSrYtw7E07LgOX5gyAM",
+  "ALLOWED_ORIGINS":"https://the-dark-slide-fe8a4.web.app,https://the-dark-slide-fe8a4.firebaseapp.com"
+ },
+ "ratelimits":[
+  {"name":"IP_LIMITER","namespace_id":"1001","simple":{"limit":30,"period":60}},
+  {"name":"USERNAME_LIMITER","namespace_id":"1002","simple":{"limit":10,"period":60}}
+ ],
+ "observability":{"enabled":false}
+}
