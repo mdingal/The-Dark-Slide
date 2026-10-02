@@ -27,7 +27,7 @@ export const TopBar: React.FC<{ currentPage: string | null; onNavigate: (tab: Ma
             className="text-left group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A72C]"
           >
             {!isLoggedIn && activeTab === 'home' ? (
-              <img src="/dark-slide-monogram.svg" alt="Dark Slide" width={285} height={150} className="block w-14 h-auto dark:invert" draggable={false} />
+              <BrandLogo monogram className="w-14" />
             ) : (
               <BrandLogo className="w-36 sm:w-40" />
             )}

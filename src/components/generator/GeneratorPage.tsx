@@ -232,8 +232,8 @@ export const GeneratorPage: React.FC = () => {
       <TrickDisplay
         trickResult={currentSession?.trickResult || finishedSession?.trickResult || null}
         complexityControl={
-      <div className="ml-auto shrink-0" title="Filters generated challenges by complexity; separate from your session difficulty rating.">
-        <div className="flex flex-col items-end gap-1">
+      <div className="w-full sm:w-auto sm:ml-auto shrink-0" title="Filters generated challenges by complexity; separate from your session difficulty rating.">
+        <div className="flex flex-col items-start sm:items-end gap-1">
           <label htmlFor="challenge-complexity" className="text-[11px] font-semibold">Challenge Complexity</label>
           <select id="challenge-complexity" value={complexityFilter} onChange={e => setComplexityFilter(e.target.value as ComplexityFilter)}
             className="text-xs px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800">
