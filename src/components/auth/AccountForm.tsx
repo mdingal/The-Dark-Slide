@@ -52,5 +52,6 @@ export const AccountForm: React.FC<{ onSuccess?: () => void; mode?: 'signup'|'si
       <button type="button" className="account-text-link" disabled={busy} onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setMessage(''); }}>{mode === 'signin' ? 'Create an account' : 'Sign in instead'}</button>
       {mode !== 'reset' && <button type="button" className="account-text-link" disabled={busy} onClick={() => { setMode('reset'); setError(''); }}>Forgot password?</button>}
     </div>
+    <p className="text-xs leading-relaxed text-neutral-500 mt-4">{mode==='signup'?'By creating an account, you agree to our ':'Read our '}<a href="#terms" target="_blank" rel="noopener noreferrer" className="cursor-pointer underline underline-offset-4">Terms &amp; Conditions</a> and <a href="#privacy" target="_blank" rel="noopener noreferrer" className="cursor-pointer underline underline-offset-4">Privacy Policy</a>. Browser storage keeps you signed in; sign out on shared devices.</p>
   </form>;
 };

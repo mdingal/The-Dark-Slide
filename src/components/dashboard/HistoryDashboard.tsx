@@ -31,7 +31,8 @@ export const HistoryDashboard:React.FC=()=>{
   };
   // Filter & Sort Sessions
   const filteredSessions = useMemo(() => {
-    let result = [...sessions];
+    // Generated challenges become history records only after practice starts.
+    let result = sessions.filter(s => !!s.sessionStartedAt && Number.isFinite(Date.parse(s.sessionStartedAt)));
 
     if (mode !== 'all') result = result.filter(s => s.trickResult.mode === mode);
 
@@ -105,7 +106,7 @@ export const HistoryDashboard:React.FC=()=>{
     result.sort((a, b) => {
       let comparison = 0;
       if (filters.sortBy === 'date') {
-        comparison = new Date(a.generatedAt).getTime() - new Date(b.generatedAt).getTime();
+        comparison = new Date(a.sessionStartedAt!).getTime() - new Date(b.sessionStartedAt!).getTime();
       } else if (filters.sortBy === 'attempts') {
         comparison = a.attemptCount - b.attemptCount;
       } else if (filters.sortBy === 'duration') {
@@ -152,7 +153,7 @@ export const HistoryDashboard:React.FC=()=>{
       {sharedControls}
       <button type="button" className="text-xs underline underline-offset-4" aria-expanded={!preferences.filtersCollapsed} onClick={()=>save({filtersCollapsed:!preferences.filtersCollapsed})}>{preferences.filtersCollapsed?'Show':'Hide'} search and advanced filters</button>
       {!preferences.filtersCollapsed&&<HistoryFilters filters={filters} onChangeFilters={setFilters} onResetFilters={()=>setFilters(INITIAL_FILTERS)} />}
-      <p className="text-xs text-neutral-600 dark:text-neutral-400">{filteredSessions.length} matching records · shared filters apply to every view. Dates use session start, with generation date as a fallback.</p>
+      <p className="text-xs text-neutral-600 dark:text-neutral-400">{filteredSessions.length} matching practice sessions · only started sessions appear here. Shared filters apply to every view; dates use session start.</p>
     </section>
     {preferences.view==='overview'&&<>
       <MilestonePanel />
@@ -161,7 +162,7 @@ export const HistoryDashboard:React.FC=()=>{
         ['Landing rate',totals.rate===null?'—':`${totals.rate}%`,`${totals.landings} landings / ${totals.attempts} attempts`],
         ['Active practice',formatDurationMs(totals.time),'Excludes paused time'],
         ['Practice days',String(totals.days),`${totals.attempted} attempted sessions`],
-        ['Challenge follow-through',filteredSessions.length?`${Math.round(totals.attempted/filteredSessions.length*100)}%`:'—',`${totals.attempted} / ${filteredSessions.length} records attempted`]
+        ['Challenge follow-through',filteredSessions.length?`${Math.round(totals.attempted/filteredSessions.length*100)}%`:'—',`${totals.attempted} / ${filteredSessions.length} started sessions with attempts`]
       ].map(([label,value,hint])=><div key={label} className={CARD}><p className="text-xs text-neutral-600 dark:text-neutral-300">{label}</p><p className="text-2xl font-bold font-mono my-2">{value}</p><p className="text-xs text-neutral-600 dark:text-neutral-400">{hint}</p></div>)}</div>
       <div className="flex flex-wrap justify-between gap-2"><h2 className="text-lg font-semibold">Pinned insights <span className="text-sm text-neutral-500">({preferences.pinned.length}/4)</span></h2><button type="button" onClick={()=>save({view:'analytics'})} className="text-sm underline underline-offset-4">Browse all analytics</button></div>
       {needsExact&&exactControl}<div className="grid grid-cols-1 xl:grid-cols-2 gap-5">{charts(preferences.pinned)}</div>
