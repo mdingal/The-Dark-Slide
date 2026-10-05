@@ -1,3 +1,4 @@
+import {RiderOnboarding} from '../auth/RiderOnboarding';
 import {riderSetupAnswers,RIDER_DETAIL_LABELS} from '../../domain/riderSetup';
 import {HardwareManager,HW_BUTTON} from './HardwareManager';
 import {RiderShowcase} from './RiderShowcase';
@@ -15,6 +16,7 @@ export const ProfileSettingsPage: React.FC = () => {
 
   const updateProfile = (value: Parameters<typeof saveProfile>[0]) => saveProfile(value).catch(error => showToast(error instanceof Error ? error.message : 'Could not save profile.'));
 
+  const [editingDetails,setEditingDetails]=useState(false);
   if (!profile) return null;
 
   const handleNameChange = (name: string) => {
@@ -48,6 +50,8 @@ export const ProfileSettingsPage: React.FC = () => {
     updateProfile({ ...profile, availableObstacles: next });
   };
 
+
+  if(editingDetails)return <RiderOnboarding editing onExit={()=>setEditingDetails(false)}/>;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -111,7 +115,7 @@ export const ProfileSettingsPage: React.FC = () => {
         </div>
       </div>
 
-      <section className="bg-white dark:bg-neutral-900 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-3"><h2 className="text-lg font-semibold">Rider Details</h2>{Object.entries(riderSetupAnswers(profile.onboarding?.answers,profile.savedSetups)).map(([k,v])=><p key={k} className="text-sm"><span className="capitalize text-neutral-500">{RIDER_DETAIL_LABELS[k]||k.replace(/([A-Z])/g,' $1')}: </span>{Array.isArray(v)?v.join(', '):v||'Skipped'}</p>)}<button className={HW_BUTTON} onClick={()=>void updateProfile({...profile,onboarding:{version:1,step:0,answers:profile.onboarding?.answers||{}}})}>Update rider details</button></section>
+      <section className="bg-white dark:bg-neutral-900 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-3"><h2 className="text-lg font-semibold">Rider Details</h2>{Object.entries(riderSetupAnswers(profile.onboarding?.answers,profile.savedSetups)).map(([k,v])=><p key={k} className="text-sm"><span className="capitalize text-neutral-500">{RIDER_DETAIL_LABELS[k]||k.replace(/([A-Z])/g,' $1')}: </span>{Array.isArray(v)?v.join(', '):v||'Skipped'}</p>)}<button className={HW_BUTTON} onClick={()=>setEditingDetails(true)}>Update rider details</button></section>
       <HardwareManager />
       {/* Available Obstacles in Spot */}
       <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-4">

@@ -11,12 +11,12 @@
 .demo-white-controls button[aria-pressed="true"] {border-color:#d4a72c;background-color:#41340f;}
 @media (prefers-reduced-motion: reduce) {.demo-white-controls button,.demo-auth-button {transition:none;}}
 
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta) {background-color:#b28a18;color:#fff;border:1px solid #d4a72c;}
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover {background-color:#c69a20;border-color:#e5be52;}
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):focus-visible {outline:2px solid #d4a72c;outline-offset:4px;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta) {background-color:#b28a18;color:#fff;border:1px solid #d4a72c;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):hover {background-color:#c69a20;border-color:#e5be52;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):focus-visible {outline:2px solid #d4a72c;outline-offset:4px;}
 
 
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta) {
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta) {
  position:relative;
  overflow:hidden;
  color:#d4a72c;
@@ -24,8 +24,8 @@
  border-color:#8a6500;
  transition:background-color 250ms ease,color 250ms ease,box-shadow 250ms ease;
 }
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover,
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):focus-visible {
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):hover,
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):focus-visible {
  background:#d4a72c;
  color:#0a0a0a;
  border-color:#d4a72c;
@@ -40,7 +40,7 @@
 @keyframes demo-edge-y {0%{top:-100%;}50%,100%{top:100%;}}
 @keyframes demo-edge-bottom {0%{right:-100%;}50%,100%{right:100%;}}
 @keyframes demo-edge-left {0%{bottom:-100%;}50%,100%{bottom:100%;}}
-@media(prefers-reduced-motion:reduce){.demo-start-cta .demo-edge{animation:none;display:none;}:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta){transition:none;}}
+@media(prefers-reduced-motion:reduce){.demo-start-cta .demo-edge{animation:none;display:none;}:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta){transition:none;}}
 
 /* A masked ring keeps the moving highlight on the rounded button border. */
 @property --demo-border-angle {
@@ -49,7 +49,7 @@
  inherits:false;
 }
 .demo-start-cta .demo-edge {display:none;}
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta)::before {
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta)::before {
  content:'';
  position:absolute;
  inset:0;
@@ -63,19 +63,19 @@
  animation:demo-rounded-border 3s linear infinite;
  pointer-events:none;
 }
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover,
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):focus-visible {
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):hover,
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):focus-visible {
  box-shadow:0 0 8px #e8c45bcc,0 0 24px #d4a72c99,0 0 48px #b58c2059,0 0 72px #8a650033;
 }
 @keyframes demo-rounded-border {to{--demo-border-angle:360deg;}}
-@media(prefers-reduced-motion:reduce){:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta)::before{animation:none;}}
+@media(prefers-reduced-motion:reduce){:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta)::before{animation:none;}}
 
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta),
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover {border-color:transparent;}
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover::before {opacity:0;animation:none;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta),
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):hover {border-color:transparent;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):hover::before {opacity:0;animation:none;}
 
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover,
-:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):focus-visible {color:#fff;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):hover,
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta, button.mustard-outline-cta):focus-visible {color:#fff;}
 
 /* Launch CTA keeps its glow at rest; hover reveals the outlined version. */
 button.homepage-launch-cta {
@@ -94,3 +94,6 @@ button.homepage-launch-cta:focus-visible {
 }
 button.homepage-launch-cta:focus-visible {outline:2px solid #d4a72c;outline-offset:4px;}
 @media(prefers-reduced-motion:reduce){button.homepage-launch-cta{transition:none;}}
+
+button.mustard-outline-cta:disabled,button.homepage-launch-cta:disabled{cursor:not-allowed;}
+button.mustard-outline-cta:disabled::before{animation:none;}
