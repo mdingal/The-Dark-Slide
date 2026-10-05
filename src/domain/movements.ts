@@ -289,6 +289,14 @@ export function resolveUnderlyingMovements(params: SingleTrickParameters): Under
       bodyRotationDir = 'backside';
       break;
 
+    case 'feather_flip':
+      boardSpinDeg=0;boardFlip='vertical_wrap';
+      if(params.bodyVarial!=='none'){bodyRotationDeg=180;bodyRotationDir=params.bodyVarial;}
+      break;
+    case 'unpossible':
+      boardSpinDeg=360;boardFlip='vertical_wrap';
+      if(params.bodyVarial!=='none'){bodyRotationDeg=180;bodyRotationDir=params.bodyVarial;}
+      break;
     case 'impossible':
       boardSpinDeg = 360;
       boardSpinDir = 'none';

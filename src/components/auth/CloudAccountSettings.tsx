@@ -38,7 +38,7 @@ export const CloudAccountSettings: React.FC = () => {
         }} />
       </label>
       {importFile && <div className="space-y-3">
-        <p className="text-xs">From {importFile.profile.displayName}: {importFile.sessions.length} sessions, {importFile.profile.savedSetups.length} setups, {(importFile.profile.bookmarks || []).length} bookmarks, {(importFile.profile.poolPresets || []).length} presets, {(importFile.profile.trickLibrary || []).length} library entries.</p>
+        <p className="text-xs">From {importFile.profile.displayName}: {importFile.sessions.length} sessions, {importFile.profile.savedSetups.length} setups, {(importFile.profile.bookmarks || []).length} bookmarks, {(importFile.profile.poolPresets || []).length} presets, {(importFile.profile.trickLibrary || []).length} library entries, {(importFile.profile.partsInventory || []).length} inventory entries.</p>
         <button disabled={busy} className="rounded px-3 py-2 bg-[#D4A72C] text-neutral-950 text-sm disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed" onClick={() => { if (!window.confirm(`Add records from ${importFile.profile.displayName} to ${profile.email}? Confirm you own this backup. Existing records will be kept.`)) return; void run(async () => { const result = await importRiderExport(profile.id, importFile); await refreshAccount(); setImportFile(null); setMessage(`Import completed: ${result.added} sessions added, ${result.skipped} existing sessions skipped. Saved tools merged.`); }); }}>{busy ? 'Please wait...' : 'Import this backup'}</button>
       </div>}
       <p className="text-xs text-neutral-500">If an import is interrupted, select the same file and retry. Already imported sessions will be skipped.</p>

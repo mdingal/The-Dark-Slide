@@ -1,3 +1,5 @@
+import {riderSetupAnswers} from '../domain/riderSetup';
+import {closePractice,remainingTime} from '../domain/sessionPlan';
 import {SharedChallengeLink} from '../domain/communityChallenges';
 import {newlyEarnedMilestones} from '../domain/milestones';
 import { claimUsername, normalizeUsername, resolveUsernameLogin, usernameConfigured } from '../services/usernameService';
@@ -98,10 +100,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       let rider = await storageService.getProfile(user.uid);
       const first = !rider;
       if (!rider) {
-        rider = { id: user.uid, email: user.email || '', displayName: user.displayName || 'Rider', instagramHandle: '', preferredTheme: 'system', savedSetups: [], availableObstacles: ['ledge', 'rail'], bookmarks: [], poolPresets: [], trickLibrary: [] };
+        rider = { id: user.uid, email: user.email || '', displayName: user.displayName || 'Rider', instagramHandle: '', preferredTheme: 'system', onboarding: {version:1,step:0,answers:{}}, partsInventory: [], savedSetups: [], availableObstacles: ['ledge', 'rail'], bookmarks: [], poolPresets: [], trickLibrary: [] };
         await storageService.saveProfile(rider);
       }
       const records = await storageService.getSessions(user.uid);
+      const fixedSetups=rider.savedSetups.map(setup=>{const used=records.find(s=>s.setupSnapshot.id===setup.id&&s.sessionStartedAt);return !setup.usedAt&&used?{...setup,usedAt:used.sessionStartedAt}:setup;});
+      if(fixedSetups.some((setup,i)=>setup!==rider!.savedSetups[i])){rider={...rider,savedSetups:fixedSetups};await storageService.saveProfile(rider);}
+
       if (epoch !== authEpoch.current || auth.currentUser?.uid !== user.uid) return;
       profileRef.current = rider; setProfile(rider); setSessions(records);
       setActiveSetupState(rider.savedSetups.find(s => s.id === rider!.defaultSetupId) || rider.savedSetups[0] || DEFAULT_FALLBACK_SETUP);
@@ -162,6 +167,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const updateSession = async (updated: PracticeSession): Promise<void> => {
     if (!profile) throw new Error('Profile missing');
     await storageService.saveSession(profile.id, updated);
+    if (updated.sessionStartedAt && !profileRef.current?.savedSetups.find(s=>s.id===updated.setupSnapshot.id)?.usedAt) {
+      const current=profileRef.current; if(current) {const next={...current,savedSetups:current.savedSetups.map(s=>s.id===updated.setupSnapshot.id?{...s,usedAt:updated.sessionStartedAt}:s)};profileRef.current=next;setProfile(next);}
+    }
     if (auth.currentUser?.uid !== profile.id) return;
     const earned = newlyEarnedMilestones(sessions, sessions.map(s=>s.id===updated.id?updated:s));
     if(earned.length){const m=earned.find(m=>m.kind==='first')||earned.find(m=>m.kind==='rate')||earned[0];showToast(`${m.title}: ${m.trickName} · ${m.detail}`);}
@@ -170,6 +178,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setCurrentSession(updated);
     }
   };
+
+  const expirationBusy=useRef(false),expirationRetryAt=useRef(0);
+  useEffect(()=>{
+    const tick=()=>{if(expirationBusy.current||Date.now()<expirationRetryAt.current)return;
+      const expiring=sessions.find(s=>s.practiceTimer?.type==='countdown'&&!!s.sessionStartedAt&&!s.sessionEndedAt&&remainingTime(s)===0);
+      if(!expiring)return;
+      expirationBusy.current=true;
+      const remaining=(expiring.practiceTimer!.durationMs||0)-expiring.timerState.accumulatedMs;
+      const endedAt=(expiring.timerState.lastStartedTimestamp||Date.now())+Math.max(0,remaining);
+      void updateSession({...closePractice(expiring,false,expiring.difficultyRating,expiring.notes,endedAt,'countdown'),outcomeReviewPending:true})
+        .then(()=>showToast('Countdown finished. Review your session in Trick Lab.'))
+        .catch(()=>{expirationRetryAt.current=Date.now()+10000;showToast('Could not save countdown result. Reconnect and retry.');})
+        .finally(()=>{expirationBusy.current=false;});
+    };
+    tick();const interval=setInterval(tick,500);return()=>clearInterval(interval);
+  },[sessions]);
 
   const repeatChallenge = async (result: GeneratedTrickResult) => {
     await startNewSession(result);
@@ -184,6 +208,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const current = profileRef.current;
     if (!current || current.id !== riderId || !isLoggedIn) throw new Error('Sign in to save your practice tools.');
     const updated = change(current);
+    if(updated.onboarding)updated.onboarding={...updated.onboarding,answers:riderSetupAnswers(updated.onboarding.answers,updated.savedSetups)};
     // Only update the interface after the cloud write succeeds.
     await storageService.saveProfile(updated);
     if (auth.currentUser?.uid !== riderId) return;
@@ -286,6 +311,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const updateProfile = async (updatedProfile: UserProfile): Promise<void> => {
     if (!profile || updatedProfile.id !== profile.id) throw new Error('Account mismatch.');
+    for (const setup of profile.savedSetups) {
+      if (!setup.usedAt && !sessions.some(s=>s.setupSnapshot.id===setup.id&&s.sessionStartedAt)) continue;
+      const next=updatedProfile.savedSetups.find(s=>s.id===setup.id);
+      const config=(s:SetupData)=>JSON.stringify({...s,favorite:undefined,usedAt:undefined});
+      if (!next || config(next)!==config(setup)) throw new Error('Used setup configurations are fixed. Create a new setup instead.');
+    }
     const changes = Object.fromEntries(Object.entries(updatedProfile).filter(([key, value]) => JSON.stringify(value) !== JSON.stringify((profile as unknown as Record<string, unknown>)[key])));
     await mutateSavedTools(current => ({ ...current, ...changes }));
     const saved = profileRef.current;

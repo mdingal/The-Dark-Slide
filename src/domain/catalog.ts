@@ -387,6 +387,15 @@ export const BASE_TRICKS: BaseTrickDefinition[] = [
     supportedObstacleTypes: ['flatground', 'ledge', 'manual_pad'],
     description: 'Vertical 360 wrap around the back finger with no horizontal spin.',
   },
+  ...(['feather_flip','unpossible'] as const).map(id => ({
+    id, name:id==='feather_flip'?'Feather Flip':'Unpossible',
+    allowedStances:['regular','fakie','switch','nollie'] as BaseTrickDefinition['allowedStances'],
+    applicableDirections:['none'] as BaseTrickDefinition['applicableDirections'],
+    boardRotationDeg:0,boardFlip:'vertical_wrap' as const,difficulty:5,
+    allowedModifiers:{bodyVarial:true,landingManual:true,revert:true},
+    supportedObstacleTypes:['flatground'] as BaseTrickDefinition['supportedObstacleTypes'],
+    description:id==='feather_flip'?'Lift into a partial vertical wrap, then reverse the board back flat before catching.':'A reverse vertical wrap around the front finger, distinct from a front-finger impossible.'
+  })),
 ];
 
 export function getBaseTrickById(id: string): BaseTrickDefinition | undefined {

@@ -1,3 +1,6 @@
+import {HW_BUTTON} from '../settings/HardwareManager';
+import {challengeFitsClass,minimumSkateClass} from '../../domain/skateClasses';
+import type {SkateClass} from '../../domain/types';
 import {SharedChallengeBar} from '../common/SharedChallengeBar';
 import {ChallengeSessionStatus} from '../common/ChallengeCompletionPanel';
 import {MilestoneMoment} from '../common/MilestonePanel';
@@ -52,6 +55,12 @@ export const GeneratorPage: React.FC = () => {
     showToast,
   } = useApp();
 
+  const [flowStep,setFlowStep]=useState(currentSession ? 4 : 0);
+  const flowHeading=React.useRef<HTMLHeadingElement>(null);
+  useEffect(()=>{flowHeading.current?.focus({preventScroll:true});},[flowStep]);
+  const goToStep=(step:number)=>{setFlowStep(step);window.scrollTo({top:0,behavior:'smooth'});};
+  const practicing=!!currentSession?.sessionStartedAt&&!currentSession.sessionEndedAt;
+
   const [finishedSession, setFinishedSession] = useState<PracticeSession | null>(null);
 
   const [stances,setStances] = useState<SingleTrickParameters['stance'][]>(['regular','nollie','fakie','switch']);
@@ -63,7 +72,8 @@ export const GeneratorPage: React.FC = () => {
   const [librarySelection,setLibrarySelection] = useState<string[]>([]);
   const [libraryStatus,setLibraryStatus] = useState('all');
   const [mode, setMode] = useState<TrickMode>('single');
-  const [complexityFilter, setComplexityFilter] = useState<ComplexityFilter>('all');
+  const complexityFilter:ComplexityFilter='all';
+  const [skateClass,setSkateClass]=useState<SkateClass>('C');
   const [isGenerating, setIsGenerating] = useState(false);
   const generationBusyRef = React.useRef(false);
 
@@ -124,6 +134,7 @@ export const GeneratorPage: React.FC = () => {
   // Sync with currentSession if resuming
   useEffect(() => {
     if (currentSession) {
+      setFlowStep(4);
       setFinishedSession(null);
       setMode(currentSession.trickResult.mode);
       if (currentSession.trickResult.singleTrick) {
@@ -148,16 +159,20 @@ export const GeneratorPage: React.FC = () => {
   const customPool = uniqueChallenges([...baseChallengePool(),...sessions.map(s=>s.trickResult),...(profile?.bookmarks || []).map(b=>b.trickResult),...(profile?.trickLibrary || []).map(t=>t.trickResult)]);
   const poolItems = (poolSource==='library'?libraryPool:customPool).filter(t=>t.mode===mode&&(poolSource==='custom'||complexityFilter==='all'||getChallengeComplexity(t)===complexityFilter));
   const poolSelection = poolSource==='library'?librarySelection:customSelection;
+  const emptyPool=flowStep===2&&poolSource!=='parameters'&&!poolItems.some(t=>poolSelection.includes(trickKey(t)));
+  const totalSteps=poolSource==='parameters'?4:3;
+  const shownStep=flowStep===4?totalSteps:flowStep;
   const handleGenerate = async () => {
     if (generationBusyRef.current) return;
     generationBusyRef.current = true;
     setIsGenerating(true); setConflictError(null);
     try {
-      const result = poolSource !== 'parameters' ? selectPoolChallenge(expandSelectedVariations(poolItems.filter(t=>poolSelection.includes(trickKey(t))),poolSource==='custom'&&stanceVariations,poolSource==='custom'&&rotationVariations?rotations:null,stances),mode,complexityFilter) : generateChallenge({ mode, complexityFilter,
+      const result = poolSource !== 'parameters' ? selectPoolChallenge(expandSelectedVariations(poolItems.filter(t=>poolSelection.includes(trickKey(t))),poolSource==='custom'&&stanceVariations,poolSource==='custom'&&rotationVariations?rotations:null,stances),mode,complexityFilter) : generateChallenge({ mode, complexityFilter,skateClass,
         singleLocks, singleExclusions, step1Locks, step2Locks, step1Exclusions, step2Exclusions,
-        obstacleLocks, obstacleExclusions, activeParams, step1Params, step2Params, selectedObstacle, obstacleData });
+        obstacleLocks, obstacleExclusions:{...obstacleExclusions,obstacles:[...new Set([...(obstacleExclusions.obstacles||[]),...(['ledge','rail'] as const).filter(o=>!profile?.availableObstacles.includes(o))])]}, activeParams, step1Params, step2Params, selectedObstacle, obstacleData });
       if ('error' in result) { setConflictError(result.error); return; }
-      await startNewSession(result);
+      if(poolSource==='parameters'&&!challengeFitsClass(result,skateClass)){setConflictError('Your selected tricks or locks do not match this class. Change the class or selection.');return;}
+      await startNewSession({...result,skateClass:poolSource==='parameters'?skateClass:minimumSkateClass(result)});
     } catch { setConflictError('Could not save the new challenge. Please try again.'); }
     finally { generationBusyRef.current = false; setIsGenerating(false); }
   };
@@ -205,13 +220,13 @@ export const GeneratorPage: React.FC = () => {
   };
 
   const presetConfig: GeneratorPresetConfig = {
-    mode, complexityFilter, singleLocks, singleExclusions, step1Locks, step2Locks,
+    mode, complexityFilter, skateClass, singleLocks, singleExclusions, step1Locks, step2Locks,
     step1Exclusions, step2Exclusions, obstacleLocks, obstacleExclusions,
     activeParams, step1Params, step2Params, selectedObstacle, obstacleData,
   };
   const applyPreset = (config: GeneratorPresetConfig) => {
     setMode(config.mode);
-    setComplexityFilter(config.complexityFilter || 'all');
+    setSkateClass(config.skateClass||'C');
     setSingleLocks(config.singleLocks); setSingleExclusions(config.singleExclusions);
     setStep1Locks(config.step1Locks); setStep2Locks(config.step2Locks);
     setStep1Exclusions(config.step1Exclusions); setStep2Exclusions(config.step2Exclusions);
@@ -224,57 +239,16 @@ export const GeneratorPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <SharedChallengeBar />
-      <section
-        aria-label="Challenge and practice session"
-        className="trick-practice-workspace bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl"
-      >
-      {/* 1. Main Trick Presentation */}
-      <TrickDisplay
-        trickResult={currentSession?.trickResult || finishedSession?.trickResult || null}
-        complexityControl={
-      <div className="w-full sm:w-auto sm:ml-auto shrink-0" title="Filters generated challenges by complexity; separate from your session difficulty rating.">
-        <div className="flex flex-col items-start sm:items-end gap-1">
-          <label htmlFor="challenge-complexity" className="text-[11px] font-semibold">Challenge Complexity</label>
-          <select id="challenge-complexity" value={complexityFilter} onChange={e => setComplexityFilter(e.target.value as ComplexityFilter)}
-            className="text-xs px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800">
-            <option value="all">All levels</option><option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option><option value="advanced">Advanced</option>
-          </select>
-        </div>
-        <p className="sr-only">Based on catalog complexity, stance, modifiers, combos, and obstacle sequences. Your difficulty rating after practice stays separate.</p>
-      </div>
-        }
-        mode={mode}
-        onChangeMode={setMode}
-        onGenerate={handleGenerate}
-        isGenerating={isGenerating}
-        conflictError={conflictError}
-        onClearLocks={handleClearLocks}
-        activeSetupName={activeSetup?.name}
-      />
-
-      {/* 2. Interactive Practice Tracking Panel */}
-      {(currentSession || finishedSession) && (
-        <PracticePanel
-          key={(currentSession || finishedSession)!.id}
-          session={(currentSession || finishedSession)!}
-          onFinishSession={(finished) => {
-            setFinishedSession(finished);
-            setCurrentSession(null);
-            showToast('Session saved. Generate a new challenge when ready.');
-          }}
-          onUpdateSession={updateSession}
-          savedSetups={profile?.savedSetups || []}
-          onSelectSetup={(s) => setActiveSetup(s)}
-        />
-      )}
-
-
-      </section>
-
-
-      <ChallengeSessionStatus session={currentSession || finishedSession} />
-      <MilestoneMoment sessionId={(currentSession || finishedSession)?.id} />
+      <header className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 space-y-3">
+        <p className="text-xs uppercase tracking-wider text-[#8A6500] dark:text-[#D4A72C]">Trick Lab{flowStep>0?` · Step ${shownStep} / ${totalSteps}`:''}</p>
+        <h1 ref={flowHeading} tabIndex={-1} className="text-2xl font-semibold focus:outline-none">{['Start a practice session','Choose your session mode','Choose your trick pool','Select your skate class','Generate & practice'][flowStep]}</h1>
+        {flowStep===0&&<><p className="text-sm text-neutral-600 dark:text-neutral-300">Choose a challenge, set your goal, and make your next session count.</p><button className={HW_BUTTON} onClick={()=>goToStep(1)}>Start a session</button></>}
+        {flowStep>0&&<div role="progressbar" aria-label="Challenge setup progress" aria-valuemin={0} aria-valuemax={totalSteps} aria-valuenow={shownStep} className="h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden"><div className="h-full bg-[#D4A72C]" style={{width:`${shownStep/totalSteps*100}%`}}/></div>}
+      </header>
+      {flowStep===1&&<section className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5">
+      <div className="flex flex-wrap items-center gap-3"><span className="text-sm font-semibold">Session mode</span>{([['single','Single Trick'],['combo','Two-Trick Combo'],['obstacle','Obstacle']] as const).map(([id,label])=><button key={id} aria-pressed={mode===id} onClick={()=>setMode(id)} className={`rounded-lg px-4 py-2 text-sm border cursor-pointer ${mode===id?'text-[#8A6500] dark:text-[#D4A72C] border-[#D4A72C] bg-[#D4A72C]/10':'border-neutral-300 dark:border-neutral-700'}`}>{label}</button>)}</div>
+      </section>}
+      {flowStep===2&&<>
       <SelectedTrickPool stances={stances} onStances={setStances} stanceVariations={stanceVariations} onStanceVariations={setStanceVariations} rotationVariations={rotationVariations} onRotationVariations={setRotationVariations} rotations={rotations} onRotations={setRotations} source={poolSource} onSource={setPoolSource} items={poolItems} selected={poolSelection} onSelected={poolSource==='library'?setLibrarySelection:setCustomSelection} status={libraryStatus} onStatus={setLibraryStatus} />
       {poolSource === 'parameters' && <PoolPresets config={presetConfig} onApply={applyPreset} />}
 
@@ -368,6 +342,55 @@ export const GeneratorPage: React.FC = () => {
           onResetExclusions={(cat) => setObstacleExclusions((prev) => ({ ...prev, [cat]: [] }))}
         />
       )}
+      </>}
+      {flowStep===3&&<section className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 space-y-3"><h2 className="font-semibold">Select your skate class</h2><div className="grid sm:grid-cols-3 gap-3">{(['C','B','A'] as const).map(c=><button aria-pressed={skateClass===c} key={c} className={`text-left rounded-lg border p-4 cursor-pointer ${skateClass===c?'border-[#D4A72C] bg-[#D4A72C]/10':'border-neutral-300 dark:border-neutral-700'}`} onClick={()=>setSkateClass(c)}><strong>Class {c}</strong><span className="block text-xs mt-2">{c==='C'?'Regular and fakie · standard tricks':c==='B'?'All four stances · standard tricks':'All four stances · adds specialty tricks'}</span></button>)}</div><p className="text-xs text-neutral-500">Body varials and reverts remain available in every class where valid for the trick. Perceived difficulty is rated after practice.</p></section>}
+      {flowStep===4&&<section
+        aria-label="Challenge and practice session"
+        className="trick-practice-workspace bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl"
+      >
+      {/* 1. Main Trick Presentation */}
+      <TrickDisplay
+        trickResult={currentSession?.trickResult || finishedSession?.trickResult || null}
+
+        mode={mode}
+        onChangeMode={setMode}
+        canGenerate={!practicing}
+        onGenerate={handleGenerate}
+        isGenerating={isGenerating}
+        conflictError={conflictError}
+        onClearLocks={handleClearLocks}
+        activeSetupName={activeSetup?.name}
+      />
+
+      {/* 2. Interactive Practice Tracking Panel */}
+      {(currentSession || finishedSession) && (
+        <PracticePanel
+          key={(currentSession || finishedSession)!.id}
+          session={(currentSession || finishedSession)!}
+          onFinishSession={(finished) => {
+            setFinishedSession(finished.sessionEndedAt?finished:null);
+            setCurrentSession(null);
+            showToast(finished.status==='pending'?'Session parked. Resume it from History.':'Session saved. Generate a new challenge when ready.');
+          }}
+          onUpdateSession={updateSession}
+          savedSetups={profile?.savedSetups || []}
+          onSelectSetup={(s) => setActiveSetup(s)}
+        />
+      )}
+
+
+      </section>}
+
+      {emptyPool&&<p role="status" className="text-sm text-[#8A6500] dark:text-[#D4A72C]">Select at least one trick from this pool to continue.</p>}
+      {flowStep>0&&<nav aria-label="Practice setup steps" className="flex justify-between gap-3">
+        <button className={HW_BUTTON} disabled={isGenerating||practicing} onClick={()=>goToStep(flowStep===4&&poolSource!=='parameters'?2:flowStep-1)}>Back</button>
+        {flowStep<4&&<button disabled={emptyPool} className={`${HW_BUTTON} disabled:cursor-not-allowed`} onClick={()=>{if(emptyPool)return;goToStep(flowStep===2&&poolSource!=='parameters'?4:flowStep+1);}}>Continue</button>}
+      </nav>}
+      {flowStep===4&&<>
+      <ChallengeSessionStatus session={currentSession || finishedSession} />
+      <MilestoneMoment sessionId={(currentSession || finishedSession)?.id} />
+      </>}
+
     </div>
   );
 };

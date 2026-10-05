@@ -1,5 +1,5 @@
 import React from 'react';
-import { getChallengeComplexity } from '../../domain/complexity';
+import { classLabel } from '../../domain/skateClasses';
 import { ChallengeActions } from '../common/ChallengeActions';
 import { GeneratedTrickResult, TrickMode } from '../../domain/types';
 import { Sparkles, Dices, AlertTriangle, Layers, ShieldAlert, Cpu, Compass } from 'lucide-react';
@@ -11,6 +11,8 @@ interface TrickDisplayProps {
   mode: TrickMode;
   onChangeMode: (m: TrickMode) => void;
   onGenerate: () => void;
+  canGenerate?: boolean;
+  demo?: boolean;
   isGenerating?: boolean;
   conflictError?: string | null;
   onClearLocks: () => void;
@@ -23,6 +25,8 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
   mode,
   onChangeMode,
   onGenerate,
+  canGenerate=true,
+  demo=false,
   isGenerating,
   conflictError,
   onClearLocks,
@@ -31,50 +35,6 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
 }) => {
   return (
     <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
-      {/* Mode Segmented Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-neutral-200 dark:border-neutral-800">
-        <div className="flex flex-col gap-1">
-          <span className="text-[11px] font-semibold">Session Mode</span>
-          <div className="flex items-center gap-1.5 p-1 bg-neutral-100 dark:bg-neutral-800/80 rounded-lg">
-          <button
-            onClick={() => onChangeMode('single')}
-              style={{ animation: "none", boxShadow: "none" }}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-              mode === 'single'
-                ? 'bg-[#D4A72C] text-[#292524] font-semibold'
-                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-            }`}
-          >
-            Single Trick
-          </button>
-          <button
-            onClick={() => onChangeMode('combo')}
-              style={{ animation: "none", boxShadow: "none" }}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-              mode === 'combo'
-                ? 'bg-[#D4A72C] text-[#292524] font-semibold'
-                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-            }`}
-          >
-            Two-Trick Combo
-          </button>
-          <button
-            onClick={() => onChangeMode('obstacle')}
-              style={{ animation: "none", boxShadow: "none" }}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-              mode === 'obstacle'
-                ? 'bg-[#D4A72C] text-[#292524] font-semibold'
-                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-            }`}
-          >
-            Obstacle
-          </button>
-        </div>
-
-        </div>
-        {complexityControl}
-      </div>
-
       {/* Conflict Notice if locks conflict */}
       {conflictError ? (
         <div className="p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-700 dark:text-rose-400 space-y-2">
@@ -163,8 +123,8 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
         </div>
       )}
 
-      {trickResult && <p className="text-xs text-neutral-600 dark:text-neutral-300">Complexity: <span className="capitalize font-medium text-[#8A6500] dark:text-[#D4A72C]">{getChallengeComplexity(trickResult)}</span></p>}
-      {trickResult && <ChallengeActions result={trickResult} />}
+      {trickResult && <p className="text-xs text-neutral-600 dark:text-neutral-300">Skate class: <span className="capitalize font-medium text-[#8A6500] dark:text-[#D4A72C]">{classLabel(trickResult)}</span></p>}
+      {trickResult && !demo && <ChallengeActions result={trickResult} />}
 
       {/* Main Action Bar */}
       <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 flex flex-wrap items-center justify-between gap-3">
@@ -174,9 +134,9 @@ export const TrickDisplay: React.FC<TrickDisplayProps> = ({
 
         <button
           type="button"
-          disabled={isGenerating}
+          disabled={isGenerating || !canGenerate}
           onClick={onGenerate}
-          className="px-6 py-3 bg-neutral-950 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-950 font-semibold text-sm rounded-xl flex items-center gap-2.5 transition-all shadow-md active:scale-98 cursor-pointer"
+          className="px-6 py-3 bg-neutral-950 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-950 font-semibold text-sm rounded-xl flex items-center gap-2.5 transition-all shadow-md active:scale-98 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Dices className="w-4 h-4" />
           {isGenerating ? 'Generating...' : 'Generate New Challenge'}

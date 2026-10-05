@@ -1,3 +1,4 @@
+import {singleFitsClass,challengeFitsClass} from './skateClasses';
 import { BASE_TRICKS, CATALOG_VERSION, getBaseTrickById } from './catalog';
 import { getObstacleTricksForObstacle } from './obstacleCatalog';
 import { getTransferChoices } from './obstacleTransfers';
@@ -43,17 +44,18 @@ function createStep(p: SingleTrickParameters, index: number, out: boolean): Comb
 }
 
 export function generateChallenge(config: GeneratorPresetConfig): GeneratedTrickResult | { error: string } {
+  const tier = config.skateClass;
   const filter = config.complexityFilter || 'all';
   let result: GeneratedTrickResult | undefined;
   if (config.mode === 'single') {
-    const choices = enumerateSingleOptions(config.singleLocks,config.singleExclusions).filter(p => matchesComplexity(singleComplexity(p),filter));
+    const choices = enumerateSingleOptions(config.singleLocks,config.singleExclusions).filter(p => (!tier||singleFitsClass(p,tier)) && matchesComplexity(singleComplexity(p),filter));
     if (choices.length) {
       const {params,breakdown}=completeSingle(pick(choices));
       result={mode:'single',canonicalName:formatSingleTrickName(params),singleTrick:params,movements:params.movements,breakdown,catalogVersion:CATALOG_VERSION};
     }
   } else if (config.mode === 'combo') {
-    const first = enumerateSingleOptions(config.step1Locks,config.step1Exclusions);
-    const second = enumerateSingleOptions(config.step2Locks,config.step2Exclusions);
+    const first = enumerateSingleOptions(config.step1Locks,config.step1Exclusions).filter(p=>!tier||singleFitsClass(p,tier));
+    const second = enumerateSingleOptions(config.step2Locks,config.step2Exclusions).filter(p=>!tier||singleFitsClass(p,tier));
     // Reuse compatible second-step pools for a stance, balance position, and first-step complexity.
     const cache = new Map<string,SingleTrickParameters[]>();
     const candidates: { first: SingleTrickParameters; second: SingleTrickParameters[] }[]=[];
@@ -93,7 +95,7 @@ export function generateChallenge(config: GeneratorPresetConfig): GeneratedTrick
       for (const transfer of getTransferChoices(obstacleType,trick.id,approach,l,e))
       for (const exitTrick of transfer.exits) {
         const p:ObstacleComponent={obstacleType,approach,obstacleTrickId:trick.id,entryTrickId,exitTrick,transferTrickId:transfer.id||undefined};
-        if (matchesComplexity(obstacleComplexity(p),filter)) options.push(p);
+        if ((!tier||challengeFitsClass({mode:'obstacle',obstacleData:p,canonicalName:'',breakdown:[],catalogVersion:CATALOG_VERSION},tier))&&matchesComplexity(obstacleComplexity(p),filter)) options.push(p);
       }
     }
     if (options.length) {
@@ -101,6 +103,6 @@ export function generateChallenge(config: GeneratorPresetConfig): GeneratedTrick
       result={mode:'obstacle',obstacleData:p,canonicalName:formatObstacleTrickName(p),breakdown:explainObstacleTrick(p),catalogVersion:CATALOG_VERSION};
     }
   }
-  if (!result) return {error:`No ${filter==='all'?'compatible':filter} challenge matches these locks and pools. Adjust complexity, unlock a value, or include more pool options.`};
-  return {...result,complexity:getChallengeComplexity(result)};
+  if (!result) return {error:`No ${filter==='all'?'compatible':filter} challenge matches these locks and pools. Adjust the skate class, unlock a value, or include more pool options.`};
+  return {...result,...(tier?{skateClass:tier}:{}),complexity:getChallengeComplexity(result)};
 }

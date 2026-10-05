@@ -1,3 +1,4 @@
+import {RiderHomeSummary} from './RiderHomeSummary';
 import { FeatureVisual } from './FeatureVisual';
 import { BrandLogo } from '../common/BrandLogo';
 import { AccountForm } from '../auth/AccountForm';
@@ -81,7 +82,7 @@ export const LandingPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('generator')}
-              className="px-6 py-3 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-900 font-semibold text-sm rounded-xl flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+              className="homepage-launch-cta px-6 py-3 font-semibold text-sm rounded-xl flex items-center gap-2 cursor-pointer"
             >
               <span>Launch Trick Lab</span>
               <ArrowRight className="w-4 h-4" />
@@ -97,42 +98,31 @@ export const LandingPage: React.FC = () => {
         )}
       </section>
 
-      {/* Account Creation / Quick Login Card: Shown ONLY when NOT logged in */}
-      {!isLoggedIn && (
-        <section
-          ref={accountSectionRef}
-          id="account-section"
-          className="homepage-account-card max-w-md mx-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-7 shadow-sm transition-colors"
-        >
-          <div className="text-center mb-5">
-            <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-              {accountTitle}
-            </h2>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              {accountDescription}
-            </p>
-          </div>
-
-          <AccountForm mode={accountMode} onModeChange={setAccountMode} onSuccess={() => setIsSignInModalOpen(false)} />
-        </section>
-      )}
-
       {/* Everything You Need to Progress Section */}
-      <section className="space-y-8">
-        <div className="text-center max-w-xl mx-auto">
-          <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            Everything You Need to Progress
-          </h2>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-            Find your next challenge, make every attempt count, and see how your riding evolves.
-          </p>
+      {isLoggedIn ? <RiderHomeSummary/> : <section className="space-y-8">
+        <div className="homepage-practice-account-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl grid lg:grid-cols-2 overflow-hidden">
+          <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+            <TrickMatrixDemo embedded onPromptAuth={handlePromptAuth} />
+          </div>
+          <section ref={accountSectionRef} id="account-section" className="min-w-0 p-6 sm:p-8 lg:p-10 border-t lg:border-t-0 lg:border-l border-neutral-200 dark:border-neutral-800">
+            <div className="mb-6 space-y-3 pb-6 border-b border-neutral-200 dark:border-neutral-800">
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-[#8A6500] dark:text-[#D4A72C]">Your rider account</p>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{accountTitle}</h2>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">{accountDescription}</p>
+            </div>
+            <AccountForm mode={accountMode} onModeChange={setAccountMode} onSuccess={() => setIsSignInModalOpen(false)} />
+          </section>
         </div>
+      </section>}
 
-        {/* Interactive Trick Generator Sandbox Demo */}
-        <TrickMatrixDemo onPromptAuth={handlePromptAuth} />
-
-        {/* Feature groups keep the homepage easy to scan. */}
-        <div className="space-y-4">
+      {/* Feature groups keep the homepage easy to scan. */}
+      {!isLoggedIn && (
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 lg:p-10 space-y-6 !mt-10 sm:!mt-12">
+          <header className="space-y-3 pb-6 border-b border-neutral-200 dark:border-neutral-800">
+            <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-[#8A6500] dark:text-[#D4A72C]">Explore the lab</p>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">Tools for Every Session</h2>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Explore what you can generate, personalize, track, and learn.</p>
+          </header>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" role="group" aria-label="Explore features">
             {['Generate & Learn', 'Make It Yours', 'Track Sessions', 'Review Progress'].map(group => (
               <button key={group} type="button" aria-pressed={featureGroup === group}
@@ -172,13 +162,13 @@ export const LandingPage: React.FC = () => {
               icon: Sparkles,
               group: 'Generate & Learn',
               title: "Choose Your Challenge Level",
-              description: "Choose Beginner, Intermediate, or Advanced complexity. Rate how difficult the session felt separately after practicing."
+              description: "Choose Class C, B, or A for stance and specialty-trick access. Rate how difficult the session felt separately after practicing."
             },
             {
               icon: Clock,
               group: 'Track Sessions',
               title: "Sessions & Share Cards",
-              description: "Log attempts, landings, time, miss tags, and notes. Finish with a status and difficulty rating, then export a share card."
+              description: "Log attempts, landings, time, miss tags, and notes. Set a goal, choose a regular or countdown timer, and park or finish with a difficulty rating and share card."
             },
             {
               icon: CheckCircle2,
@@ -246,13 +236,14 @@ export const LandingPage: React.FC = () => {
               title: "Daily & Weekly Challenges",
               description: "Join the shared daily or weekly challenge in Trick Lab. Track completion and submission totals, with a flatground alternative for obstacle weeks."
             }
-          ].filter(feature => feature.group === featureGroup).map(({ title, description }) => (
+          ].filter(feature => feature.group === featureGroup).map(({ title, description }, index) => (
             <div
               key={title}
               className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 space-y-4"
             >
+              <header className="flex w-full items-center justify-between gap-3"><span className="shrink-0 text-[10px] font-mono tracking-widest text-[#8A6500] dark:text-[#D4A72C]">{String(index+1).padStart(2,'0')}</span><span className="text-right text-[10px] uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{featureGroup}</span></header>
               <FeatureVisual title={title} />
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
+              <h3 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-white">
                 {title}
               </h3>
               <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
@@ -262,15 +253,18 @@ export const LandingPage: React.FC = () => {
           ))}
         </div>
         </div>
-      </section>
+      )}
 
       {/* About the Project */}
-      <section className="homepage-about-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-4">
-        <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
+      <section className="homepage-about-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 lg:p-10 space-y-6 !mt-10 sm:!mt-12">
+        <header className="space-y-3 pb-6 border-b border-neutral-200 dark:border-neutral-800">
+          <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-[#8A6500] dark:text-[#D4A72C]">ABOUT THE PROJECT</p>
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
           DARK SLIDE · Fingerboard Lab
         </h2>
+        </header>
 
-        <div className="w-full space-y-4 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+        <div className="w-full space-y-5 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
           <p>
             DARK SLIDE started with a familiar question: what should I try next?
             It's easy to fall back on the same comfortable tricks, lose track of

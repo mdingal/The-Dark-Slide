@@ -1,3 +1,4 @@
+import {PART_KINDS} from '../domain/hardware';
 import { doc, runTransaction } from 'firebase/firestore';
 import { db } from './firebase';
 import { cleanCloudData, requireRider, storageService } from './firebaseStorageService';
@@ -9,7 +10,7 @@ const text = (x: unknown) => typeof x === 'string';
 const number = (x: unknown) => typeof x === 'number' && Number.isFinite(x) && x >= 0;
 const count = (x: unknown) => number(x) && Number.isInteger(x);
 const date = (x: unknown) => text(x) && Number.isFinite(Date.parse(x as string));
-const setup = (x: unknown) => object(x) && id(x.id) && text(x.name) && number(x.deckWidthMm) && x.deckWidthMm > 0 && ['plastic','urethane','resin'].includes(x.wheelMaterial);
+const setup = (x: unknown) => object(x) && id(x.id) && text(x.name) && number(x.deckWidthMm) && ['plastic','urethane','resin','unknown'].includes(x.wheelMaterial);
 const params = (x: unknown) => object(x) && ['regular','fakie','switch','nollie'].includes(x.stance) && ['none','frontside','backside'].includes(x.direction) && text(x.baseTrickId) && ['none','frontside','backside'].includes(x.bodyVarial) && ['normal','manual','nose_manual'].includes(x.landing) && ['none','frontside','backside'].includes(x.revert);
 function trick(x: unknown): boolean {
  if (!object(x) || !text(x.canonicalName) || !text(x.catalogVersion) || !Array.isArray(x.breakdown) || !x.breakdown.every(text)) return false;
@@ -22,18 +23,21 @@ function session(x: unknown): boolean {
  if (x.history.some((h: unknown) => !object(h) || !['attempt','landing','status_change'].includes(h.action) || !number(h.timestamp) || !count(h.prevAttemptCount) || !count(h.prevLandingCount) || !['pending','success','failed'].includes(h.prevStatus))) return false;
  for (const key of ['firstLandingAttemptNumber','firstLandingElapsedMs','currentLandingStreak','bestLandingStreak','consistencyGoal']) if (x[key] !== undefined && !number(x[key])) return false;
  for (const key of ['sessionStartedAt','sessionEndedAt']) if (x[key] !== undefined && !date(x[key])) return false;
+ if(x.goal!==undefined&&(!object(x.goal)||!['landings','streak'].includes(x.goal.type)||!count(x.goal.target)||x.goal.target<1||x.goal.target>10000))return false;
+ if(x.practiceTimer!==undefined&&(!object(x.practiceTimer)||!['regular','countdown'].includes(x.practiceTimer.type)||(x.practiceTimer.type==='countdown'&&(!number(x.practiceTimer.durationMs)||x.practiceTimer.durationMs<1000||x.practiceTimer.durationMs>86400000))))return false;
  return x.missTagCounts === undefined || (object(x.missTagCounts) && Object.values(x.missTagCounts).every(count));
 }
 export function parseRiderExport(source: string): RiderExport {
  let data: unknown; try { data = JSON.parse(source.replace(/^\uFEFF/, '')); } catch { throw new Error('Choose a valid JSON export from The Dark Slide.'); }
  if (!object(data) || data.format !== 'the-dark-slide-rider-export' || data.version !== 1 || !object(data.profile) || !id(data.profile.id) || !text(data.profile.displayName) || !Array.isArray(data.sessions) || !data.sessions.every(session)) throw new Error('This file is not a supported rider export, or contains invalid sessions.');
  const p = data.profile;
+ if(p.partsInventory!==undefined&&(!Array.isArray(p.partsInventory)||!p.partsInventory.every((part:unknown)=>object(part)&&id(part.id)&&PART_KINDS.includes(part.kind)&&text(part.name)&&(part.brand===undefined||text(part.brand))&&(part.quantity===undefined||(count(part.quantity)&&part.quantity>=1))&&(part.location===undefined||['installed','reserve'].includes(part.location))&&object(part.specs)&&Object.values(part.specs).every(text))))throw Error('The export contains invalid inventory parts.');
  if (!Array.isArray(p.savedSetups) || !p.savedSetups.every(setup)) throw new Error('The export contains invalid setups.');
  for (const key of ['bookmarks','poolPresets','trickLibrary']) {
   if (p[key] === undefined) continue;
   if (!Array.isArray(p[key]) || !p[key].every((item: unknown) => object(item) && id(item.id) && (key === 'poolPresets' ? text(item.name) && date(item.savedAt) && object(item.config) && ['single','combo','obstacle'].includes(item.config.mode) && object(item.config.singleLocks) && object(item.config.singleExclusions) && object(item.config.obstacleData) && params(item.config.activeParams) && params(item.config.step1Params) && params(item.config.step2Params) && ['step1Locks','step2Locks','step1Exclusions','step2Exclusions','obstacleLocks','obstacleExclusions'].every(key => object(item.config[key])) : trick(item.trickResult) && (key === 'bookmarks' ? date(item.savedAt) : ['want_to_learn','learning','landed','consistent'].includes(item.status) && date(item.addedAt) && date(item.updatedAt))))) throw new Error('The export contains invalid saved tools.');
  }
- for (const key of ['savedSetups','bookmarks','poolPresets','trickLibrary']) if (new Set((p[key] || []).map((row: { id: string }) => row.id)).size !== (p[key] || []).length) throw new Error('The export contains duplicate saved-tool IDs.');
+ for (const key of ['savedSetups','bookmarks','poolPresets','trickLibrary','partsInventory']) if (new Set((p[key] || []).map((row: { id: string }) => row.id)).size !== (p[key] || []).length) throw new Error('The export contains duplicate saved-tool IDs.');
  if (new Set(data.sessions.map((s: PracticeSession) => s.id)).size !== data.sessions.length) throw new Error('The export contains duplicate session IDs.');
  return data as unknown as RiderExport;
 }
@@ -41,7 +45,7 @@ export async function importRiderExport(uid: string, data: RiderExport): Promise
  requireRider(uid);
  const current = await storageService.getProfile(uid); if (!current) throw new Error('Cloud profile missing.');
  const ids = new Map<string, string>();
- const sourceIds = [...data.sessions.map(s => s.id), ...['savedSetups','bookmarks','poolPresets','trickLibrary'].flatMap(key => ((data.profile as unknown as Record<string, { id: string }[]>)[key] || []).map(row => row.id))];
+ const sourceIds = [...data.sessions.map(s => s.id), ...['savedSetups','bookmarks','poolPresets','trickLibrary','partsInventory'].flatMap(key => ((data.profile as unknown as Record<string, { id: string }[]>)[key] || []).map(row => row.id))];
  for (const source of sourceIds) {
   if (data.profile.id === uid) ids.set(source, source);
   else { const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data.profile.id + ':' + source)); ids.set(source, 'file_' + Array.from(new Uint8Array(digest)).map(n => n.toString(16).padStart(2, '0')).join('')); }
@@ -53,12 +57,13 @@ export async function importRiderExport(uid: string, data: RiderExport): Promise
   const ref = doc(db, 'users', uid, 'sessions', mappedId(record.id));
   const created = await runTransaction(db, async tx => {
    const existing = await tx.get(ref); if (existing.exists()) return false;
-   tx.set(ref, cleanCloudData({ ...record, id: mappedId(record.id), cloudRevision: 1, timerState: { ...record.timerState, isRunning: false, lastStartedTimestamp: undefined, accumulatedMs: record.activeDurationMs } })); return true;
+   tx.set(ref, cleanCloudData({ ...record, setupSnapshot:{...record.setupSnapshot,id:mappedId(record.setupSnapshot.id)||record.setupSnapshot.id}, id: mappedId(record.id), cloudRevision: 1, timerState: { ...record.timerState, isRunning: false, lastStartedTimestamp: undefined, accumulatedMs: record.activeDurationMs } })); return true;
   }); if (created) added++; else skipped++;
  }
  const updated: UserProfile = { ...current };
- for (const key of ['savedSetups','bookmarks','poolPresets','trickLibrary'] as const) {
-  const existing = current[key] || [], incoming = (data.profile[key] || []).map(row => ({ ...row, id: mappedId(row.id) }));
+ const importedSetupIds=new Set(data.sessions.filter(s=>s.sessionStartedAt).map(s=>s.setupSnapshot.id));
+ for (const key of ['savedSetups','bookmarks','poolPresets','trickLibrary','partsInventory'] as const) {
+  const existing = current[key] || [], incoming = (data.profile[key] || []).map(row => ({ ...row, id: mappedId(row.id),...(key==='savedSetups'?{...(importedSetupIds.has(row.id)?{usedAt:(row as any).usedAt||new Date().toISOString()}:{}),partIds:Object.fromEntries(Object.entries((row as any).partIds||{}).map(([k,v])=>[k,mappedId(v as string)||v]))}:{}) }));
   (updated as unknown as Record<string, unknown>)[key] = [...existing, ...incoming.filter(row => !existing.some(e => e.id === row.id))];
  }
  // Identity and current preferences stay with the destination account.

@@ -1,7 +1,8 @@
 import React from 'react';
 import { ChallengeActions } from '../common/ChallengeActions';
 import { getStreaks, MISS_TAGS } from '../../domain/progression';
-import { getChallengeComplexity } from '../../domain/complexity';
+import {classLabel} from '../../domain/skateClasses';
+import {PART_KINDS,PART_LABELS} from '../../domain/hardware';
 import { PracticeSession } from '../../domain/types';
 import { Modal } from '../common/Modal';
 import { formatDurationMs } from '../../domain/timer';
@@ -42,6 +43,8 @@ export const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
           </div>
         </div>
 
+        <section className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-700 space-y-2"><h3 className="font-semibold">Practice plan</h3><p>Goal: {session.goal?`${session.goal.target} ${session.goal.type==='streak'?'in a row':'total landings'}`:'Not recorded'}</p><p>Timer: {session.practiceTimer?.type||'Not recorded'} {session.practiceTimer?.durationMs?formatDurationMs(session.practiceTimer.durationMs):''}</p><p>Surface: {session.practiceSurface||'Not recorded'}</p><p>{session.parkedAt?'Parked for later':session.sessionEndedAt?`Ended: ${session.endedReason||'Not recorded'}`:'In progress'}</p></section>
+        <details className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-700"><summary className="cursor-pointer font-semibold">Parts used — archived snapshot</summary><div className="mt-3 space-y-3">{PART_KINDS.map(k=><div key={k}><h4>{PART_LABELS[k]}: {session.setupSnapshot.partsSnapshot?.[k]?.name||'Not recorded'}</h4><p className="text-neutral-500">{session.setupSnapshot.partsSnapshot?.[k]?.brand}</p>{Object.entries(session.setupSnapshot.partsSnapshot?.[k]?.specs||{}).filter(([,v])=>v).map(([key,value])=><p key={key}>{key}: {value}</p>)}</div>)}</div></details>
         {/* Breakdown */}
         <div>
           <div className="font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
@@ -149,7 +152,7 @@ export const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
             ? formatDurationMs(session.firstLandingElapsedMs) : 'Not recorded'} (active practice time; pauses excluded).
         </p>
         <div className="rounded-lg bg-neutral-50 dark:bg-neutral-800 p-3 text-xs space-y-1">
-          <p>Challenge complexity: <span className="capitalize">{getChallengeComplexity(session.trickResult)}</span> · Session difficulty: {session.difficultyRating} / 5</p>
+          <p>Skate class: <span className="capitalize">{classLabel(session.trickResult)}</span> · Session difficulty: {session.difficultyRating} / 5</p>
           <p>Current streak: {getStreaks(session).current} · Best recorded streak: {getStreaks(session).best} · Goal: {session.consistencyGoal || 3}</p>
           <p>Miss tags: {MISS_TAGS.filter(t=>(session.missTagCounts?.[t.id]||0)>0).map(t=>`${t.label}: ${session.missTagCounts?.[t.id]}`).join(' · ')||'None recorded'}</p>
           <p>Deck: {session.setupSnapshot.deckModel || 'Not recorded'} · Trucks: {session.setupSnapshot.truckModel || 'Not recorded'} · Wheel model: {session.setupSnapshot.wheelModel || 'Not recorded'}</p>

@@ -1,427 +1,78 @@
-import React, { useState } from 'react';
-import {
-  Stance,
-  Direction,
-  BodyVarial,
-  LandingPosition,
-  RevertDirection,
-  ParameterLocks,
-  SingleTrickParameters,
-} from '../../domain/types';
-import { BASE_TRICKS } from '../../domain/catalog';
-import { formatSingleTrickName, explainSingleTrick } from '../../domain/naming';
-import { generateSingleTrick, getCompatibleOptionsForLocks } from '../../domain/rules';
-import { useApp } from '../../context/AppContext';
-import {
-  Dices,
-  Lock,
-  Unlock,
-  Sparkles,
-  ArrowRight,
-  UserPlus,
-  LogIn,
-  CheckCircle2,
-  Info,
-} from 'lucide-react';
-import { Modal } from '../common/Modal';
+import './TrickLabPreview.css';
+import {BrandLogo} from '../common/BrandLogo';
+import {TrickDisplay} from '../generator/TrickDisplay';
+import {PracticePanel} from '../generator/PracticePanel';
+import {createPracticeSession} from '../../domain/practiceActions';
+import {Modal} from '../common/Modal';
+import React,{useState,useEffect} from 'react';
+import {HW_BUTTON} from '../settings/HardwareManager';
+import {ParameterSelector} from '../generator/ParameterSelector';
+import {generateChallenge} from '../../domain/challengeGeneration';
+import {baseChallengePool,selectPoolChallenge} from '../../domain/selectedChallengePool';
+import {minimumSkateClass} from '../../domain/skateClasses';
+import {trickKey} from '../../domain/progression';
+import {GeneratedTrickResult,GeneratorPresetConfig,ParameterLocks,ParameterExclusions,SingleTrickParameters,SkateClass,TrickMode,SetupData,PracticeSession} from '../../domain/types';
+export const TrickMatrixDemo:React.FC<{onPromptAuth:()=>void;onExpandedChange?:(expanded:boolean)=>void;embedded?:boolean}>=({onPromptAuth,onExpandedChange,embedded=false})=>{
+ const [step,S]=useState(0),[mode,M]=useState<TrickMode>('single'),[source,F]=useState('parameters'),[tier,C]=useState<SkateClass>('C'),[locks,L]=useState<ParameterLocks>({}),[excluded,E]=useState<ParameterExclusions>({}),[selected,P]=useState<string[]>([]),[result,R]=useState<GeneratedTrickResult|null>(null),[error,X]=useState('');
+ useEffect(()=>{onExpandedChange?.(step>0);},[step,onExpandedChange]);
+ const [demoSession,Q]=useState<PracticeSession|null>(null),[auth,A]=useState(false);
+ const demoSetups:SetupData[]=[{id:'demo-34',name:'Demo 34 mm setup',deckWidthMm:34,wheelMaterial:'urethane'},{id:'demo-32',name:'Demo 32 mm setup',deckWidthMm:32,wheelMaterial:'plastic'}];
+ const [params,V]=useState<SingleTrickParameters>({stance:'regular',direction:'none',baseTrickId:'kickflip',bodyVarial:'none',landing:'normal',revert:'none'});
+ const pool=baseChallengePool().filter(t=>t.mode===mode);
+ const generate=()=>{
+  const config:GeneratorPresetConfig={mode,skateClass:tier,complexityFilter:'all',singleLocks:locks,singleExclusions:excluded,step1Locks:locks,step2Locks:{},step1Exclusions:excluded,step2Exclusions:{},obstacleLocks:{},obstacleExclusions:{},activeParams:params,step1Params:params,step2Params:params,selectedObstacle:'ledge',obstacleData:{obstacleType:'ledge',approach:'frontside',obstacleTrickId:'50_50',entryTrickId:'ollie',exitTrick:'clean'}};
+  const next=source==='selected'?selectPoolChallenge(pool.filter(t=>selected.includes(trickKey(t))),mode,'all'):generateChallenge(config);
+  if('error' in next){X(next.error);return;}const generated={...next,skateClass:source==='parameters'?tier:minimumSkateClass(next)};R(generated);Q(createPracticeSession(generated,demoSetups[0]));X('');
+ };
+ const totalSteps=source==='parameters'?4:3,shownStep=step===4?totalSteps:step;
+ const emptyPool=step===2&&source==='selected'&&!pool.some(t=>selected.includes(trickKey(t)));
+ const choice=(active:boolean)=>`${HW_BUTTON} ${active?'bg-[#D4A72C]/10':''}`;
+ const requestAuth=()=>{S(0);onPromptAuth();};
+ const flow=<section aria-label="Trick Lab demo" className={`demo-white-controls bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 sm:p-8 space-y-5 w-full mx-auto max-w-none`}>
+ <header className="space-y-2"><p className="text-xs uppercase tracking-wider text-[#8A6500] dark:text-[#D4A72C]">Interactive Trick Lab preview</p><h3 className={step===0 ? "text-2xl sm:text-3xl font-semibold" : "text-xl font-semibold"}>{['Start a practice session','Choose your session mode','Choose your trick pool','Select your skate class','Generate & practice'][step]}</h3><p className="text-sm text-neutral-500">Try the current challenge flow. Sign in to configure your setup, goal, timer, and surface and save your practice.</p>{step>0&&<div role="progressbar" aria-label="Demo setup progress" aria-valuemin={0} aria-valuemax={totalSteps} aria-valuenow={shownStep} className="h-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden"><div className="h-full bg-[#D4A72C]" style={{width:`${shownStep/totalSteps*100}%`}}/></div>}</header>
+ {step===0&&<button className="demo-start-cta w-full sm:w-auto rounded-xl px-8 py-3.5 text-base font-bold cursor-pointer" onClick={()=>S(1)}><span aria-hidden="true" className="demo-edge demo-edge-top"/><span aria-hidden="true" className="demo-edge demo-edge-right"/><span aria-hidden="true" className="demo-edge demo-edge-bottom"/><span aria-hidden="true" className="demo-edge demo-edge-left"/>Try a Session</button>}
+ {step===1&&<div className="flex flex-wrap gap-3">{([['single','Single Trick'],['combo','Two-Trick Combo'],['obstacle','Obstacle']] as const).map(([id,label])=><button key={id} aria-pressed={mode===id} className={choice(mode===id)} onClick={()=>{M(id);R(null);X('');}}>{label}</button>)}</div>}
+ {step===2&&<div className="space-y-4"><div className="flex flex-wrap gap-3">{[['parameters','Parameters & Locks'],['selected','Selected Trick Pool']].map(([id,label])=><button key={id} className={choice(source===id)} aria-pressed={source===id} onClick={()=>F(id)}>{label}</button>)}<button className={HW_BUTTON} onClick={requestAuth}>Personal Trick Library · Sign in</button></div>
+ {source==='selected'?<fieldset className="grid sm:grid-cols-2 gap-3"><legend className="text-sm mb-3">Select the tricks to shuffle</legend>{pool.map(t=><label key={trickKey(t)} className="flex gap-2 items-start text-sm cursor-pointer"><input type="checkbox" className="accent-[#D4A72C] mt-1" checked={selected.includes(trickKey(t))} onChange={()=>P(selected.includes(trickKey(t))?selected.filter(k=>k!==trickKey(t)):[...selected,trickKey(t)])}/>{t.canonicalName}</label>)}{!pool.length&&<p className="text-sm text-neutral-500">The full Trick Lab supports saved combos and obstacle challenges in your pool. Try Parameters & Locks for this mode.</p>}</fieldset>:mode==='obstacle'?<p className="text-sm text-neutral-500">This preview shuffles valid ledge and rail challenges. Sign in for obstacle locks, transfers, and custom pools.</p>:<><p className="text-xs text-neutral-500">{mode==='combo'?'Configure the first trick; the second trick is generated to match its landing.':'Lock any parameter or customize its pool.'}</p><ParameterSelector locks={locks} exclusions={excluded} activeValues={params} onToggleLock={(k,v)=>L(prev=>{const next={...prev};if(v===undefined)delete next[k];else next[k]=v;return next;})} onClearLocks={()=>L({})} onToggleExclude={(k,id)=>E(prev=>({...prev,[k]:(prev[k]||[]).includes(id)?(prev[k]||[]).filter(v=>v!==id):[...(prev[k]||[]),id]}))} onResetExclusions={k=>E(prev=>({...prev,[k]:[]}))} onChangeValue={(k,v)=>{V(prev=>({...prev,[k]:v}));if(locks[k]!==undefined)L(prev=>({...prev,[k]:v}));}}/></>}
+ </div>}
+ {step===3&&<div className="grid sm:grid-cols-3 gap-3">{(['C','B','A'] as const).map(c=><button key={c} aria-pressed={tier===c} className={`${choice(tier===c)} text-left p-4`} onClick={()=>C(c)}><strong>Class {c}</strong><span className="block text-xs mt-2">{c==='C'?'Regular and fakie · standard tricks':c==='B'?'All four stances · standard tricks':'All four stances · adds specialty tricks'}</span></button>)}</div>}
+ {step===4&&<section aria-label="Challenge and practice session" className="trick-practice-workspace bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl">
+ <TrickDisplay demo trickResult={result} mode={mode} onChangeMode={M} onGenerate={generate} conflictError={error} onClearLocks={()=>L({})}/>
+ {result&&demoSession&&<PracticePanel key={demoSession.id} session={demoSession} savedSetups={demoSetups} onSelectSetup={()=>{}} onUpdateSession={async()=>{}} demo={{setups:demoSetups,onStart:()=>{S(0);A(true);}}}/>}
+ </section>}
 
-interface TrickMatrixDemoProps {
-  onPromptAuth: () => void;
-}
+ {emptyPool&&<p role="status" className="text-sm text-[#8A6500] dark:text-[#D4A72C]">Select at least one trick to continue.</p>}
+ {step>0&&<nav aria-label="Demo steps" className="flex justify-between gap-3 border-t border-neutral-200 dark:border-neutral-800 pt-4"><button data-demo-navigation className={HW_BUTTON} onClick={()=>S(step===4&&source!=='parameters'?2:step-1)}>Back</button>{step<4&&<button data-demo-navigation disabled={emptyPool} className={`${HW_BUTTON} disabled:cursor-not-allowed`} onClick={()=>{if(emptyPool)return;R(null);X('');S(step===2&&source!=='parameters'?4:step+1);}}>Continue</button>}</nav>}
+ </section>;
+ return <>
+ <section aria-label="Start a demo practice session" className={`demo-white-controls space-y-8 ${embedded?'':'bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 sm:p-8 max-w-xl mx-auto'}`}>
+   <div className="flex items-center gap-4">
+     <BrandLogo monogram className="w-16 sm:w-20 shrink-0" />
+     <div className="border-l border-neutral-300 dark:border-neutral-700 pl-4">
+       <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-neutral-500 dark:text-neutral-400">Fingerboard Lab</p>
+       <p className="text-xs text-[#8A6500] dark:text-[#D4A72C] mt-1">Find your next breakthrough.</p>
+     </div>
+   </div>
+   <header className="space-y-4">
+     <h2 className="text-base sm:text-xl xl:text-2xl whitespace-nowrap font-bold tracking-tight text-neutral-900 dark:text-white">Everything You Need to Progress</h2>
+     <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">Find your next challenge, make every attempt count,<span className="block">and see how your riding evolves.</span></p>
+   </header>
+   <ol aria-label="Your practice flow" className="grid grid-cols-3 gap-2 sm:gap-3">
+     {[['01','Choose','Your tricks'],['02','Generate','Your challenge'],['03','Practice','Your progress']].map(([number,title,detail])=><li key={number} className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-white/[0.025] p-3 sm:p-4 space-y-3">
+       <span className="block text-[10px] font-mono tracking-widest text-[#8A6500] dark:text-[#D4A72C]">{number}</span>
+       <div><span className="block text-sm font-semibold text-neutral-900 dark:text-neutral-100">{title}</span><span className="block text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 mt-1">{detail}</span></div>
+     </li>)}
+   </ol>
+   <div className="border-t border-neutral-200 dark:border-neutral-800 pt-6 space-y-4">
+     <div className="space-y-2">
+       <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">Start a Demo Practice Session</h3>
+       <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">Try the generator and preview your session settings. Sign in when you’re ready to save your progress.</p>
+     </div>
+     <button type="button" className="demo-start-cta w-full sm:w-auto rounded-xl px-8 py-3.5 text-base font-bold cursor-pointer inline-flex items-center justify-center gap-3" onClick={()=>{R(null);Q(null);X('');S(1);}}>Try a Session<svg aria-hidden="true" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button>
+   </div>
+ </section>
 
-export const TrickMatrixDemo: React.FC<TrickMatrixDemoProps> = ({ onPromptAuth }) => {
-  const { isLoggedIn, setActiveTab } = useApp();
-
-  const [locks, setLocks] = useState<ParameterLocks>({});
-  const [params, setParams] = useState<SingleTrickParameters>({
-    stance: 'regular',
-    direction: 'none',
-    baseTrickId: 'kickflip',
-    bodyVarial: 'none',
-    landing: 'normal',
-    revert: 'none',
-  });
-
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [lastGeneratedName, setLastGeneratedName] = useState<string | null>(null);
-
-  // Compute live compatible options based on current locks
-  const compatible = getCompatibleOptionsForLocks(locks, {});
-
-  // Compute live trick name & explanation based on current tweaked parameters
-  const currentFormattedName = formatSingleTrickName(params);
-  const currentBreakdown = explainSingleTrick(params);
-
-  const toggleLock = (key: keyof ParameterLocks, value: any) => {
-    setLocks((prev) => {
-      const next = { ...prev };
-      if (next[key] !== undefined) {
-        delete next[key];
-      } else {
-        next[key] = value;
-      }
-      return next;
-    });
-  };
-
-  const updateParam = (key: keyof SingleTrickParameters, value: any) => {
-    setParams((prev) => {
-      const updated = { ...prev, [key]: value };
-      // If parameter is locked, update the lock value too
-      if (key in locks && locks[key as keyof ParameterLocks] !== undefined) {
-        setLocks((l) => ({ ...l, [key]: value }));
-      }
-      return updated;
-    });
-  };
-
-  const handleGenerateClick = () => {
-    if (!isLoggedIn) {
-      setIsAuthModalOpen(true);
-      return;
-    }
-
-    try {
-      const result = generateSingleTrick(locks, {});
-      if ('params' in result) {
-        setParams(result.params);
-        setLastGeneratedName(formatSingleTrickName(result.params));
-      }
-    } catch {
-      // Fallback
-    }
-  };
-
-  return (
-    <div className="bg-neutral-900 dark:bg-black text-white rounded-2xl p-6 sm:p-8 border border-neutral-800 shadow-xl space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-800 pb-5">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-mono font-medium mb-1.5 border border-amber-500/20">
-            <Sparkles className="w-3 h-3" />
-            <span>Interactive Physics Demo</span>
-          </div>
-          <h3 className="text-xl font-bold tracking-tight text-white">
-            Live Trick Generator Sandbox
-          </h3>
-          <p className="text-xs text-neutral-400 mt-1 max-w-xl">
-            Tweak any parameter or lock specific categories. Experience our deterministic trick rules and rotational mechanics before signing in.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={handleGenerateClick}
-            className="px-5 py-2.5 bg-white text-neutral-950 hover:bg-neutral-200 font-bold text-xs rounded-xl flex items-center gap-2 shadow-sm transition-all cursor-pointer"
-          >
-            <Dices className="w-4 h-4 text-neutral-900" />
-            <span>Generate Random Trick</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Prominent Trick Preview Card */}
-      <div className="bg-neutral-800/80 rounded-xl p-5 border border-neutral-700 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">
-            Live Configured Result
-          </span>
-          {lastGeneratedName && (
-            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
-              <CheckCircle2 className="w-3 h-3" /> Randomized via Deterministic Rules
-            </span>
-          )}
-        </div>
-
-        <div className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-          {currentFormattedName}
-        </div>
-
-        {/* Breakdown tags */}
-        <div className="flex flex-wrap gap-2 pt-1">
-          {currentBreakdown.map((item, idx) => (
-            <span
-              key={idx}
-              className="text-xs px-2.5 py-1 rounded-md bg-neutral-900 text-neutral-300 border border-neutral-700 font-mono"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Interactive Parameter Controls Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Stance */}
-        <div className="bg-neutral-800/40 p-3.5 rounded-xl border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <label className="font-semibold text-neutral-200">Stance</label>
-            <button
-              type="button"
-              onClick={() => toggleLock('stance', params.stance)}
-              title={locks.stance ? 'Unlock Stance' : 'Lock Stance'}
-              className={`p-1 rounded cursor-pointer transition-colors ${
-                locks.stance ? 'text-amber-400 bg-amber-500/10' : 'text-neutral-500 hover:text-neutral-300'
-              }`}
-            >
-              {locks.stance ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-            </button>
-          </div>
-          <select
-            value={params.stance}
-            onChange={(e) => updateParam('stance', e.target.value as Stance)}
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neutral-500"
-          >
-            {(['regular', 'fakie', 'switch', 'nollie'] as Stance[]).map((st) => (
-              <option key={st} value={st} disabled={!compatible.compatibleStances.includes(st)}>
-                {st.toUpperCase()} {!compatible.compatibleStances.includes(st) ? '(Incompatible)' : ''}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Direction */}
-        <div className="bg-neutral-800/40 p-3.5 rounded-xl border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <label className="font-semibold text-neutral-200">Direction</label>
-            <button
-              type="button"
-              onClick={() => toggleLock('direction', params.direction)}
-              title={locks.direction ? 'Unlock Direction' : 'Lock Direction'}
-              className={`p-1 rounded cursor-pointer transition-colors ${
-                locks.direction ? 'text-amber-400 bg-amber-500/10' : 'text-neutral-500 hover:text-neutral-300'
-              }`}
-            >
-              {locks.direction ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-            </button>
-          </div>
-          <select
-            value={params.direction}
-            onChange={(e) => updateParam('direction', e.target.value as Direction)}
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neutral-500"
-          >
-            <option value="none">None / Straight</option>
-            <option value="frontside" disabled={!compatible.compatibleDirections.includes('frontside')}>
-              Frontside (FS) {!compatible.compatibleDirections.includes('frontside') ? '(Incompatible)' : ''}
-            </option>
-            <option value="backside" disabled={!compatible.compatibleDirections.includes('backside')}>
-              Backside (BS) {!compatible.compatibleDirections.includes('backside') ? '(Incompatible)' : ''}
-            </option>
-          </select>
-        </div>
-
-        {/* Base Trick */}
-        <div className="bg-neutral-800/40 p-3.5 rounded-xl border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <label className="font-semibold text-neutral-200">Base Trick</label>
-            <button
-              type="button"
-              onClick={() => toggleLock('baseTrickId', params.baseTrickId)}
-              title={locks.baseTrickId ? 'Unlock Base Trick' : 'Lock Base Trick'}
-              className={`p-1 rounded cursor-pointer transition-colors ${
-                locks.baseTrickId ? 'text-amber-400 bg-amber-500/10' : 'text-neutral-500 hover:text-neutral-300'
-              }`}
-            >
-              {locks.baseTrickId ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-            </button>
-          </div>
-          <select
-            value={params.baseTrickId}
-            onChange={(e) => updateParam('baseTrickId', e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neutral-500"
-          >
-            {BASE_TRICKS.map((trick) => (
-              <option key={trick.id} value={trick.id} disabled={!compatible.compatibleBaseTricks.includes(trick.id)}>
-                {trick.name} {!compatible.compatibleBaseTricks.includes(trick.id) ? '(Incompatible)' : ''}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Body Varial */}
-        <div className="bg-neutral-800/40 p-3.5 rounded-xl border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <label className="font-semibold text-neutral-200">Body Varial</label>
-            <button
-              type="button"
-              onClick={() => toggleLock('bodyVarial', params.bodyVarial)}
-              title={locks.bodyVarial ? 'Unlock Body Varial' : 'Lock Body Varial'}
-              className={`p-1 rounded cursor-pointer transition-colors ${
-                locks.bodyVarial ? 'text-amber-400 bg-amber-500/10' : 'text-neutral-500 hover:text-neutral-300'
-              }`}
-            >
-              {locks.bodyVarial ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-            </button>
-          </div>
-          <select
-            value={params.bodyVarial}
-            onChange={(e) => updateParam('bodyVarial', e.target.value as BodyVarial)}
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neutral-500"
-          >
-            <option value="none">None</option>
-            <option value="frontside" disabled={!compatible.compatibleBodyVarials.includes('frontside')}>
-              Frontside (Sex Change) {!compatible.compatibleBodyVarials.includes('frontside') ? '(Incompatible)' : ''}
-            </option>
-            <option value="backside" disabled={!compatible.compatibleBodyVarials.includes('backside')}>
-              Backside (BS Varial) {!compatible.compatibleBodyVarials.includes('backside') ? '(Incompatible)' : ''}
-            </option>
-          </select>
-        </div>
-
-        {/* Landing */}
-        <div className="bg-neutral-800/40 p-3.5 rounded-xl border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <label className="font-semibold text-neutral-200">Landing Position</label>
-            <button
-              type="button"
-              onClick={() => toggleLock('landing', params.landing)}
-              title={locks.landing ? 'Unlock Landing' : 'Lock Landing'}
-              className={`p-1 rounded cursor-pointer transition-colors ${
-                locks.landing ? 'text-amber-400 bg-amber-500/10' : 'text-neutral-500 hover:text-neutral-300'
-              }`}
-            >
-              {locks.landing ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-            </button>
-          </div>
-          <select
-            value={params.landing}
-            onChange={(e) => updateParam('landing', e.target.value as LandingPosition)}
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neutral-500"
-          >
-            <option value="normal">Normal Clean Landing</option>
-            <option value="manual" disabled={!compatible.compatibleLandings.includes('manual')}>
-              Manual (Tail Down) {!compatible.compatibleLandings.includes('manual') ? '(Incompatible)' : ''}
-            </option>
-            <option value="nose_manual" disabled={!compatible.compatibleLandings.includes('nose_manual')}>
-              Nose Manual (Nose Down) {!compatible.compatibleLandings.includes('nose_manual') ? '(Incompatible)' : ''}
-            </option>
-          </select>
-        </div>
-
-        {/* Revert */}
-        <div className="bg-neutral-800/40 p-3.5 rounded-xl border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <label className="font-semibold text-neutral-200">Revert Exit</label>
-            <button
-              type="button"
-              onClick={() => toggleLock('revert', params.revert)}
-              title={locks.revert ? 'Unlock Revert' : 'Lock Revert'}
-              className={`p-1 rounded cursor-pointer transition-colors ${
-                locks.revert ? 'text-amber-400 bg-amber-500/10' : 'text-neutral-500 hover:text-neutral-300'
-              }`}
-            >
-              {locks.revert ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-            </button>
-          </div>
-          <select
-            value={params.revert}
-            onChange={(e) => updateParam('revert', e.target.value as RevertDirection)}
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neutral-500"
-          >
-            <option value="none">None</option>
-            <option value="frontside" disabled={!compatible.compatibleReverts.includes('frontside')}>
-              Frontside Revert {!compatible.compatibleReverts.includes('frontside') ? '(Incompatible)' : ''}
-            </option>
-            <option value="backside" disabled={!compatible.compatibleReverts.includes('backside')}>
-              Backside Revert {!compatible.compatibleReverts.includes('backside') ? '(Incompatible)' : ''}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      {/* Action footer */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-neutral-800 text-xs text-neutral-400">
-        <div className="flex items-center gap-2">
-          <Info className="w-4 h-4 text-neutral-400 shrink-0" />
-          <span>
-            {Object.keys(locks).length > 0
-              ? `${Object.keys(locks).length} parameter${Object.keys(locks).length > 1 ? 's' : ''} locked. Unlocked values will be randomized.`
-              : 'All parameters unlocked. Random generation explores the full catalog.'}
-          </span>
-        </div>
-
-        {isLoggedIn ? (
-          <button
-            type="button"
-            onClick={() => setActiveTab('generator')}
-            className="text-white hover:text-amber-400 font-semibold flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
-          >
-            <span>Open in Full Generator Studio</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => {
-              setIsAuthModalOpen(true);
-            }}
-            className="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
-          >
-            <span>Sign in to unlock two-trick combos & timers</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-
-      {/* Auth Prompt Modal for non-users */}
-      <Modal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        title="Create Rider Account to Generate Tricks"
-      >
-        <div className="space-y-4 text-neutral-800 dark:text-neutral-200">
-          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-2">
-            <p className="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5 text-sm">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              Full Laboratory Access Required
-            </p>
-            <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">
-              You are currently viewing the sandbox demo. To roll randomized tricks, practice combos, start active session timers, log landing counts, and save custom deck specs, please create a free rider account or sign in.
-            </p>
-          </div>
-
-          <div className="space-y-2 text-xs text-neutral-600 dark:text-neutral-400">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Full deterministic random trick generation</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Two-trick combo transitions with strict stance physics</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Session timers, undo history, and landing percentage analytics</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Custom deck width, mold, shape, and wheel material tracking</span>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setIsAuthModalOpen(false);
-                onPromptAuth();
-              }}
-              className="w-full sm:w-auto flex-1 py-2.5 px-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold rounded-lg text-xs flex items-center justify-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>Go to Account Sign-Up</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsAuthModalOpen(false)}
-              className="w-full sm:w-auto py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-medium rounded-lg text-xs hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
-            >
-              Continue Tweaking Demo
-            </button>
-          </div>
-        </div>
-      </Modal>
-    </div>
-  );
+ <Modal isOpen={step>0} onClose={()=>S(0)} title="Configure your demo session" wide>{flow}</Modal>
+ <Modal isOpen={auth} onClose={()=>A(false)} title="Sign in to start your practice session"><div className="space-y-4"><p className="text-sm text-neutral-600 dark:text-neutral-300">Sign in or create a rider account to start your timer and save your attempts, landings, and progress.</p><button className="demo-auth-button demo-start-cta rounded-xl px-6 py-3 text-sm font-bold cursor-pointer" onClick={()=>{A(false);requestAuth();}}>Sign in / Create an account</button></div></Modal>
+ </>;
 };

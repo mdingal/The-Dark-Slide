@@ -13,6 +13,11 @@ import {
 } from './obstacleMechanics';
 
 export function formatSingleTrickName(params: SingleTrickParameters): string {
+  if(['feather_flip','unpossible'].includes(params.baseTrickId)) {
+    const name=params.baseTrickId==='feather_flip'?'Feather Flip':'Unpossible';
+    return [params.stance==='regular'?'':params.stance,name,params.bodyVarial==='none'?'':`${params.bodyVarial==='frontside'?'FS':'BS'} Body Varial`,params.landing==='normal'?'':params.landing==='manual'?'Manual':'Nose Manual',params.revert==='none'?'':`${params.revert==='frontside'?'FS':'BS'} Revert`].filter(Boolean).join(' ');
+  }
+
   const movements = resolveUnderlyingMovements(params);
   const recognition = recognizeTrickFromMovements(params.stance, movements);
 

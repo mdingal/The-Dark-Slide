@@ -1,3 +1,4 @@
+import {RiderOnboarding} from './components/auth/RiderOnboarding';
 import React from 'react';
 import { InfoPage, InfoPageId, readInfoPage } from './components/info/InfoPage';
 import { SiteFooter } from './components/info/SiteFooter';
@@ -15,6 +16,7 @@ const AppContent: React.FC = () => {
   const { activeTab, setActiveTab, isLoggedIn, profile, authLoading, authError, refreshAccount } = useApp();
 
   const [infoPage, setInfoPage] = React.useState<InfoPageId | null>(readInfoPage);
+  const needsOnboarding=isLoggedIn && !!profile?.onboarding && !profile.onboarding.completedAt;
   const previousTab = React.useRef(activeTab);
   const closeInfoPage = () => {
     if (readInfoPage()) window.location.hash = '';
@@ -47,11 +49,11 @@ const AppContent: React.FC = () => {
   return (
     <div className="cutting-mat-page min-h-screen flex flex-col bg-[#e8dfd1] dark:bg-neutral-950 text-[#292524] dark:text-neutral-100 transition-colors">
       <div className="sticky top-0 z-30">
-      <TopBar currentPage={infoPage} onNavigate={(tab) => { closeInfoPage(); setActiveTab(tab); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} />
+      <TopBar onboarding={needsOnboarding} currentPage={infoPage} onNavigate={(tab) => { if(needsOnboarding)return; closeInfoPage(); setActiveTab(tab); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} />
       </div>
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {infoPage ? <InfoPage page={infoPage} onHome={() => { closeInfoPage(); setActiveTab('home'); }} /> : <>
+        {needsOnboarding ? <RiderOnboarding key={profile?.id} /> : infoPage ? <InfoPage page={infoPage} onHome={() => { closeInfoPage(); setActiveTab('home'); }} /> : <>
         {authLoading && <p role="status" className="text-center py-8">Loading your account…</p>}
         {authError && <div role="alert" className="text-center py-4">{authError} <button className="underline" onClick={() => void refreshAccount()}>Retry</button></div>}
         {(!authLoading && (!isLoggedIn || activeTab === 'home')) && <LandingPage />}

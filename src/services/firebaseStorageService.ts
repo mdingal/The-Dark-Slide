@@ -6,7 +6,7 @@ export function requireRider(id: string): void {
   if (!auth.currentUser?.emailVerified || auth.currentUser.uid !== id) throw new Error('Sign in with your verified account to save progress.');
   if (typeof navigator !== 'undefined' && !navigator.onLine) throw new Error('You are offline. Connect before saving progress.');
 }
-const tools = ['savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary'] as const;
+const tools = ['savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary', 'partsInventory'] as const;
 export const storageService = {
  async getProfile(id: string): Promise<UserProfile | null> {
   requireRider(id); const root = await getDocFromServer(doc(db, 'users', id));
@@ -35,6 +35,23 @@ export const storageService = {
   requireRider(id); const result = await getDocsFromServer(collection(db, 'users', id, 'sessions'));
   return result.docs.map(row => row.data() as PracticeSession).sort((a,b) => b.generatedAt.localeCompare(a.generatedAt));
  },
- async saveSession(id: string, session: PracticeSession): Promise<void> { requireRider(id); await runTransaction(db, async tx => { const ref = doc(db, 'users', id, 'sessions', session.id); const old = await tx.get(ref); if ((old.data()?.cloudRevision || 0) !== (session.cloudRevision || 0)) throw new Error('Session changed on another device. Reload before saving.'); tx.set(ref, { ...cleanCloudData(session), cloudRevision: (session.cloudRevision || 0) + 1 }); }); session.cloudRevision = (session.cloudRevision || 0) + 1; },
+ async saveSession(id: string, session: PracticeSession): Promise<void> {
+  requireRider(id);
+  await runTransaction(db, async tx => {
+    const ref=doc(db,'users',id,'sessions',session.id),old=await tx.get(ref);
+    if((old.data()?.cloudRevision||0)!==(session.cloudRevision||0))throw Error('Session changed on another device. Reload before saving.');
+    if(session.sessionStartedAt) {
+      const setupRef=doc(db,'users',id,'savedSetups',session.setupSnapshot.id),setup=await tx.get(setupRef);
+      if (!old.data()?.sessionStartedAt && setup.exists()) {
+        const stable=(value:any):any=>Array.isArray(value)?value.map(stable):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().filter(k=>!['favorite','usedAt'].includes(k)).map(k=>[k,stable(value[k])])):value;
+        if(JSON.stringify(stable(cleanCloudData(session.setupSnapshot)))!==JSON.stringify(stable(setup.data())))throw Error('This setup changed on another device. Reload and choose it again.');
+      }
+      if(!old.data()?.sessionStartedAt&&!setup.exists())throw Error('Choose a saved fingerboard setup before starting.');
+      if(setup.exists()&&!setup.data().usedAt)tx.update(setupRef,{usedAt:session.sessionStartedAt});
+    }
+    tx.set(ref,{...cleanCloudData(session),cloudRevision:(session.cloudRevision||0)+1});
+  });
+  session.cloudRevision=(session.cloudRevision||0)+1;
+ },
  async deleteSession(id: string, sessionId: string): Promise<void> { requireRider(id); await deleteDoc(doc(db, 'users', id, 'sessions', sessionId)); },
 };

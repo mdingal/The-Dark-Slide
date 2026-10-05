@@ -1,3 +1,6 @@
+import {classLabel} from './skateClasses';
+import {goalReached} from './sessionPlan';
+import {PART_KINDS,PART_LABELS,PART_FIELDS} from './hardware';
 import { PracticeSession } from './types';
 import { getChallengeComplexity } from './complexity';
 import { compareSetups, getPersonalBests, getStreaks, MISS_TAGS, trickKey } from './progression';
@@ -29,7 +32,7 @@ export const CHARTS: ChartDefinition[] = [
   { id:'stanceFrequency', title:'Stance Distribution', category:'Tricks & Obstacles', kind:'bar', series:['Generated','Attempts'], description:'Record counts and attempts by starting stance; obstacle records without a rider stance appear as Not recorded. FS / BS approach is shown separately.' },
   { id:'stanceRate', title:'Landing Rate by Stance', category:'Tricks & Obstacles', kind:'bar', unit:'%', description:'Landings ÷ attempts by starting stance. Mixed tricks can influence differences between stances.' },
   { id:'trickFrequency', title:'Trick Frequency', category:'Tricks & Obstacles', kind:'bar', series:['Generated','Attempts'], description:'Top eight catalog tricks by attempts. Each combo step gets the full session attempt count; obstacles count their entry trick. These bars are not a partition of all attempts.' },
-  { id:'complexity', title:'Performance by Complexity', category:'Tricks & Obstacles', kind:'bar', unit:'%', description:'Landings ÷ attempts for Beginner, Intermediate, and Advanced generated complexity.' },
+  { id:'complexity', title:'Performance by Skate Class', category:'Tricks & Obstacles', kind:'bar', unit:'%', description:'Landings ÷ attempts by the recorded Class C, B, or A pool. Older sessions show their minimum compatible class.' },
   { id:'obstacles', title:'Obstacle Coverage', category:'Tricks & Obstacles', kind:'bar', description:'Record counts for flatground, ledges, and rails. Flatground and combo modes are classified independently of setup metadata.' },
   { id:'approach', title:'Obstacle Approach', category:'Tricks & Obstacles', kind:'bar', description:'FS and BS approach directions for obstacle records, separate from Regular, Fakie, Switch, and Nollie rider stances.' },
   { id:'grinds', title:'Grind & Slide Coverage', category:'Tricks & Obstacles', kind:'bar', description:'Starting and transfer grinds/slides counted separately. Session attempts are attributed to every included grind or slide.' },
@@ -40,6 +43,11 @@ export const CHARTS: ChartDefinition[] = [
   { id:'setupRate', title:'Setup Performance', category:'Hardware', kind:'bar', exact:true, unit:'%', description:'Weighted landing rates using archived setup snapshots. Choose one exact trick for a more useful comparison.' },
   { id:'truckRate', title:'Truck Performance', category:'Hardware', kind:'bar', exact:true, unit:'%', description:'Weighted landing rates by recorded truck model. Older sessions with no model are grouped as Not recorded.' },
   { id:'wheelRate', title:'Wheel Performance', category:'Hardware', kind:'bar', exact:true, unit:'%', description:'Weighted landing rates by wheel model and material. Sample counts are shown with each result.' },
+  {id:'surfaceRate',title:'Performance by Practice Surface',category:'Hardware',kind:'bar',exact:true,unit:'%',description:'Landing rates by session surface, with attempt counts. Compare the same trick for a useful comparison.'},
+  {id:'sessionGoals',title:'Session Goal Achievement',category:'Progress',kind:'bar',exact:true,unit:'%',description:'Finished sessions reaching their configured total-landings or best-streak target. Parked sessions are excluded.'},
+  {id:'timerGoals',title:'Goal Achievement by Timer',category:'Practice Habits',kind:'bar',exact:true,unit:'%',description:'Finished sessions reaching their goal, grouped by regular or countdown timer.'},
+  {id:'timerEnds',title:'How Sessions End',category:'Practice Habits',kind:'donut',description:'Completed sessions ended manually or by countdown, with parked sessions separate.'},
+  ...PART_KINDS.flatMap(kind=>['Brand','Model',...Object.keys(PART_FIELDS[kind])].map(field=>({id:`hardware_${kind}_${field}`,title:`${PART_LABELS[kind]}: ${field}`,category:'Hardware' as const,kind:'bar' as const,exact:true,unit:'%',description:`Landing rate by ${field.toLowerCase()} from the frozen ${PART_LABELS[kind].toLowerCase()} snapshot. Missing specifications appear as Not recorded; these comparisons are descriptive, not proof of cause.`}))),
 ];
 export const DEFAULT_PINS = ['landing','weekly','misses'];
 export interface DashboardPreferences {
@@ -71,7 +79,14 @@ export function chartData(id:string, sessions:PracticeSession[], now=new Date())
     const map=new Map<string,PracticeSession[]>();source.forEach(s=>{const k=key(s);map.set(k,[...(map.get(k)||[]),s]);});return [...map.entries()].sort(([a],[b])=>a.localeCompare(b));};
   const daily=group(attempted,sessionDay), row=(name:string,value:number,extra:Record<string,string|number>={}):AnalyticsRow=>({name,value:round(value),...extra});
   let rows:AnalyticsRow[]=[],note=`${sessions.length} records · ${attempted.length} attempted · ${sum(attempted,'attemptCount')} attempts`, empty='No matching data yet. Record an attempted session or adjust the filters.';
-  if(id==='landing') rows=daily.map(([d,s])=>row(d,rate(s),{Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));
+  if(id==='surfaceRate'||id.startsWith('hardware_')) {
+    const [kind,field]=id.startsWith('hardware_')?(()=>{const key=id.slice(9);const kind=PART_KINDS.find(k=>key.startsWith(k+'_'))!;return [kind,key.slice(kind.length+1)] as const;})():[null,null];
+    rows=group(attempted,s=>id==='surfaceRate'?s.practiceSurface||'Not recorded':kind?(field==='Brand'?(s.setupSnapshot.partsSnapshot?.[kind]?.brand||s.setupSnapshot.partsSnapshot?.[kind]?.name):field==='Model'?s.setupSnapshot.partsSnapshot?.[kind]?.name:s.setupSnapshot.partsSnapshot?.[kind]?.specs[field!])||'Not recorded':'Not recorded').map(([k,s])=>row(k,rate(s),{Sessions:s.length,Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));
+  } else if(id==='sessionGoals'||id==='timerGoals') {
+    const finished=sessions.filter(s=>s.sessionEndedAt&&s.goal);
+    rows=group(finished,s=>id==='timerGoals'?s.practiceTimer?.type||'Not recorded':`${s.goal!.target} ${s.goal!.type==='streak'?'in a row':'total landings'}`).map(([k,s])=>row(k,s.filter(goalReached).length/s.length*100,{Achieved:s.filter(goalReached).length,Sessions:s.length}));
+  } else if(id==='timerEnds') rows=group(sessions,s=>s.sessionEndedAt?s.endedReason||'Legacy / not recorded':s.parkedAt?'Parked':'Active').map(([k,s])=>row(k,s.length));
+  else if(id==='landing') rows=daily.map(([d,s])=>row(d,rate(s),{Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));
   else if(id==='activity') rows=daily.map(([d,s])=>row(d,sum(s,'attemptCount'),{Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));
   else if(id==='firstAttempts'||id==='firstTime') {
     const measured=landed.filter(s=>id==='firstAttempts'?s.firstLandingAttemptNumber!==undefined:s.firstLandingElapsedMs!==undefined);
@@ -79,7 +94,7 @@ export function chartData(id:string, sessions:PracticeSession[], now=new Date())
     note=`${measured.length} measured landed sessions · ${attempted.filter(s=>s.landingCount===0).length} unlanded · ${landed.length-measured.length} landed with missing measurements`;
     empty='Land a trick and record its first-landing measurement to see this trend.';
   } else if(id==='difficulty') {
-    rows=group(sessions.filter(s=>s.sessionEndedAt&&s.difficultyRating>=1&&s.difficultyRating<=5),sessionDay).map(([d,s])=>row(d,median(s.map(x=>x.difficultyRating)),{Rated:s.length}));
+    rows=group(sessions.filter(s=>s.sessionEndedAt&&!s.outcomeReviewPending&&s.difficultyRating>=1&&s.difficultyRating<=5),sessionDay).map(([d,s])=>row(d,median(s.map(x=>x.difficultyRating)),{Rated:s.length}));
     empty='Finish a session and give it a difficulty rating (1–5).';
   } else if(id==='firstTry') {
     const known=attempted.filter(s=>s.landingCount===0||s.firstLandingAttemptNumber!==undefined);
@@ -88,7 +103,7 @@ export function chartData(id:string, sessions:PracticeSession[], now=new Date())
   } else if(id==='bests') rows=group(attempted,s=>trickKey(s.trickResult)).map(([,s])=>{const p=getPersonalBests(s);return row(s[0].trickResult.canonicalName,p.highestLandingRate?round(p.highestLandingRate.rate*100):0,{'Fewest to first':p.fewestFirstLandingAttempts??'—','Best rate':p.highestLandingRate?`${round(p.highestLandingRate.rate*100)}% (${p.highestLandingRate.landings}/${p.highestLandingRate.attempts})`:'—','Best streak':p.bestStreak,Sessions:s.length});});
   else if(id==='streak') rows=daily.map(([d,s])=>row(d,Math.max(...s.map(x=>getStreaks(x).best)),{Sessions:s.length}));
   else if(id==='goal') {
-    const recorded=attempted.filter(s=>s.consistencyGoal!==undefined);
+    const recorded=attempted.filter(s=>s.goal?s.goal.type==='streak':s.consistencyGoal!==undefined);
     rows=group(recorded,s=>String(s.consistencyGoal)).map(([g,s])=>{const hit=s.filter(x=>getStreaks(x).best>=Number(g)).length;return row(`${g} in a row`,hit/s.length*100,{Achieved:hit,Sessions:s.length});});
     note+=` · ${attempted.length-recorded.length} records without a goal excluded`;
   } else if(id==='streakDistribution') rows=group(attempted,s=>String(getStreaks(s).best)).map(([k,s])=>row(`${k} consecutive`,s.length));
@@ -105,7 +120,7 @@ export function chartData(id:string, sessions:PracticeSession[], now=new Date())
   else if(id==='lastPracticed') rows=group(sessions,s=>trickKey(s.trickResult)).map(([,s])=>{const a=s.filter(x=>x.attemptCount>0).sort((a,b)=>sessionDay(b).localeCompare(sessionDay(a))),last=a[0]?sessionDay(a[0]):undefined;
     const days=last?Math.max(0,Math.floor((Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())-Date.parse(`${last}T00:00:00Z`))/86400000)):null;
     return row(s[0].trickResult.canonicalName,days??-1,{'Last practiced':last||'Never','Days since':days??'Never',Attempts:sum(s,'attemptCount')});}).sort((a,b)=>b.value-a.value);
-  else if(id==='stanceFrequency'||id==='stanceRate'||id==='complexity') rows=group(id==='stanceFrequency'?sessions:attempted,id==='complexity'?s=>getChallengeComplexity(s.trickResult):sessionStance).map(([k,s])=>row(k==='not_recorded'?'Not recorded':k,id==='stanceFrequency'?s.length:rate(s),{Generated:s.length,Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));
+  else if(id==='stanceFrequency'||id==='stanceRate'||id==='complexity') rows=group(id==='stanceFrequency'?sessions:attempted,id==='complexity'?s=>classLabel(s.trickResult):sessionStance).map(([k,s])=>row(k==='not_recorded'?'Not recorded':k,id==='stanceFrequency'?s.length:rate(s),{Generated:s.length,Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));
   else if(id==='trickFrequency'||id==='grinds') {
     const counts=new Map<string,{Generated:number;Attempts:number}>();
     for(const s of sessions){let ids:string[]=[];
@@ -117,7 +132,7 @@ export function chartData(id:string, sessions:PracticeSession[], now=new Date())
   else if(id==='obstacles') rows=group(sessions,s=>s.trickResult.mode==='obstacle'?(s.trickResult.obstacleData?.obstacleType||'Not recorded'):'flatground').map(([k,s])=>row(k,s.length,{Attempts:sum(s,'attemptCount')}));
   else if(id==='misses') rows=MISS_TAGS.map(t=>row(t.label,sessions.reduce((n,s)=>n+(s.missTagCounts?.[t.id]||0),0))).filter(r=>r.value>0);
   else if(id==='missTrend') rows=daily.filter(([,s])=>sum(s,'attemptCount')>sum(s,'landingCount')).map(([d,s])=>{const misses=sum(s,'attemptCount')-sum(s,'landingCount');return row(d,misses,{Misses:misses,...Object.fromEntries(MISS_TAGS.map(t=>[t.label,round(s.reduce((n,s)=>n+(s.missTagCounts?.[t.id]||0),0)/misses*100)]))});});
-  else if(id==='deck'||id==='wheel') rows=group(sessions,s=>id==='deck'?`${s.setupSnapshot.deckWidthMm}mm`:s.setupSnapshot.wheelMaterial).map(([k,s])=>row(k,s.length));
+  else if(id==='deck'||id==='wheel') rows=group(sessions,s=>id==='deck'?s.setupSnapshot.deckWidthMm?`${s.setupSnapshot.deckWidthMm}mm`:'Not recorded':s.setupSnapshot.wheelMaterial).map(([k,s])=>row(k,s.length));
   else if(['setupRate','truckRate','wheelRate'].includes(id)) rows=compareSetups(sessions,id==='setupRate'?'setup':id==='truckRate'?'trucks':'wheels').map(g=>row(g.label,g.landingRate*100,{Attempts:g.attempts,Landings:g.landings,Sessions:g.sessions}));
   if(id==='misses'||id==='missTrend') {
     const misses=sum(attempted,'attemptCount')-sum(attempted,'landingCount');

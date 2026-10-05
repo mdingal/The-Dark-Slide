@@ -354,6 +354,7 @@ export function generateBreakdown(
   params: SingleTrickParameters,
   baseDef: BaseTrickDefinition
 ): string[] {
+  if(['feather_flip','unpossible'].includes(params.baseTrickId)) return [baseDef.description, `Stance: ${params.stance}`, `Body varial: ${params.bodyVarial}`, `Landing: ${params.landing}`, `Revert: ${params.revert}`];
   const breakdown: string[] = [];
   const movements = params.movements || resolveUnderlyingMovements(params);
   const recognition = recognizeTrickFromMovements(params.stance, movements);

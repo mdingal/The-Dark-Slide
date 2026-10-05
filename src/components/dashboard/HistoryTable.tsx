@@ -6,7 +6,7 @@ import { Play, Eye, Trash2, ChevronDown, ChevronRight, CheckSquare, Square } fro
 import { Modal } from '../common/Modal';
 import { ChallengeActions } from '../common/ChallengeActions';
 import { getStreaks, MISS_TAGS } from '../../domain/progression';
-import { getChallengeComplexity } from '../../domain/complexity';
+import { classLabel } from '../../domain/skateClasses';
 
 interface HistoryTableProps {
   sessions: PracticeSession[];
@@ -141,7 +141,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
               <th className="py-3 px-3 text-right whitespace-nowrap" title="Elapsed active time at the first successful landing"><span>1st land</span><br /><span>Time</span></th>
               <th className="py-3 px-3 text-right">Active<br />Time</th>
               <th className="py-3 px-3 text-center">Status</th>
-              <th className="py-3 px-3">Complexity</th>
+              <th className="py-3 px-3">Class</th>
               <th className="py-3 px-3 text-right whitespace-nowrap">Best<br />Streak</th>
               <th className="py-3 px-3">Miss Tags</th>
               <th className="py-3 px-3 text-right">Actions</th>
@@ -270,7 +270,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
                       </span>
                     </td>
 
-                    <td className="py-2.5 px-3 capitalize">{getChallengeComplexity(session.trickResult)}</td>
+                    <td className="py-2.5 px-3 capitalize">{classLabel(session.trickResult)}</td>
                     <td className="py-2.5 px-3 text-right font-mono">{getStreaks(session).best}</td>
                     <td className="py-2.5 px-3 miss-tags-cell">
                       {MISS_TAGS.some(t => (session.missTagCounts?.[t.id] || 0) > 0) ? <div className="miss-tags-list">

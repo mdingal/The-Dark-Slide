@@ -48,16 +48,20 @@ service cloud.firestore {
       allow create, update: if owns(uid)
         && request.resource.data.id == uid
         && request.resource.data.email == request.auth.token.email
-        && request.resource.data.keys().hasOnly(['id', 'email', 'displayName', 'instagramHandle', 'preferredTheme', 'defaultSetupId', 'availableObstacles', 'dashboardPreferences', 'showcase', 'toolIds', 'importedLocalProfiles', 'cloudRevision', 'preferredDifficultyRange'])
+        && request.resource.data.keys().hasOnly(['id', 'email', 'displayName', 'instagramHandle', 'preferredTheme', 'defaultSetupId', 'availableObstacles', 'dashboardPreferences', 'showcase', 'toolIds', 'importedLocalProfiles', 'cloudRevision', 'preferredDifficultyRange', 'onboarding'])
         && request.resource.data.displayName is string
         && request.resource.data.displayName.size() > 0
         && request.resource.data.displayName.size() <= 80
+        && (!('onboarding' in request.resource.data) || (request.resource.data.onboarding is map && request.resource.data.onboarding.version == 1 && request.resource.data.onboarding.step is int && request.resource.data.onboarding.step >= 0 && request.resource.data.onboarding.step <= 6 && request.resource.data.onboarding.answers is map))
         && (!('showcase' in request.resource.data) || validShowcase(request.resource.data.showcase));
       match /{bucket}/{recordId} {
-        allow read, delete: if owns(uid) && bucket in ['sessions', 'savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary'];
+        allow delete: if owns(uid) && bucket in ['sessions','savedSetups','bookmarks','poolPresets','trickLibrary','partsInventory'] && (bucket != 'savedSetups' || !('usedAt' in resource.data));
+        allow read: if owns(uid) && bucket in ['sessions', 'savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary', 'partsInventory'];
         allow create, update: if owns(uid)
-          && bucket in ['sessions', 'savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary']
-          && request.resource.data.id == recordId;
+          && bucket in ['sessions', 'savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary', 'partsInventory']
+          && request.resource.data.id == recordId
+          && (bucket != 'sessions' || resource == null || !('sessionStartedAt' in resource.data) || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['setupSnapshot','goal','practiceTimer','practiceSurface']))
+          && (bucket != 'savedSetups' || resource == null || !('usedAt' in resource.data) || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['favorite']));
       }
     }
   }

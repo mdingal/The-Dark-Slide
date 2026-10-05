@@ -1,3 +1,4 @@
+import type {InventoryPart,PartKind,OnboardingData} from './hardware';
 import type {SharedChallengeLink} from './communityChallenges';
 import type { DashboardPreferences } from './dashboardAnalytics';
 export type Stance = 'regular' | 'fakie' | 'switch' | 'nollie';
@@ -7,7 +8,7 @@ export type LandingPosition = 'normal' | 'manual' | 'nose_manual';
 export type RevertDirection = 'none' | 'frontside' | 'backside';
 
 export type ObstacleType = 'flatground' | 'ledge' | 'rail' | 'manual_pad';
-export type WheelMaterial = 'plastic' | 'urethane' | 'resin';
+export type WheelMaterial = 'plastic' | 'urethane' | 'resin' | 'unknown';
 
 export type SessionStatus = 'pending' | 'success' | 'failed';
 export type ComplexityTier = 'beginner' | 'intermediate' | 'advanced';
@@ -179,7 +180,9 @@ export interface ComboStep {
 
 export type TrickMode = 'single' | 'combo' | 'obstacle';
 
+export type SkateClass = 'C' | 'B' | 'A';
 export interface GeneratedTrickResult {
+  skateClass?: SkateClass;
   complexity?: ComplexityTier;
   mode: TrickMode;
   canonicalName: string;
@@ -192,6 +195,10 @@ export interface GeneratedTrickResult {
 }
 
 export interface SetupData {
+  favorite?: boolean;
+  usedAt?: string;
+  partIds?: Partial<Record<PartKind,string>>;
+  partsSnapshot?: Partial<Record<PartKind,InventoryPart>>;
   deckModel?: string;
   truckModel?: string;
   wheelModel?: string;
@@ -223,6 +230,12 @@ export interface CounterActionHistoryItem {
 }
 
 export interface PracticeSession {
+  goal?: {type:'landings'|'streak';target:number};
+  practiceTimer?: {type:'regular'|'countdown';durationMs?:number};
+  practiceSurface?:string;
+  parkedAt?:string;
+  outcomeReviewPending?:boolean;
+  endedReason?:'manual'|'countdown';
   sharedChallenge?: SharedChallengeLink;
   cloudRevision?: number;
   currentLandingStreak?: number;
@@ -258,6 +271,7 @@ export interface ChallengeBookmark {
 }
 
 export interface GeneratorPresetConfig {
+  skateClass?: SkateClass;
   complexityFilter?: ComplexityFilter;
   mode: TrickMode;
   singleLocks: ParameterLocks;
@@ -293,6 +307,8 @@ export interface TrickLibraryEntry {
 export interface RiderShowcaseSettings { bio:string; goal:string; accent:'mustard'|'blue'|'purple'|'green'; featuredTricks:string[]; featuredMilestones:string[]; featuredSetupId:string; showStats:boolean; }
 
 export interface UserProfile {
+  partsInventory?: InventoryPart[];
+  onboarding?: OnboardingData;
   showcase?: RiderShowcaseSettings;
   cloudRevision?: number;
   importedLocalProfiles?: string[];

@@ -1,3 +1,4 @@
+import {classLabel} from '../../domain/skateClasses';
 import {ChallengeCompletionPanel} from '../common/ChallengeCompletionPanel';
 import {MilestonePanel} from '../common/MilestonePanel';
 import React, { useState, useMemo } from 'react';
@@ -18,6 +19,7 @@ const INPUT='rounded-md border border-neutral-300 dark:border-neutral-700 bg-neu
 const CARD='bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5';
 export const HistoryDashboard:React.FC=()=>{
   const {sessions,profile,resumeSession,deleteSession,deleteSessions,saveDashboardPreferences,showToast}=useApp();
+  const [surface,setSurface]=useState('all'),[tier,setTier]=useState('all'),[timerFilter,setTimerFilter]=useState('all'),[goalFilter,setGoalFilter]=useState('all'),[setupFilter,setSetupFilter]=useState('all');
   const [filters,setFilters]=useState<FilterState>(INITIAL_FILTERS),[mode,setMode]=useState('all');
   const [preferences,setPreferences]=useState(()=>dashboardPreferences(profile?.dashboardPreferences));
   const prefRef=React.useRef(preferences),revision=React.useRef(0);
@@ -34,6 +36,11 @@ export const HistoryDashboard:React.FC=()=>{
     // Generated challenges become history records only after practice starts.
     let result = sessions.filter(s => !!s.sessionStartedAt && Number.isFinite(Date.parse(s.sessionStartedAt)));
 
+    if(surface!=='all')result=result.filter(s=>s.practiceSurface===surface);
+    if(tier!=='all')result=result.filter(s=>classLabel(s.trickResult)===tier);
+    if(timerFilter!=='all')result=result.filter(s=>s.practiceTimer?.type===timerFilter);
+    if(goalFilter!=='all')result=result.filter(s=>s.goal?.type===goalFilter);
+    if(setupFilter!=='all')result=result.filter(s=>s.setupSnapshot.id===setupFilter);
     if (mode !== 'all') result = result.filter(s => s.trickResult.mode === mode);
 
     // 1. Search text
@@ -116,7 +123,7 @@ export const HistoryDashboard:React.FC=()=>{
     });
 
     return result;
-  }, [sessions, filters, mode]);
+  }, [sessions, filters, mode, surface, tier, timerFilter, goalFilter, setupFilter]);
 
   const challenges=useMemo(()=>[...new Map(filteredSessions.map(s=>[trickKey(s.trickResult),s.trickResult.canonicalName])).entries()].sort((a,b)=>a[1].localeCompare(b[1])),[filteredSessions]);
   const validExact=challenges.some(([k])=>k===exact)?exact:'';
@@ -140,7 +147,14 @@ export const HistoryDashboard:React.FC=()=>{
   const sharedControls=<div className="flex flex-wrap gap-3">
     <label className="text-xs font-medium flex flex-col gap-1">Date range<select aria-label="Dashboard date range" className={INPUT} value={filters.dateRange} onChange={e=>setFilters({...filters,dateRange:e.target.value})}><option value="all">All time</option><option value="today">Today</option><option value="week">Past 7 days</option><option value="month">Past 30 days</option></select></label>
     <label className="text-xs font-medium flex flex-col gap-1">Session mode<select aria-label="Dashboard session mode" className={INPUT} value={mode} onChange={e=>setMode(e.target.value)}><option value="all">All modes</option><option value="single">Single Trick</option><option value="combo">Two-Trick Combo</option><option value="obstacle">Obstacle</option></select></label>
-    <button type="button" onClick={()=>{setFilters(INITIAL_FILTERS);setMode('all');setExact('');}} className="text-xs underline underline-offset-4 self-end py-2">Reset filters</button>
+    {[
+      {label:'Practice surface',value:surface,set:setSurface,options:[...new Set(sessions.filter(s=>s.sessionStartedAt).map(s=>s.practiceSurface).filter((s):s is string=>!!s))].map(s=>[s,s])},
+      {label:'Skate class',value:tier,set:setTier,options:['Class C','Class B','Class A'].map(s=>[s,s])},
+      {label:'Timer',value:timerFilter,set:setTimerFilter,options:[['regular','Regular'],['countdown','Countdown']]},
+      {label:'Goal',value:goalFilter,set:setGoalFilter,options:[['landings','Total landings'],['streak','In a row']]},
+      {label:'Fingerboard setup',value:setupFilter,set:setSetupFilter,options:[...new Map(sessions.filter(s=>s.sessionStartedAt).map(s=>[s.setupSnapshot.id,s.setupSnapshot.name])).entries()]}
+    ].map(control=><label key={control.label} className="text-xs font-medium flex flex-col gap-1">{control.label}<select aria-label={control.label} className={INPUT} value={control.value} onChange={e=>control.set(e.target.value)}><option value="all">All</option>{control.options.map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>)}
+    <button type="button" onClick={()=>{setFilters(INITIAL_FILTERS);setMode('all');setExact('');setSurface('all');setTier('all');setTimerFilter('all');setGoalFilter('all');setSetupFilter('all');}} className="text-xs underline underline-offset-4 self-end py-2">Reset filters</button>
   </div>;
   const charts=(ids:string[])=>ids.map(id=>CHARTS.find(c=>c.id===id)).filter((c):c is ChartDefinition=>!!c).map(c=><AnalyticsChart key={c.id} definition={c} sessions={c.exact?exactSessions:filteredSessions} pinned={preferences.pinned.includes(c.id)} collapsed={preferences.collapsed.includes(c.id)} onPin={()=>pin(c.id)} onCollapse={()=>toggleCollapse(c.id)} onExpand={()=>setExpanded(c)} />);
   const activeCharts=preferences.view==='overview'?preferences.pinned:selected;

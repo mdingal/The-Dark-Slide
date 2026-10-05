@@ -1,0 +1,96 @@
+.demo-white-controls button:not([data-demo-navigation]),.demo-auth-button {
+ color: #fff;
+ background-color: #262626;
+ transition: background-color 150ms ease, border-color 150ms ease;
+}
+.demo-white-controls button:not([data-demo-navigation]):hover,.demo-auth-button:hover {
+ color: #fff;
+ background-color: #8a6500;
+ border-color: #d4a72c;
+}
+.demo-white-controls button[aria-pressed="true"] {border-color:#d4a72c;background-color:#41340f;}
+@media (prefers-reduced-motion: reduce) {.demo-white-controls button,.demo-auth-button {transition:none;}}
+
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta) {background-color:#b28a18;color:#fff;border:1px solid #d4a72c;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover {background-color:#c69a20;border-color:#e5be52;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):focus-visible {outline:2px solid #d4a72c;outline-offset:4px;}
+
+
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta) {
+ position:relative;
+ overflow:hidden;
+ color:#d4a72c;
+ background:#0a0a0a;
+ border-color:#8a6500;
+ transition:background-color 250ms ease,color 250ms ease,box-shadow 250ms ease;
+}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover,
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):focus-visible {
+ background:#d4a72c;
+ color:#0a0a0a;
+ border-color:#d4a72c;
+ box-shadow:0 0 5px #d4a72c80,0 0 20px #b58c204d,0 0 35px #8a650026;
+}
+.demo-start-cta .demo-edge {position:absolute;display:block;pointer-events:none;}
+.demo-start-cta .demo-edge-top {top:0;left:-100%;width:100%;height:2px;background:linear-gradient(90deg,transparent,#e8c45b);animation:demo-edge-x 2s linear infinite;}
+.demo-start-cta .demo-edge-right {top:-100%;right:0;width:2px;height:100%;background:linear-gradient(180deg,transparent,#d4a72c);animation:demo-edge-y 2s linear infinite .5s;}
+.demo-start-cta .demo-edge-bottom {bottom:0;right:-100%;width:100%;height:2px;background:linear-gradient(270deg,transparent,#e8c45b);animation:demo-edge-bottom 2s linear infinite 1s;}
+.demo-start-cta .demo-edge-left {bottom:-100%;left:0;width:2px;height:100%;background:linear-gradient(360deg,transparent,#d4a72c);animation:demo-edge-left 2s linear infinite 1.5s;}
+@keyframes demo-edge-x {0%{left:-100%;}50%,100%{left:100%;}}
+@keyframes demo-edge-y {0%{top:-100%;}50%,100%{top:100%;}}
+@keyframes demo-edge-bottom {0%{right:-100%;}50%,100%{right:100%;}}
+@keyframes demo-edge-left {0%{bottom:-100%;}50%,100%{bottom:100%;}}
+@media(prefers-reduced-motion:reduce){.demo-start-cta .demo-edge{animation:none;display:none;}:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta){transition:none;}}
+
+/* A masked ring keeps the moving highlight on the rounded button border. */
+@property --demo-border-angle {
+ syntax:'<angle>';
+ initial-value:0deg;
+ inherits:false;
+}
+.demo-start-cta .demo-edge {display:none;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta)::before {
+ content:'';
+ position:absolute;
+ inset:0;
+ padding:2px;
+ border-radius:inherit;
+ background:conic-gradient(from var(--demo-border-angle),#8a650040 0deg,#b58c2080 220deg,#d4a72c 285deg,#ffe08a 325deg,#d4a72c 345deg,#8a650040 360deg);
+ -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+ -webkit-mask-composite:xor;
+ mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+ mask-composite:exclude;
+ animation:demo-rounded-border 3s linear infinite;
+ pointer-events:none;
+}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover,
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):focus-visible {
+ box-shadow:0 0 8px #e8c45bcc,0 0 24px #d4a72c99,0 0 48px #b58c2059,0 0 72px #8a650033;
+}
+@keyframes demo-rounded-border {to{--demo-border-angle:360deg;}}
+@media(prefers-reduced-motion:reduce){:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta)::before{animation:none;}}
+
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta),
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover {border-color:transparent;}
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover::before {opacity:0;animation:none;}
+
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):hover,
+:is(.demo-white-controls button.demo-start-cta, button.demo-auth-button.demo-start-cta):focus-visible {color:#fff;}
+
+/* Launch CTA keeps its glow at rest; hover reveals the outlined version. */
+button.homepage-launch-cta {
+ background:#d4a72c;
+ color:#fff;
+ border:1px solid #d4a72c;
+ box-shadow:0 0 8px #e8c45bcc,0 0 24px #d4a72c99,0 0 48px #b58c2059,0 0 72px #8a650033;
+ transition:background-color 220ms ease,color 220ms ease,text-shadow 220ms ease;
+}
+button.homepage-launch-cta:hover,
+button.homepage-launch-cta:focus-visible {
+ background:#fff;
+ color:#d4a72c;
+ border-color:#d4a72c;
+ text-shadow:0 0 8px #d4a72c99,0 0 18px #b58c2066;
+}
+button.homepage-launch-cta:focus-visible {outline:2px solid #d4a72c;outline-offset:4px;}
+@media(prefers-reduced-motion:reduce){button.homepage-launch-cta{transition:none;}}

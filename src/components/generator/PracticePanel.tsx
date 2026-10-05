@@ -1,3 +1,5 @@
+import {SessionStartWizard} from './SessionStartWizard';
+import {closePractice,goalReached,remainingTime} from '../../domain/sessionPlan';
 import React, { useEffect, useState, useRef } from 'react';
 import { PracticeSession, SessionStatus, CounterActionHistoryItem, SetupData } from '../../domain/types';
 import {
@@ -27,6 +29,7 @@ import { MissTag } from '../../domain/types';
 import { recordCounterAction, undoCounterAction } from '../../domain/practiceActions';
 
 interface PracticePanelProps {
+  demo?: {setups:SetupData[];onStart:()=>void};
   session: PracticeSession;
   onUpdateSession: (updated: PracticeSession) => Promise<void>;
   onFinishSession?: (finished: PracticeSession) => void;
@@ -40,6 +43,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
   savedSetups,
   onSelectSetup,
   onFinishSession,
+  demo,
 }) => {
   // Local display time ticker
   const [displayDurationMs, setDisplayDurationMs] = useState<number>(() =>
@@ -76,77 +80,28 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
     return () => clearInterval(interval);
   }, [session.timerState]);
 
-  // Handle timer toggles
-  const handleToggleTimer = () => {
-    const now = Date.now();
-    let newTimerState;
-    let startedAt = session.sessionStartedAt;
-
-    if (session.timerState.isRunning) {
-      newTimerState = pauseTimer(session.timerState, now);
-    } else {
-      newTimerState = startTimer(session.timerState, now);
-      if (!startedAt) {
-        startedAt = new Date(now).toISOString();
-      }
-    }
-
-    const currentDuration = calculateActiveDurationMs(newTimerState, now);
-    void saveCounter({
-      ...session,
-      timerState: newTimerState,
-      sessionStartedAt: startedAt,
-      activeDurationMs: currentDuration,
-    });
+  const [startIntent,setStartIntent]=useState<'start'|'attempt'|'landing'|null>(null);
+  const [park,setPark]=useState(false);
+  const openStart=(intent:'start'|'attempt'|'landing')=>{setStartIntent(intent);};
+  const handleToggleTimer=()=>{
+    if(!session.sessionStartedAt){openStart('start');return;}
+    const now=Date.now();
+    void saveCounter({...session,parkedAt:undefined,timerState:session.timerState.isRunning?pauseTimer(session.timerState,now):startTimer(session.timerState,now)});
   };
-
-  // Opening confirmation does not mutate the saved session.
-  const handleStopSession = () => {
-    finishTimeRef.current = Date.now();
-    setFinishStatus(session.landingCount > 0 ? 'success' : 'pending');
-    setFinishRating(null);
-    setRecordMissingLanding(false);
-    setFinishError('');
-    setIsFinishOpen(true);
+  const handleStopSession=()=>{
+    if(!session.sessionStartedAt){openStart('start');return;}
+    finishTimeRef.current=Date.now();setPark(false);setFinishRating(null);setFinishError('');setIsFinishOpen(true);
+    void saveCounter({...session,timerState:pauseTimer(session.timerState,finishTimeRef.current),activeDurationMs:calculateActiveDurationMs(session.timerState,finishTimeRef.current)});
   };
-
-  const handleFinishSession = async () => {
-    if (isSaving || finishRating === null) return;
-    if (finishStatus === 'success' && session.landingCount === 0 && !recordMissingLanding) {
-      setFinishError('Record a landing or choose Pending or Failed.');
-      return;
-    }
-    setIsSaving(true);
-    setFinishError('');
-    const now = finishTimeRef.current;
-    const timerState = stopTimer(session.timerState, now);
-    const addLanding = finishStatus === 'success' && session.landingCount === 0;
-    const completedCounters = addLanding ? recordCounterAction({ ...session, timerState,
-      sessionStartedAt: session.sessionStartedAt || new Date(now).toISOString() }, 'landing', now) : session;
-    const finished: PracticeSession = {
-      ...completedCounters,
-      status: finishStatus,
-      difficultyRating: finishRating,
-      notes: notesDraft,
-      timerState,
-      activeDurationMs: calculateActiveDurationMs(timerState, now),
-      sessionEndedAt: new Date(now).toISOString(),
-      attemptCount: session.attemptCount + (addLanding ? 1 : 0),
-      landingCount: session.landingCount + (addLanding ? 1 : 0),
-      firstLandingAttemptNumber: addLanding
-        ? session.attemptCount + 1 : session.firstLandingAttemptNumber,
-      firstLandingElapsedMs: addLanding
-        ? calculateActiveDurationMs(timerState, now) : session.firstLandingElapsedMs,
-    };
-    try {
-      await onUpdateSession(finished);
-      setIsFinishOpen(false);
-      onFinishSession?.(finished);
-    } catch {
-      setFinishError('Could not save your session. Your session has not been cleared. Try again.');
-    } finally {
-      setIsSaving(false);
-    }
+  useEffect(()=>{if(session.outcomeReviewPending){finishTimeRef.current=Date.parse(session.sessionEndedAt!);setPark(false);setIsFinishOpen(true);}},[session.outcomeReviewPending]);
+  const handleFinishSession=async()=>{
+    if(isSaving||counterBusyRef.current||finishRating===null)return;
+    setIsSaving(true);setFinishError('');
+    const now=Date.now();
+    const finished={...closePractice(session,park,finishRating,notesDraft,now,session.endedReason||'manual'),outcomeReviewPending:false,...(isFinished?{sessionEndedAt:session.sessionEndedAt}: {})};
+    try{await onUpdateSession(finished);setIsFinishOpen(false);onFinishSession?.(finished);}
+    catch{setFinishError('Could not save. Your session is still available; please retry.');}
+    finally{setIsSaving(false);}
   };
 
   // Serialize counter updates so fast clicks cannot overwrite another landing.
@@ -154,7 +109,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
   const [counterBusy, setCounterBusy] = useState(false);
   const [counterError, setCounterError] = useState('');
   const saveCounter = async (updated: PracticeSession) => {
-    if (counterBusyRef.current || isFinished) return false;
+    if (demo || counterBusyRef.current || isFinished) return false;
     counterBusyRef.current = true;
     setCounterBusy(true);
     setCounterError('');
@@ -163,22 +118,15 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
     finally { counterBusyRef.current = false; setCounterBusy(false); }
   };
   const handleAddAttempt = async () => {
+    if(!session.sessionStartedAt){openStart('attempt');return;}
+    if(session.practiceTimer?.type==='countdown'&&remainingTime(session)===0)return;
     const saved = await saveCounter(recordCounterAction(session, 'attempt', Date.now(), selectedMissTags));
     if (saved) setSelectedMissTags([]);
   };
-  const handleAddLanding = () => saveCounter(recordCounterAction(session, 'landing'));
+  const handleAddLanding = () => {if(!session.sessionStartedAt){openStart('landing');return;}if(session.practiceTimer?.type==='countdown'&&remainingTime(session)===0)return;return saveCounter(recordCounterAction(session, 'landing'));};
   const handleUndo = () => saveCounter(undoCounterAction(session));
 
-  const handleSetupSelect = (setupId: string) => {
-    const chosen = savedSetups.find((s) => s.id === setupId);
-    if (chosen) {
-      onSelectSetup(chosen);
-      void saveCounter({
-        ...session,
-        setupSnapshot: { ...chosen },
-      });
-    }
-  };
+
 
   const landingRate =
     session.attemptCount > 0
@@ -408,6 +356,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
 
   return (
     <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-5">
+      {startIntent&&<SessionStartWizard session={session} demoSetups={demo?.setups} onClose={()=>setStartIntent(null)} onStart={async configured=>{if(demo){setStartIntent(null);demo.onStart();return;}const next=startIntent==='start'?configured:recordCounterAction(configured,startIntent!,Date.now(),selectedMissTags);await onUpdateSession(next);setStartIntent(null);setSelectedMissTags([]);}}/>}
       {/* Header with Title, Status and Setup Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800 gap-3">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 w-full">
@@ -426,30 +375,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
             </span>}
           </h2>
 
-          {/* Setup selector dropdown */}
-          <div className="flex flex-wrap items-center gap-2 min-w-0">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-              Setup Used:
-            </span>
-            {savedSetups.length > 0 ? (
-              <select
-                disabled={isFinished || counterBusy}
-                value={session.setupSnapshot.id}
-                onChange={(e) => handleSetupSelect(e.target.value)}
-                className="text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-md px-2.5 py-1 text-neutral-900 dark:text-white focus:outline-none cursor-pointer"
-              >
-                {savedSetups.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.deckWidthMm}mm · {s.wheelMaterial.charAt(0).toUpperCase() + s.wheelMaterial.slice(1).toLowerCase()})
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <span className="text-xs text-neutral-600 dark:text-neutral-400 font-mono">
-                {session.setupSnapshot.name || 'Standard 34mm'}
-              </span>
-            )}
-          </div>
+          <div className="text-xs min-w-0"><span className="text-neutral-500">Setup used: </span>{session.sessionStartedAt?session.setupSnapshot.name:'Choose when starting'}{session.practiceSurface&&<span className="block text-neutral-500">{session.practiceSurface}</span>}</div>
         </div>
 
         {isFinished && (
@@ -466,7 +392,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
         <div className="col-span-2 lg:col-span-1 min-w-0">
           <div className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">Practice Timer</div>
           <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white tabular-nums mt-0.5">
-            {formatDurationMs(displayDurationMs)}
+            {formatDurationMs(session.practiceTimer?.type==='countdown'?Math.max(0,(session.practiceTimer.durationMs||0)-displayDurationMs):displayDurationMs)}
           </div>
           {!isFinished && <div className="mt-2 flex flex-wrap items-center gap-2">
             <button
@@ -538,13 +464,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
       <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-3 space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-medium">Landing streak: <strong className="text-[#8A6500] dark:text-[#D4A72C]">{streaks.current}</strong> / {consistencyGoal} <span className="text-neutral-500">· Best: {streaks.best}</span></p>
-          <label className="flex items-center gap-2 text-xs">Goal
-            <select aria-label="Consistency goal" disabled={isFinished || counterBusy} value={consistencyGoal}
-              onChange={e => void saveCounter({ ...session, consistencyGoal: Number(e.target.value) })}
-              className="rounded-md bg-neutral-100 dark:bg-neutral-800 px-2 py-1">
-              {Array.from({length:20},(_,i)=>i+1).map(n => <option key={n} value={n}>{n} in a row</option>)}
-            </select>
-          </label>
+          <p className="text-xs">Goal: {session.goal?`${session.goal.target} ${session.goal.type==='streak'?'in a row':'total landings'}`:'Choose when starting'}{session.goal&&goalReached(session)?' · Reached!':''}</p>
         </div>
         {streaks.current >= consistencyGoal && <p role="status" className="text-xs text-emerald-600 dark:text-emerald-400">Consistency goal reached!</p>}
         {!isFinished && <p className="text-[11px] text-neutral-500">Add Attempt records a miss and resets your current streak. Successful Landing extends it.</p>}
@@ -617,29 +537,12 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
       >
         <div className="space-y-4">
           <p className="text-sm text-neutral-600 dark:text-neutral-300">
-            Are you sure you want to finish? Choose your result and difficulty.
+            End this session or park it for later. Rate how difficult it felt and add your notes.
             Your session will be saved before the active practice session resets.
           </p>
-          <fieldset disabled={isSaving} className="space-y-2">
-            <legend className="text-sm font-medium mb-2">Session status</legend>
-            <div className="flex gap-2">
-              {(['pending', 'success', 'failed'] as SessionStatus[]).map((status) => (
-                <button key={status} type="button" aria-pressed={finishStatus === status}
-                  onClick={() => { setFinishStatus(status); setFinishError(''); }}
-                  className={`px-3 py-2 rounded-md text-sm capitalize ${finishStatus === status
-                    ? 'bg-[#D4A72C] text-[#292524]' : 'bg-neutral-100 dark:bg-neutral-800'}`}>
-                  {status}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-          {finishStatus === 'success' && session.landingCount === 0 && (
-            <label className="flex gap-2 text-sm">
-              <input type="checkbox" checked={recordMissingLanding} disabled={isSaving}
-                onChange={(e) => setRecordMissingLanding(e.target.checked)} />
-              Record one successful landing (+1 attempt and +1 landing).
-            </label>
-          )}
+          {!isFinished&&<div className="flex gap-3"><button disabled={isSaving} type="button" aria-pressed={!park} className={`border rounded-lg p-3 ${!park?'border-[#D4A72C] bg-[#D4A72C]/10':'border-neutral-300 dark:border-neutral-700'}`} onClick={()=>setPark(false)}>End session</button><button disabled={isSaving} type="button" aria-pressed={park} className={`border rounded-lg p-3 ${park?'border-[#D4A72C] bg-[#D4A72C]/10':'border-neutral-300 dark:border-neutral-700'}`} onClick={()=>setPark(true)}>Park for later</button></div>}
+          <p className="text-sm">{park?'Your session will stay pending so you can resume it later.':`Goal ${goalReached(session)?'reached — success':'not reached — failed'}.`}</p>
+          <label className="block text-sm">Session notes & observations<textarea className="w-full rounded-lg border p-3 bg-transparent" rows={4} value={notesDraft} disabled={isSaving} onChange={e=>setNotesDraft(e.target.value)}/></label>
           <fieldset disabled={isSaving} className="space-y-2">
             <legend className="text-sm font-medium mb-2">Difficulty rating (required)</legend>
             <div className="flex gap-2">
@@ -658,10 +561,10 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           <div className="flex justify-end gap-3">
             <button type="button" disabled={isSaving} onClick={() => setIsFinishOpen(false)}
               className="px-3 py-2 rounded-md text-sm">Cancel</button>
-            <button type="button" disabled={isSaving || finishRating === null}
+            <button type="button" disabled={isSaving || counterBusy || finishRating === null}
               onClick={handleFinishSession}
               className="px-4 py-2 rounded-md bg-[#D4A72C] text-[#292524] text-sm font-semibold disabled:opacity-40">
-              {isSaving ? 'Saving...' : 'Yes, Finish Session'}
+              {isSaving ? 'Saving...' : park ? 'Park session' : 'End session'}
             </button>
           </div>
         </div>
