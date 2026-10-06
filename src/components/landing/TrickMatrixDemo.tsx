@@ -55,7 +55,7 @@ export const TrickMatrixDemo:React.FC<{onPromptAuth:()=>void;onExpandedChange?:(
    </div>
    <header className="space-y-4">
      <h2 className="text-base sm:text-xl xl:text-2xl whitespace-nowrap font-bold tracking-tight text-neutral-900 dark:text-white">Everything You Need to Progress</h2>
-     <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">Find your next challenge, make every attempt count,<span className="block">and see how your riding evolves.</span></p>
+     <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">Find your next challenge, make every attempt count,<span className="inline sm:block"> and see how your riding evolves.</span></p>
    </header>
    <ol aria-label="Your practice flow" className="grid grid-cols-3 gap-2 sm:gap-3">
      {[['01','Choose','Your tricks'],['02','Generate','Your challenge'],['03','Practice','Your progress']].map(([number,title,detail])=><li key={number} className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-white/[0.025] p-3 sm:p-4 space-y-3">
