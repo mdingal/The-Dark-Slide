@@ -1,3 +1,4 @@
+import {consumeLabStart} from '../../domain/dashboardEntry';
 import {HW_BUTTON} from '../settings/HardwareManager';
 import {challengeFitsClass,minimumSkateClass} from '../../domain/skateClasses';
 import type {SkateClass} from '../../domain/types';
@@ -8,6 +9,7 @@ import { SelectedTrickPool, PoolSource } from './SelectedTrickPool';
 import { baseChallengePool, uniqueChallenges, selectPoolChallenge, expandSelectedVariations } from '../../domain/selectedChallengePool';
 import { trickKey } from '../../domain/progression';
 import { getChallengeComplexity } from '../../domain/complexity';
+import '../landing/TrickLabPreview.css';
 import React, { useState, useEffect, useCallback } from 'react';
 import { getTransferChoices } from '../../domain/obstacleTransfers';
 import { useApp } from '../../context/AppContext';
@@ -53,9 +55,12 @@ export const GeneratorPage: React.FC = () => {
     startNewSession,
     updateSession,
     showToast,
+    setActiveTab,
   } = useApp();
 
-  const [flowStep,setFlowStep]=useState(currentSession ? 4 : 0);
+  const [startAtIntro]=useState(()=>consumeLabStart());
+  const [flowStep,setFlowStep]=useState(startAtIntro?0:currentSession ? 4 : 0);
+  useEffect(()=>{const reset=()=>{consumeLabStart();setFlowStep(0);};window.addEventListener('lab-start-entry',reset);return()=>window.removeEventListener('lab-start-entry',reset);},[]);
   const flowHeading=React.useRef<HTMLHeadingElement>(null);
   useEffect(()=>{flowHeading.current?.focus({preventScroll:true});},[flowStep]);
   const goToStep=(step:number)=>{setFlowStep(step);window.scrollTo({top:0,behavior:'smooth'});};
@@ -134,7 +139,7 @@ export const GeneratorPage: React.FC = () => {
   // Sync with currentSession if resuming
   useEffect(() => {
     if (currentSession) {
-      setFlowStep(4);
+      if(!startAtIntro)setFlowStep(4);
       setFinishedSession(null);
       setMode(currentSession.trickResult.mode);
       if (currentSession.trickResult.singleTrick) {
@@ -237,16 +242,22 @@ export const GeneratorPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <SharedChallengeBar />
-      <header className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 space-y-3">
+    <div className={`space-y-6 ${flowStep===0?'lab-start-layout':''}`}>
+      {flowStep===0&&<SharedChallengeBar />}
+      <div className={flowStep===0?'lab-start-combined':'block lg:contents'}>
+      {flowStep===0&&<section aria-label="Your practice flow" className="practice-flow-visual rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 lg:p-8 space-y-6">
+        <div className="space-y-2"><p className="text-xs uppercase tracking-widest text-[#8A6500] dark:text-[#D4A72C]">Your next session</p><h2 className="text-xl lg:text-2xl font-semibold">Make every session count.</h2></div>
+        <div className="grid grid-cols-3 gap-3 lg:gap-8"><div className="practice-flow-step min-w-0"><div aria-hidden="true" className="practice-flow-icon"><svg viewBox="0 0 100 100" className="w-full h-full max-w-32 text-[#D4A72C]" fill="none"><g transform="rotate(-28 50 50)"><rect x="35" y="12" width="30" height="76" rx="15" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity=".07"/><path d="M40 32h20M40 68h20" stroke="currentColor" strokeOpacity=".5"/><circle cx="42" cy="28" r="1.5" fill="currentColor"/><circle cx="58" cy="28" r="1.5" fill="currentColor"/><circle cx="42" cy="72" r="1.5" fill="currentColor"/><circle cx="58" cy="72" r="1.5" fill="currentColor"/><path d="M44 47h12M44 53h12" stroke="currentColor" strokeLinecap="round"/></g></svg></div><div><span className="text-xs font-mono text-[#8A6500] dark:text-[#D4A72C]">01</span><h3 className="text-sm lg:text-lg font-semibold mt-2">Choose your challenge</h3><p className="text-xs lg:text-base text-neutral-600 dark:text-neutral-400 mt-2">Pick a trick pool that fits your session.</p></div></div><div className="practice-flow-step min-w-0"><div aria-hidden="true" className="practice-flow-icon"><svg viewBox="0 0 100 100" className="w-full h-full max-w-32 text-[#D4A72C]" fill="none"><circle cx="50" cy="50" r="32" stroke="currentColor" strokeOpacity=".15" strokeWidth="5"/><path d="M50 18a32 32 0 1 1-30.4 22" stroke="currentColor" strokeWidth="5" strokeLinecap="round"/><path d="m36 50 10 10 20-22" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div><div><span className="text-xs font-mono text-[#8A6500] dark:text-[#D4A72C]">02</span><h3 className="text-sm lg:text-lg font-semibold mt-2">Practice with a goal</h3><p className="text-xs lg:text-base text-neutral-600 dark:text-neutral-400 mt-2">Choose your setup, target, and timer.</p></div></div><div className="practice-flow-step min-w-0"><div aria-hidden="true" className="practice-flow-icon"><svg viewBox="0 0 100 100" className="w-full h-full max-w-32 text-[#D4A72C]" fill="none"><path d="M18 26h64M18 50h64M18 74h64" stroke="currentColor" strokeOpacity=".12"/><path d="M20 72 37 58 53 63 68 40 81 28" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M20 72 37 58 53 63 68 40 81 28v51H20Z" fill="currentColor" fillOpacity=".07"/><circle cx="81" cy="28" r="4" fill="currentColor"/></svg></div><div><span className="text-xs font-mono text-[#8A6500] dark:text-[#D4A72C]">03</span><h3 className="text-sm lg:text-lg font-semibold mt-2">Review your progress</h3><p className="text-xs lg:text-base text-neutral-600 dark:text-neutral-400 mt-2">See your landings, streaks, and results.</p></div></div></div>
+      </section>}
+      <header className="lab-session-intro bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 space-y-3">
         <p className="text-xs uppercase tracking-wider text-[#8A6500] dark:text-[#D4A72C]">Trick Lab{flowStep>0?` · Step ${shownStep} / ${totalSteps}`:''}</p>
         <h1 ref={flowHeading} tabIndex={-1} className="text-2xl font-semibold focus:outline-none">{['Start a practice session','Choose your session mode','Choose your trick pool','Select your skate class','Generate & practice'][flowStep]}</h1>
-        {flowStep===0&&<><p className="text-sm text-neutral-600 dark:text-neutral-300">Choose a challenge, set your goal, and make your next session count.</p><button className={HW_BUTTON} onClick={()=>goToStep(1)}>Start a session</button></>}
+        {flowStep===0&&<><p className="text-sm text-neutral-600 dark:text-neutral-300">Choose a challenge, set your goal, and make your next session count.</p><button className="session-flow-primary homepage-launch-cta" onClick={()=>goToStep(practicing?4:1)}>{practicing?'RESUME CURRENT SESSION':'START A SESSION'}</button></>}
         {flowStep>0&&<div role="progressbar" aria-label="Challenge setup progress" aria-valuemin={0} aria-valuemax={totalSteps} aria-valuenow={shownStep} className="h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden"><div className="h-full bg-[#D4A72C]" style={{width:`${shownStep/totalSteps*100}%`}}/></div>}
       </header>
+      </div>
       {flowStep===1&&<section className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5">
-      <div className="flex flex-wrap items-center gap-3"><span className="text-sm font-semibold">Session mode</span>{([['single','Single Trick'],['combo','Two-Trick Combo'],['obstacle','Obstacle']] as const).map(([id,label])=><button key={id} aria-pressed={mode===id} onClick={()=>setMode(id)} className={`rounded-lg px-4 py-2 text-sm border cursor-pointer ${mode===id?'text-[#8A6500] dark:text-[#D4A72C] border-[#D4A72C] bg-[#D4A72C]/10':'border-neutral-300 dark:border-neutral-700'}`}>{label}</button>)}</div>
+      <div className="session-mode-choices grid grid-cols-1 gap-3"><span className="text-base font-semibold col-span-full">Session mode</span>{([['single','Single Trick'],['combo','Two-Trick Combo'],['obstacle','Obstacle']] as const).map(([id,label])=><button key={id} aria-pressed={mode===id} onClick={()=>setMode(id)} className={`rounded-lg px-4 py-2 text-sm border cursor-pointer ${mode===id?'text-[#8A6500] dark:text-[#D4A72C] border-[#D4A72C] bg-[#D4A72C]/10':'border-neutral-300 dark:border-neutral-700'}`}>{label}</button>)}</div>
       </section>}
       {flowStep===2&&<>
       <SelectedTrickPool stances={stances} onStances={setStances} stanceVariations={stanceVariations} onStanceVariations={setStanceVariations} rotationVariations={rotationVariations} onRotationVariations={setRotationVariations} rotations={rotations} onRotations={setRotations} source={poolSource} onSource={setPoolSource} items={poolItems} selected={poolSelection} onSelected={poolSource==='library'?setLibrarySelection:setCustomSelection} status={libraryStatus} onStatus={setLibraryStatus} />
@@ -370,7 +381,9 @@ export const GeneratorPage: React.FC = () => {
           onFinishSession={(finished) => {
             setFinishedSession(finished.sessionEndedAt?finished:null);
             setCurrentSession(null);
-            showToast(finished.status==='pending'?'Session parked. Resume it from History.':'Session saved. Generate a new challenge when ready.');
+            showToast(finished.status==='pending'?'Session parked. Resume it from History.':'Session saved. Review your results in History.');
+            setActiveTab('history');
+            window.scrollTo({top:0,behavior:'instant'});
           }}
           onUpdateSession={updateSession}
           savedSetups={profile?.savedSetups || []}
@@ -383,8 +396,9 @@ export const GeneratorPage: React.FC = () => {
 
       {emptyPool&&<p role="status" className="text-sm text-[#8A6500] dark:text-[#D4A72C]">Select at least one trick from this pool to continue.</p>}
       {flowStep>0&&<nav aria-label="Practice setup steps" className="flex justify-between gap-3">
-        <button className={HW_BUTTON} disabled={isGenerating||practicing} onClick={()=>goToStep(flowStep===4&&poolSource!=='parameters'?2:flowStep-1)}>Back</button>
-        {flowStep<4&&<button disabled={emptyPool} className={`${HW_BUTTON} disabled:cursor-not-allowed`} onClick={()=>{if(emptyPool)return;goToStep(flowStep===2&&poolSource!=='parameters'?4:flowStep+1);}}>Continue</button>}
+        <button className="session-flow-back" disabled={isGenerating||practicing} onClick={()=>goToStep(flowStep===4&&poolSource!=='parameters'?2:flowStep-1)}>Back</button>
+        <button type="button" className="session-flow-back lab-flow-reset" disabled={isGenerating} onClick={()=>goToStep(0)}>Reset</button>
+        {flowStep<4&&<button disabled={emptyPool} className="session-flow-primary lab-flow-continue disabled:cursor-not-allowed" onClick={()=>{if(emptyPool)return;goToStep(flowStep===2&&poolSource!=='parameters'?4:flowStep+1);}}>Continue</button>}
       </nav>}
       {flowStep===4&&<>
       <ChallengeSessionStatus session={currentSession || finishedSession} />

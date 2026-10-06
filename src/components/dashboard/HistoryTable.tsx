@@ -112,7 +112,16 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({
         </div>
       )}
 
-      <div className="history-table-fit">
+      <div className="mobile-history-cards lg:hidden p-4 space-y-4">
+        <button type="button" onClick={handleToggleSelectAll} className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 p-3 text-sm">{isAllSelected?'Clear selection':'Select all matching sessions'}</button>
+        {displayedSessions.map(s=><article key={s.id} className="border border-neutral-200 dark:border-neutral-700 rounded-xl p-4 space-y-4">
+          <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs text-neutral-500">{new Date(s.sessionStartedAt||s.generatedAt).toLocaleDateString()} · {s.status}</p><h3 className="font-semibold break-words mt-1">{s.trickResult.canonicalName}</h3><p className="text-xs text-neutral-500 mt-2">{s.trickResult.mode} · {classLabel(s.trickResult)} · {s.setupSnapshot.name}</p></div><button type="button" aria-label={`Select ${s.trickResult.canonicalName}`} aria-pressed={selectedIds.has(s.id)} onClick={e=>handleToggleSelectRow(s.id,e)} className="shrink-0">{selectedIds.has(s.id)?<CheckSquare className="w-5 h-5"/>:<Square className="w-5 h-5"/>}</button></div>
+          <dl className="grid grid-cols-2 gap-3 text-sm">{[['Attempts',s.attemptCount],['Landings',s.landingCount],['Practice time',formatDurationMs(s.activeDurationMs)],['Best streak',s.bestLandingStreak||0]].map(([label,value])=><div key={label}><dt className="text-xs text-neutral-500">{label}</dt><dd className="font-semibold mt-1">{value}</dd></div>)}</dl>
+          <div className="grid grid-cols-2 gap-2"><button type="button" onClick={()=>onOpenDetails(s)} className="rounded-lg border border-[#D4A72C] px-3 py-2 text-sm">View details</button><button type="button" onClick={()=>onResume(s)} className="rounded-lg bg-[#D4A72C] text-neutral-950 px-3 py-2 text-sm">Open session</button></div>
+          <details><summary className="text-sm text-neutral-500 cursor-pointer">More actions</summary>          <div className="flex flex-wrap justify-between items-center gap-3"><ChallengeActions result={s.trickResult} compact/><button type="button" onClick={()=>setDeleteConfirmSession(s)} className="px-3 py-2 text-sm text-rose-600 dark:text-rose-400">Delete</button></div></details>
+        </article>)}
+      </div>
+      <div className="history-table-fit hidden lg:block">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/75 dark:bg-neutral-950/50 text-neutral-700 dark:text-neutral-300 font-semibold font-mono">

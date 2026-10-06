@@ -1,3 +1,4 @@
+import {requestDashboardView,requestLabStart} from '../domain/dashboardEntry';
 import {riderSetupAnswers} from '../domain/riderSetup';
 import {closePractice,remainingTime} from '../domain/sessionPlan';
 import {SharedChallengeLink} from '../domain/communityChallenges';
@@ -111,7 +112,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       profileRef.current = rider; setProfile(rider); setSessions(records);
       setActiveSetupState(rider.savedSetups.find(s => s.id === rider!.defaultSetupId) || rider.savedSetups[0] || DEFAULT_FALLBACK_SETUP);
       setCurrentSession(records.find(s => s.status === 'pending' && !s.sessionEndedAt) || null);
-      window.dispatchEvent(new CustomEvent('rider-theme-loaded', { detail: rider.preferredTheme || 'system' }));
+      window.dispatchEvent(new CustomEvent('rider-theme-loaded', { detail: rider.preferredTheme === 'light' ? 'light' : 'dark' }));
       setIsFirstLogin(first); setIsLoggedIn(true);
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     } catch {
@@ -379,7 +380,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <AppContext.Provider
       value={{
         activeTab,
-        setActiveTab,
+        setActiveTab: (tab) => { if(tab==='generator')requestLabStart(); if(tab==='history'){requestDashboardView('overview');window.dispatchEvent(new CustomEvent('dashboard-view-change',{detail:{...profile?.dashboardPreferences,view:'overview',category:'Progress'}}));} setActiveTab(tab); },
         profile,
         activeSetup,
         setActiveSetup,

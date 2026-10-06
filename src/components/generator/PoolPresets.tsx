@@ -19,9 +19,9 @@ export const PoolPresets: React.FC<{ config: GeneratorPresetConfig; onApply: (co
     finally { busyRef.current = false; setBusy(false); }
   };
   const input = 'rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-xs min-w-0';
-  return <section aria-label="Pool presets" className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-3">
+  return <details aria-label="Pool presets" className="pool-presets-disclosure rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-3">
+    <summary className="text-sm font-semibold cursor-pointer">Pool Presets <span className="text-xs font-normal text-neutral-500">({presets.length} saved)</span></summary>
     <div>
-      <h2 className="text-sm font-semibold">Pool Presets</h2>
       <p className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">Save pools, locks, and selected values for all three modes. Applying a preset changes the next generation, not your current session.</p>
     </div>
     <div className="flex flex-col lg:flex-row gap-3">
@@ -46,5 +46,5 @@ export const PoolPresets: React.FC<{ config: GeneratorPresetConfig; onApply: (co
       </form>
     </div>
     {error && <p role="alert" className="text-xs text-rose-600">{error}</p>}
-  </section>;
+  </details>;
 };

@@ -47,7 +47,7 @@ const AppContent: React.FC = () => {
 
 
   return (
-    <div className="cutting-mat-page min-h-screen flex flex-col bg-[#e8dfd1] dark:bg-neutral-950 text-[#292524] dark:text-neutral-100 transition-colors">
+    <div className={`${isLoggedIn&&!needsOnboarding?'mobile-has-navigation':''} cutting-mat-page min-h-screen flex flex-col bg-[#e8dfd1] dark:bg-neutral-950 text-[#292524] dark:text-neutral-100 transition-colors`}>
       <div className="sticky top-0 z-30">
       <TopBar onboarding={needsOnboarding} currentPage={infoPage} onNavigate={(tab) => { if(needsOnboarding)return; closeInfoPage(); setActiveTab(tab); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} />
       </div>
@@ -64,7 +64,7 @@ const AppContent: React.FC = () => {
         </>}
       </main>
 
-      <SiteFooter currentPage={infoPage} />
+      <SiteFooter currentPage={infoPage} className={isLoggedIn ? 'hidden lg:block' : ''} />
 
       <Toast />
     </div>

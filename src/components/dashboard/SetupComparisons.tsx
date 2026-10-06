@@ -24,15 +24,15 @@ export const SetupComparisons:React.FC<{sessions:PracticeSession[];expanded?:boo
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
+        <table className="mobile-data-table w-full text-left text-xs">
           <thead><tr className="border-b border-neutral-200 dark:border-neutral-800">
             {['Hardware','Sessions','Attempts','Landings','Landing rate','Avg. attempts to first land','Practice time'].map(t=><th key={t} className="p-2 whitespace-nowrap">{t}</th>)}
           </tr></thead>
           <tbody>{rows.map(row=><tr key={row.key} className="border-b border-neutral-100 dark:border-neutral-800">
-            <td className="p-2 min-w-52">{row.label}</td><td className="p-2">{row.sessions}</td><td className="p-2">{row.attempts}</td><td className="p-2">{row.landings}</td>
-            <td className="p-2 font-mono">{Math.round(row.landingRate*100)}%</td>
-            <td className="p-2">{row.averageFirstLandingAttempts!==undefined?`${row.averageFirstLandingAttempts.toFixed(1)} (${row.firstLandingSamples} sessions)`:'—'}</td>
-            <td className="p-2 font-mono whitespace-nowrap">{formatDurationMs(row.durationMs)}</td>
+            <td data-label="Hardware" className="p-2 min-w-52">{row.label}</td><td data-label="Sessions" className="p-2">{row.sessions}</td><td data-label="Attempts" className="p-2">{row.attempts}</td><td data-label="Landings" className="p-2">{row.landings}</td>
+            <td data-label="Landing rate" className="p-2 font-mono">{Math.round(row.landingRate*100)}%</td>
+            <td data-label="Average attempts to first landing" className="p-2">{row.averageFirstLandingAttempts!==undefined?`${row.averageFirstLandingAttempts.toFixed(1)} (${row.firstLandingSamples} sessions)`:'—'}</td>
+            <td data-label="Practice time" className="p-2 font-mono whitespace-nowrap">{formatDurationMs(row.durationMs)}</td>
           </tr>)}</tbody>
         </table>
       </div>

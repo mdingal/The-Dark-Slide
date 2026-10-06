@@ -594,3 +594,239 @@ html.dark body,
   background-color: rgba(7, 7, 7, 0.90);
   border-top-color: rgba(200, 200, 200, 0.14);
 }
+/* Mobile ergonomics: reachable navigation, readable inputs, and vertical records. */
+@media(max-width:1023px){
+ .mobile-has-navigation{padding-bottom:calc(84px + env(safe-area-inset-bottom));}
+ .cutting-mat-page main{padding-left:16px;padding-right:16px;min-width:0;}
+ .cutting-mat-page button,.cutting-mat-page summary,
+ .mobile-dialog-panel button,.mobile-dialog-panel summary{min-height:44px;touch-action:manipulation;}
+ .cutting-mat-page button:has(svg):not(:has(span)),.mobile-dialog-panel button:has(svg):not(:has(span)){min-width:44px;}
+ .cutting-mat-page input:not([type=checkbox]):not([type=radio]),.cutting-mat-page select,.cutting-mat-page textarea,
+ .mobile-dialog-panel input:not([type=checkbox]):not([type=radio]),.mobile-dialog-panel select,.mobile-dialog-panel textarea{font-size:16px;min-height:44px;max-width:100%;}
+ .cutting-mat-page input[type=checkbox],.cutting-mat-page input[type=radio],.mobile-dialog-panel input[type=checkbox],.mobile-dialog-panel input[type=radio]{width:20px;height:20px;flex-shrink:0;}
+ .cutting-mat-page :is(section,article,fieldset){min-width:0;}
+ .cutting-mat-page nav:not(.mobile-bottom-navigation):not([aria-label="Main Navigation"]){flex-wrap:wrap;}
+ .cutting-mat-page nav[aria-label="Dashboard views"],.cutting-mat-page nav[aria-label="Analytics categories"],.cutting-mat-page nav[aria-label="Parts categories"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+ .cutting-mat-page nav[aria-label="Parts categories"] button{white-space:normal;}
+ .mobile-dialog-overlay{align-items:flex-end;padding:0;}
+ .mobile-dialog-panel{max-height:calc(100dvh - env(safe-area-inset-top) - 16px);border-bottom-left-radius:0;border-bottom-right-radius:0;}
+ .mobile-dialog-content{padding-bottom:calc(24px + env(safe-area-inset-bottom));}
+ .mobile-dialog-panel nav[aria-label="Demo steps"]{position:sticky;bottom:0;background:inherit;}
+ .mobile-data-table,.mobile-data-table tbody{display:block;width:100%;}
+ .mobile-data-table thead{display:none;}
+ .mobile-data-table tr{display:block;border:1px solid #73737355;border-radius:12px;margin:12px 0;padding:12px;}
+ .mobile-data-table td{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-width:0!important;width:auto!important;white-space:normal!important;overflow-wrap:anywhere;border:0;text-align:right;}
+ .mobile-data-table td::before{content:attr(data-label);font-family:inherit;text-align:left;color:#737373;font-weight:500;}
+ .mobile-data-table td:first-child{display:block;text-align:left;font-weight:600;font-size:14px;border-bottom:1px solid #73737333;margin-bottom:8px;}
+ .mobile-data-table td:first-child::before{display:none;}
+ .mobile-expanded-chart{padding:8px!important;}
+ .mobile-expanded-chart>div{padding:16px!important;}
+ .cutting-mat-page [role=status].fixed{bottom:calc(90px + env(safe-area-inset-bottom));}
+}
+@media(max-width:639px){
+ .demo-white-controls h2{white-space:normal!important;font-size:22px;line-height:1.3;}
+ .trick-practice-workspace button{min-width:0!important;}
+ .trick-practice-workspace button:has(svg){white-space:nowrap!important;}
+ .trick-practice-workspace button.min-w-\[140px\],.trick-practice-workspace button.min-w-\[220px\]{flex-basis:100%;}
+ .trick-practice-workspace button[title="Stop timer and finalize practice session"]{white-space:nowrap!important;}
+ .homepage-feature-grid{gap:16px;}
+ .mobile-bottom-navigation button{padding:6px 2px;}
+ .cutting-mat-page header>div>div{min-width:0;}
+}
+
+@media(max-width:1023px){
+ .mobile-has-navigation:has(.community-challenge-dock-signed-in){padding-bottom:calc(230px + env(safe-area-inset-bottom));}
+ .community-challenge-dock-signed-in{position:fixed;left:12px;right:12px;bottom:calc(80px + env(safe-area-inset-bottom));z-index:35;background:#eee5d7;}
+ .dark .community-challenge-dock-signed-in{background:rgba(10,10,10,.97);}
+ .community-challenge-dock-signed-in>div{padding:8px;}
+ .community-challenge-dock-signed-in>div>div:first-child{display:none;}
+ .community-challenge-dock-signed-in .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+ .community-challenge-dock-signed-in button>div{flex-direction:column;gap:2px;}
+ .community-challenge-dock-signed-in button{padding:8px;}
+ .community-challenge-dock-signed-in button>div span:last-child{font-size:9px;}
+ .session-mode-choices>button{text-align:left;padding:14px;}
+ .mobile-parameter-card{padding:16px;}
+ .mobile-parameter-row{border:1px solid #73737333;border-radius:10px;padding:10px;}
+ .mobile-parameter-card>.grid{gap:10px;}
+ .mobile-parameter-row>div:first-child{gap:8px;}
+ .mobile-parameter-row select{font-size:14px!important;}
+}
+
+/* Clear primary actions and compact preset disclosure. */
+.session-flow-primary{cursor:pointer;background:#D4A72C;color:#171717;border:1px solid #D4A72C;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:600;transition:background .15s;}
+.session-flow-primary:hover{background:#e4bb48;}
+.session-flow-primary:disabled{opacity:.4;cursor:not-allowed;}
+.session-flow-back{cursor:pointer;border:1px solid #73737366;border-radius:10px;padding:12px 18px;font-size:14px;}
+.session-flow-back:disabled{opacity:.4;cursor:not-allowed;}
+.session-flow-primary:focus-visible,.session-flow-back:focus-visible{outline:2px solid #D4A72C;outline-offset:3px;}
+.pool-presets-disclosure:not([open]){padding:0;}
+.pool-presets-disclosure:not([open])>summary{margin:0;padding:12px 16px;min-height:44px;}
+@media(max-width:1023px){
+ .mobile-parameter-row>div:first-child>label{font-size:14px;font-weight:600;}
+ .mobile-parameter-row select{font-size:16px!important;}
+ nav[aria-label="Practice setup steps"]{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);}
+ .session-flow-primary,.session-flow-back{min-height:48px;}
+}
+
+/* Consistent pool / lock alignment and room for native select arrows. */
+.mobile-parameter-row>div:first-child{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;}
+.mobile-parameter-row>div:first-child>div{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.mobile-parameter-row>div:first-child>div>button{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:1px solid #73737344;border-radius:8px;}
+.mobile-parameter-row>div:first-child>div>button svg{width:16px;height:16px;flex-shrink:0;}
+.mobile-parameter-row>div:first-child>div>div>button{min-height:44px;padding:8px 10px;border-radius:8px;}
+select[aria-label^="Learning status for"]{padding-left:12px;padding-right:36px;min-width:0;max-width:100%;}
+@media(max-width:1023px){
+ .mobile-parameter-row{padding:12px;}
+ .mobile-parameter-row>div:first-child{margin-bottom:8px;}
+ .mobile-parameter-row select{padding:10px 32px 10px 12px;}
+}
+
+/* Library dropdown: match adjacent action labels, inset the arrow itself. */
+select[aria-label^="Learning status for"]{
+ font-size:12px!important;
+ padding-left:8px;
+ padding-right:30px;
+ appearance:none;
+ -webkit-appearance:none;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+ background-repeat:no-repeat;
+ background-position:right 10px center;
+ background-size:12px;
+}
+.dark select[aria-label^="Learning status for"]{
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d4d4d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.mobile-parameter-row>div:first-child>label{color:#8A6500;}
+.dark .mobile-parameter-row>div:first-child>label{color:#D4A72C;}
+
+.practice-flow-icon{display:flex;align-items:center;justify-content:center;border:1px solid #D4A72C33;border-radius:12px;background:#D4A72C08;margin-bottom:16px;aspect-ratio:1;max-height:120px;}
+.practice-flow-icon svg{width:72px;height:72px;}
+@media(min-width:640px){
+ .session-mode-choices{grid-template-columns:repeat(3,minmax(0,1fr));}
+ .session-mode-choices>button{padding:14px 20px;text-align:center;font-size:15px;}
+}
+@media(min-width:1024px){
+ .practice-flow-step{display:grid;grid-template-columns:96px minmax(0,1fr);gap:20px;align-items:center;}
+ .practice-flow-icon{width:96px;height:112px;margin:0;}
+ .community-challenge-dock button>div{font-size:12px;}
+ .community-challenge-dock button>p{font-size:15px;}
+ .community-challenge-dock button{padding:14px 16px;}
+ .community-challenge-dock>div>div:first-child>span{font-size:12px;}
+}
+
+@media(max-width:1023px){nav[aria-label="Practice setup steps"]{grid-template-columns:repeat(3,minmax(0,1fr));}nav[aria-label="Practice setup steps"]>button{padding-left:8px;padding-right:8px;}}
+
+@media(min-width:1024px){
+ .lab-start-layout{display:flex;flex-direction:column;gap:24px;}
+ .lab-start-layout>:not([hidden]){margin-top:0!important;margin-bottom:0!important;}
+ .lab-start-layout>.community-challenge-dock{order:0;}
+ .lab-start-layout>.lab-session-intro{order:1;}
+ .lab-start-layout>.practice-flow-visual{order:2;}
+ nav[aria-label="Practice setup steps"]{justify-content:flex-start;}
+ nav[aria-label="Practice setup steps"]>.lab-flow-continue{margin-left:auto;}
+}
+
+/* A single compact desktop introduction; mobile keeps separate cards. */
+.lab-start-combined{display:flex;flex-direction:column;gap:24px;}
+@media(min-width:1024px){
+ .lab-start-combined{display:grid;gap:0;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);border:1px solid #d4d4d4;border-radius:12px;background:rgba(255,255,255,.6);overflow:hidden;}
+ .dark .lab-start-combined{border-color:#262626;background:rgba(12,12,12,.8);}
+ .lab-start-combined>.practice-flow-visual,.lab-start-combined>.lab-session-intro{border:0!important;border-radius:0!important;background:transparent!important;margin:0!important;box-shadow:none!important;padding:24px!important;}
+ .lab-start-combined>.practice-flow-visual{order:0;}
+ .lab-start-combined>.lab-session-intro{order:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;border-left:1px solid #73737333!important;}
+ .lab-start-combined .practice-flow-step{display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
+ .lab-start-combined .practice-flow-icon{width:64px;height:64px;}
+ .lab-start-combined .practice-flow-icon svg{width:48px;height:48px;}
+ .lab-start-combined .practice-flow-step h3{font-size:15px;line-height:1.4;margin-top:4px;}
+ .lab-start-combined .practice-flow-step p{font-size:13px;line-height:1.5;margin-top:4px;}
+ .lab-start-combined .practice-flow-visual>div:last-child{gap:20px;}
+}
+
+@media(min-width:1024px){
+ .lab-start-combined>.lab-session-intro{padding-left:44px!important;padding-right:32px!important;}
+ .lab-start-combined .practice-flow-step{border:1px solid #D4A72C22;border-radius:12px;padding:14px;background:#D4A72C05;gap:10px;}
+ .lab-start-combined .practice-flow-icon{width:100%;height:52px;border:0;background:transparent;justify-content:flex-start;}
+ .lab-start-combined .practice-flow-visual>div:last-child{gap:12px;}
+ .lab-start-combined .practice-flow-step h3{margin-top:4px;}
+ .lab-start-combined .practice-flow-step p{margin-top:6px;}
+ .lab-start-combined .practice-flow-step>div:last-child>span{display:none;}
+}
+
+.desktop-navigation-dropdown>summary{list-style:none;}
+.desktop-navigation-dropdown>summary::-webkit-details-marker{display:none;}
+
+@media(min-width:1024px){
+ nav[aria-label="Main Navigation"] .desktop-tab-active{padding:8px 12px;border:1px solid #D4A72C;border-radius:8px;background:#D4A72C;color:#fff;box-shadow:0 0 8px #e8c45bcc,0 0 24px #d4a72c99,0 0 48px #b58c2059,0 0 72px #8a650033;transition:background-color 220ms ease,color 220ms ease;}
+ nav[aria-label="Main Navigation"] .desktop-tab-active:hover,nav[aria-label="Main Navigation"] .desktop-tab-active:focus-visible{background:#fff;color:#D4A72C;text-shadow:0 0 8px #D4A72C99;}
+}
+
+@media(min-width:1024px){
+ nav[aria-label="Main Navigation"] .desktop-tab-active,
+ nav[aria-label="Main Navigation"] .desktop-tab-active:hover,
+ nav[aria-label="Main Navigation"] .desktop-tab-active:focus-visible{
+  position:relative;padding:8px 0;border:0;border-radius:0;background:transparent;color:#8A6500;box-shadow:none;text-shadow:0 0 8px #D4A72C88,0 0 18px #B58C2055;
+ }
+ .dark nav[aria-label="Main Navigation"] .desktop-tab-active{color:#D4A72C;}
+ nav[aria-label="Main Navigation"] .desktop-tab-active::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:#D4A72C;box-shadow:0 0 6px #e8c45bcc,0 0 14px #D4A72C99,0 0 24px #B58C2059;
+ }
+}
+
+/* Dense glass surface for desktop navigation dropdowns. */
+.cutting-mat-page .desktop-navigation-dropdown>div{
+ background:rgba(238,229,215,.97)!important;
+ backdrop-filter:blur(20px) saturate(115%);
+ -webkit-backdrop-filter:blur(20px) saturate(115%);
+ border-color:rgba(120,110,90,.3)!important;
+ box-shadow:0 12px 32px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.15)!important;
+}
+.dark .cutting-mat-page .desktop-navigation-dropdown>div{
+ background:rgba(17,17,17,.97)!important;
+ border-color:rgba(255,255,255,.14)!important;
+ box-shadow:0 12px 32px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.045)!important;
+}
+
+/* Mobile dashboard: progressive detail with a calm, consistent hierarchy. */
+@media(max-width:1023px){
+ .mobile-progress-dashboard{display:flex;flex-direction:column;gap:16px;}
+ .mobile-progress-dashboard> *{margin-top:0!important;margin-bottom:0!important;}
+ .mobile-progress-dashboard h1{font-size:24px;line-height:1.2;}
+ .mobile-progress-dashboard>div:first-child>p{display:none;}
+ .mobile-progress-dashboard nav[aria-label="Dashboard views"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+ .mobile-progress-dashboard nav[aria-label="Dashboard views"] button{padding:12px 8px;font-size:13px;}
+ .bookmarks-spacing-section{border:1px solid #73737340;border-radius:12px;overflow:hidden;background:rgba(20,20,20,.04);}
+ .dark .bookmarks-spacing-section{background:rgba(12,12,12,.8);}
+ .bookmarks-spacing-section>div>section{border:0;border-radius:0;}
+ .mobile-progress-dashboard section[aria-label="Shared dashboard filters"]>div:first-child{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+ .mobile-progress-dashboard section[aria-label="Shared dashboard filters"] label{min-width:0;}
+ .mobile-progress-dashboard section[aria-label="Shared dashboard filters"] select{width:100%;}
+ .mobile-progress-dashboard nav[aria-label="Analytics categories"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+ .mobile-history-cards article{padding:14px;gap:12px;}
+ .mobile-history-cards article h3{font-size:16px;line-height:1.4;}
+ .mobile-history-cards article dl{grid-template-columns:repeat(2,minmax(0,1fr));background:#7373730d;border-radius:8px;padding:12px;}
+ .mobile-history-cards details>div{margin-top:12px;}
+ .mobile-progress-dashboard .mobile-data-table td{padding:10px 12px;}
+}
+
+@media(max-width:1023px){
+ .dashboard-bookmarks{padding:0!important;}
+ .cutting-mat-page .dashboard-bookmarks>summary{min-height:0;line-height:24px;padding:16px; margin:0;}
+ .dashboard-bookmarks>div{margin-top:0;padding:0 16px 16px;}
+}
+
+@media(min-width:1024px){
+ .mobile-dashboard-section{border:1px solid #73737340;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.5);align-self:start;}
+ .dark .mobile-dashboard-section{background:rgba(12,12,12,.8);}
+ .mobile-dashboard-section>button{padding:18px 20px;transition:background-color .2s;}
+ .mobile-dashboard-section>button:hover{background:#D4A72C0a;}
+ .mobile-dashboard-section>div>section{border:0;border-radius:0;}
+ .mobile-progress-dashboard section[aria-label="Shared dashboard filters"]>div:first-child{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));}
+ .mobile-progress-dashboard section[aria-label="Shared dashboard filters"] label{min-width:0;}
+ .mobile-progress-dashboard section[aria-label="Shared dashboard filters"] select{width:100%;}
+ .mobile-progress-dashboard nav[aria-label="Dashboard views"]{padding:6px;border:1px solid #73737333;border-radius:12px;width:fit-content;}
+ .mobile-progress-dashboard nav[aria-label="Dashboard views"] button{min-width:140px;}
+}
+
+
+.mobile-progress-dashboard nav[aria-label="Dashboard views"]{border:0!important;padding:0!important;background:transparent;}

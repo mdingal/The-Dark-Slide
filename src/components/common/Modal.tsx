@@ -43,9 +43,9 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+      className="mobile-dialog-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
     >
-      <div className={`relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl ${wide ? 'max-w-6xl' : 'max-w-2xl'} w-full max-h-[calc(100dvh-2rem)] flex flex-col overflow-hidden shadow-xl text-neutral-900 dark:text-neutral-100`}>
+      <div className={`mobile-dialog-panel relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl ${wide ? 'max-w-6xl' : 'max-w-2xl'} w-full max-h-[calc(100dvh-2rem)] flex flex-col overflow-hidden shadow-xl text-neutral-900 dark:text-neutral-100`}>
         <div className="flex shrink-0 items-center justify-between gap-4 p-4 sm:px-6 border-b border-neutral-200 dark:border-neutral-800">
           <h2 id={titleId} className="text-base font-semibold">
             {title}
@@ -59,7 +59,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-6">{children}</div>
+        <div className="mobile-dialog-content min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-6">{children}</div>
       </div>
     </div>,
     document.body

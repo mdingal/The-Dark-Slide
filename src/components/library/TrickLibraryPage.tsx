@@ -36,13 +36,13 @@ export const TrickLibraryPage:React.FC=()=>{
       <div className="flex flex-wrap gap-2">
         {LEARNING_STATUSES.map(s=><span key={s.id} className="rounded-md bg-neutral-100 dark:bg-neutral-800 px-2 py-1 text-xs">{s.label}: {library.filter(t=>t.status===s.id).length}</span>)}
       </div>
-      <form className="flex flex-wrap gap-2" onSubmit={async e=>{
+      <form className="flex flex-col sm:flex-row sm:flex-wrap gap-2" onSubmit={async e=>{
         e.preventDefault();const result=available.find(([key])=>key===selected)?.[1];if(!result||busy)return;
         setBusy(true);try{await setTrickLearningStatus(result,'want_to_learn');setSelected('');}
         catch{showToast('Could not add this trick. Try again.');}finally{setBusy(false);}
       }}>
-        <select aria-label="Trick to add to library" value={selected} onChange={e=>setSelected(e.target.value)} className={`${input} flex-1`}>
-          <option value="">Choose a catalog trick or previous challenge</option>
+        <select aria-label="Trick to add to library" value={selected} onChange={e=>setSelected(e.target.value)} className={`${input} w-full sm:w-auto sm:flex-1`}>
+          <option value="">Choose a trick or challenge</option>
           {available.filter(([key])=>!library.some(t=>trickKey(t.trickResult)===key)).map(([key,t])=><option key={key} value={key}>{t.canonicalName}</option>)}
         </select>
         <button type="submit" disabled={busy||!selected} className="px-3 py-2 rounded-md text-xs bg-[#D4A72C] text-[#292524] disabled:opacity-40">Add Trick</button>

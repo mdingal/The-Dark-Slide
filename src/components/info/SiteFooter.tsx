@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrandLogo } from '../common/BrandLogo';
 import { INFO_LINKS, InfoPageId } from './InfoPage';
-export const SiteFooter: React.FC<{ currentPage: InfoPageId | null }> = ({ currentPage }) => (
-  <footer className="border-t border-neutral-200 dark:border-neutral-800 py-8 sm:py-10">
+export const SiteFooter: React.FC<{ currentPage: InfoPageId | null; className?: string }> = ({ currentPage, className = '' }) => (
+  <footer className={`${className} border-t border-neutral-200 dark:border-neutral-800 py-8 sm:py-10`}>
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
       <div className="flex flex-col items-center sm:items-stretch text-center sm:text-left lg:flex-row lg:items-start lg:justify-between gap-6">
         <div className="space-y-2">

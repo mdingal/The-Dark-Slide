@@ -49,14 +49,14 @@ export const ParameterSelector: React.FC<ParameterSelectorProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+    <div className="mobile-parameter-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b border-neutral-200 dark:border-neutral-800 gap-2">
         <div>
           <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-            Trick Parameters, Locks & Item Pools
+            Trick parameters
           </h2>
           <p className="text-xs text-neutral-700 dark:text-neutral-300 mt-0.5">
-            Lock categories to fixed values, or click "Pool" to exclude specific items from randomization.
+            Choose a value, lock it, or customize its pool.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -335,7 +335,7 @@ const ParameterRow: React.FC<ParameterRowProps> = ({
   children,
 }) => {
   return (
-    <div className="space-y-1.5">
+    <div className="mobile-parameter-row space-y-1.5">
       <div className="flex items-center justify-between">
         <label className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
           {label}

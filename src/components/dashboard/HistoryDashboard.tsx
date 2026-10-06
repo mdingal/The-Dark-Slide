@@ -1,3 +1,5 @@
+import {consumeDashboardView} from '../../domain/dashboardEntry';
+import {MobileDashboardSection} from './MobileDashboardSection';
 import {classLabel} from '../../domain/skateClasses';
 import {ChallengeCompletionPanel} from '../common/ChallengeCompletionPanel';
 import {MilestonePanel} from '../common/MilestonePanel';
@@ -21,7 +23,7 @@ export const HistoryDashboard:React.FC=()=>{
   const {sessions,profile,resumeSession,deleteSession,deleteSessions,saveDashboardPreferences,showToast}=useApp();
   const [surface,setSurface]=useState('all'),[tier,setTier]=useState('all'),[timerFilter,setTimerFilter]=useState('all'),[goalFilter,setGoalFilter]=useState('all'),[setupFilter,setSetupFilter]=useState('all');
   const [filters,setFilters]=useState<FilterState>(INITIAL_FILTERS),[mode,setMode]=useState('all');
-  const [preferences,setPreferences]=useState(()=>dashboardPreferences(profile?.dashboardPreferences));
+  const [preferences,setPreferences]=useState(()=>dashboardPreferences({...profile?.dashboardPreferences,view:consumeDashboardView(),category:'Progress'}));
   const prefRef=React.useRef(preferences),revision=React.useRef(0);
   const [exact,setExact]=useState(''),[expanded,setExpanded]=useState<ChartDefinition|null>(null);
   const [inspectSession,setInspectSession]=useState<PracticeSession|null>(null);
@@ -31,6 +33,7 @@ export const HistoryDashboard:React.FC=()=>{
     prefRef.current=next;setPreferences(next);setSaving(true);
     void saveDashboardPreferences(next).catch(()=>{if(revision.current===version){prefRef.current=previous;setPreferences(previous);}showToast('Could not save dashboard preferences. Please try again.');}).finally(()=>{if(revision.current===version)setSaving(false);});
   };
+  React.useEffect(()=>{const change=(event:Event)=>{const next=dashboardPreferences((event as CustomEvent).detail);prefRef.current=next;setPreferences(next);};window.addEventListener('dashboard-view-change',change);return()=>window.removeEventListener('dashboard-view-change',change);},[]);
   // Filter & Sort Sessions
   const filteredSessions = useMemo(() => {
     // Generated challenges become history records only after practice starts.
@@ -156,39 +159,38 @@ export const HistoryDashboard:React.FC=()=>{
     ].map(control=><label key={control.label} className="text-xs font-medium flex flex-col gap-1">{control.label}<select aria-label={control.label} className={INPUT} value={control.value} onChange={e=>control.set(e.target.value)}><option value="all">All</option>{control.options.map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>)}
     <button type="button" onClick={()=>{setFilters(INITIAL_FILTERS);setMode('all');setExact('');setSurface('all');setTier('all');setTimerFilter('all');setGoalFilter('all');setSetupFilter('all');}} className="text-xs underline underline-offset-4 self-end py-2">Reset filters</button>
   </div>;
-  const charts=(ids:string[])=>ids.map(id=>CHARTS.find(c=>c.id===id)).filter((c):c is ChartDefinition=>!!c).map(c=><AnalyticsChart key={c.id} definition={c} sessions={c.exact?exactSessions:filteredSessions} pinned={preferences.pinned.includes(c.id)} collapsed={preferences.collapsed.includes(c.id)} onPin={()=>pin(c.id)} onCollapse={()=>toggleCollapse(c.id)} onExpand={()=>setExpanded(c)} />);
+  const charts=(ids:string[])=>ids.map(id=>CHARTS.find(c=>c.id===id)).filter((c):c is ChartDefinition=>!!c).map(c=><MobileDashboardSection key={c.id} title={c.title}><AnalyticsChart definition={c} sessions={c.exact?exactSessions:filteredSessions} pinned={preferences.pinned.includes(c.id)} collapsed={preferences.collapsed.includes(c.id)} onPin={()=>pin(c.id)} onCollapse={()=>toggleCollapse(c.id)} onExpand={()=>setExpanded(c)} /></MobileDashboardSection>);
   const activeCharts=preferences.view==='overview'?preferences.pinned:selected;
   const needsExact=activeCharts.some(id=>CHARTS.find(c=>c.id===id)?.exact);
   const views=[['overview','Overview'],['history','Session History'],['analytics','Analytics'],['setups','Setup Comparisons']] as const;
-  return <div className="space-y-6">
+  return <div className="mobile-progress-dashboard space-y-6">
     <div className="flex flex-wrap items-end justify-between gap-3"><div><h1 className="text-2xl sm:text-3xl font-bold">Your Progress Dashboard</h1><p className="text-sm text-neutral-600 dark:text-neutral-300 mt-2">Explore your practice, focus on a trick, and keep your favorite insights close.</p></div><p className="text-xs text-neutral-600 dark:text-neutral-400" aria-live="polite">{saving?'Saving preferences…':'Dashboard preferences saved with this rider'}</p></div>
-    <nav aria-label="Dashboard views" className="flex flex-wrap gap-2">{views.map(([id,label])=><button key={id} type="button" aria-current={preferences.view===id?'page':undefined} onClick={()=>save({view:id})} className={`px-4 py-2 rounded-lg text-sm border ${preferences.view===id?'bg-[#D4A72C] text-neutral-950 border-[#D4A72C] font-semibold':'border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300'}`}>{label}</button>)}</nav>
-    <section className={`${CARD} space-y-4`} aria-label="Shared dashboard filters">
+    <nav aria-label="Dashboard views" className="flex flex-wrap gap-2">{views.map(([id,label])=><button key={id} type="button" aria-current={preferences.view===id?'page':undefined} onClick={()=>save(id==='analytics'?{view:id,category:'Progress'}:{view:id})} className={`px-4 py-2 rounded-lg text-sm border ${preferences.view===id?'bg-[#D4A72C] text-neutral-950 border-[#D4A72C] font-semibold':'border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300'}`}>{label}</button>)}</nav>
+    <MobileDashboardSection title={`Filters · ${filteredSessions.length} sessions`}><section className={`${CARD} space-y-4`} aria-label="Shared dashboard filters">
       {sharedControls}
       <button type="button" className="text-xs underline underline-offset-4" aria-expanded={!preferences.filtersCollapsed} onClick={()=>save({filtersCollapsed:!preferences.filtersCollapsed})}>{preferences.filtersCollapsed?'Show':'Hide'} search and advanced filters</button>
       {!preferences.filtersCollapsed&&<HistoryFilters filters={filters} onChangeFilters={setFilters} onResetFilters={()=>setFilters(INITIAL_FILTERS)} />}
       <p className="text-xs text-neutral-600 dark:text-neutral-400">{filteredSessions.length} matching practice sessions · only started sessions appear here. Shared filters apply to every view; dates use session start.</p>
-    </section>
+    </section></MobileDashboardSection>
     {preferences.view==='overview'&&<>
-      <MilestonePanel />
-      <ChallengeCompletionPanel />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{[
         ['Landing rate',totals.rate===null?'—':`${totals.rate}%`,`${totals.landings} landings / ${totals.attempts} attempts`],
         ['Active practice',formatDurationMs(totals.time),'Excludes paused time'],
         ['Practice days',String(totals.days),`${totals.attempted} attempted sessions`],
         ['Challenge follow-through',filteredSessions.length?`${Math.round(totals.attempted/filteredSessions.length*100)}%`:'—',`${totals.attempted} / ${filteredSessions.length} started sessions with attempts`]
       ].map(([label,value,hint])=><div key={label} className={CARD}><p className="text-xs text-neutral-600 dark:text-neutral-300">{label}</p><p className="text-2xl font-bold font-mono my-2">{value}</p><p className="text-xs text-neutral-600 dark:text-neutral-400">{hint}</p></div>)}</div>
-      <div className="flex flex-wrap justify-between gap-2"><h2 className="text-lg font-semibold">Pinned insights <span className="text-sm text-neutral-500">({preferences.pinned.length}/4)</span></h2><button type="button" onClick={()=>save({view:'analytics'})} className="text-sm underline underline-offset-4">Browse all analytics</button></div>
+      <MobileDashboardSection title="Milestones & community progress"><MilestonePanel /><ChallengeCompletionPanel /></MobileDashboardSection>
+      <div className="flex flex-wrap justify-between gap-2"><h2 className="text-lg font-semibold">Pinned insights <span className="text-sm text-neutral-500">({preferences.pinned.length}/4)</span></h2><button type="button" onClick={()=>save({view:'analytics',category:'Progress'})} className="text-sm underline underline-offset-4">Browse all analytics</button></div>
       {needsExact&&exactControl}<div className="grid grid-cols-1 xl:grid-cols-2 gap-5">{charts(preferences.pinned)}</div>
       {!preferences.pinned.length&&<p className={`${CARD} text-sm`}>No pinned charts. Open Analytics and use a chart’s pin button to add it here.</p>}
     </>}
     {preferences.view==='history'&&<>
-      <details open={!preferences.collapsed.includes('bookmarks')} onToggle={e=>{const open=e.currentTarget.open;if(open===preferences.collapsed.includes('bookmarks'))toggleCollapse('bookmarks');}} className={CARD}><summary className="font-semibold cursor-pointer">Bookmarked Challenges</summary><div className="mt-4"><BookmarksPanel /></div></details>
+      <details open={!preferences.collapsed.includes('bookmarks')} onToggle={e=>{const open=e.currentTarget.open;if(open===preferences.collapsed.includes('bookmarks'))toggleCollapse('bookmarks');}} className={`${CARD} dashboard-bookmarks`}><summary className="font-semibold cursor-pointer">Bookmarked Challenges</summary><div className="mt-4"><BookmarksPanel /></div></details>
       <HistoryTable sessions={filteredSessions} onResume={resumeSession} onOpenDetails={setInspectSession} onDelete={deleteSession} onBatchDelete={deleteSessions} />
     </>}
     {preferences.view==='analytics'&&<>
       <nav aria-label="Analytics categories" className="flex flex-wrap gap-2">{CATEGORIES.map(c=><button type="button" key={c} aria-pressed={preferences.category===c} onClick={()=>save({category:c})} className={`px-3 py-2 text-sm rounded-lg border ${preferences.category===c?'border-[#D4A72C] text-[#8A6500] dark:text-[#D4A72C]':'border-neutral-300 dark:border-neutral-700'}`}>{c}</button>)}</nav>
-      <section className={`${CARD} space-y-4`}><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold">Choose charts · {preferences.category}</h2><div className="flex gap-4 text-xs"><button type="button" className="underline underline-offset-4" onClick={()=>save({selected:{...preferences.selected,[preferences.category]:CHARTS.filter(c=>c.category===preferences.category).map(c=>c.id)}})}>Select All</button><button type="button" className="underline underline-offset-4" onClick={()=>save({selected:{...preferences.selected,[preferences.category]:[]}})}>Select None</button></div></div><p className="text-xs text-neutral-600 dark:text-neutral-300">Two charts start selected in each category. Choose more when useful; pin up to four to Overview.</p><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{CHARTS.filter(c=>c.category===preferences.category).map(c=><label key={c.id} className="flex gap-2 items-start text-sm cursor-pointer"><input type="checkbox" checked={selected.includes(c.id)} onChange={()=>toggleChart(c.id)} className="mt-1 accent-[#D4A72C]" />{c.title}</label>)}</div></section>
+      <MobileDashboardSection title={`Customize charts · ${selected.length} selected`}><section className={`${CARD} space-y-4`}><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold">Choose charts · {preferences.category}</h2><div className="flex gap-4 text-xs"><button type="button" className="underline underline-offset-4" onClick={()=>save({selected:{...preferences.selected,[preferences.category]:CHARTS.filter(c=>c.category===preferences.category).map(c=>c.id)}})}>Select All</button><button type="button" className="underline underline-offset-4" onClick={()=>save({selected:{...preferences.selected,[preferences.category]:[]}})}>Select None</button></div></div><p className="text-xs text-neutral-600 dark:text-neutral-300">Two charts start selected in each category. Choose more when useful; pin up to four to Overview.</p><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{CHARTS.filter(c=>c.category===preferences.category).map(c=><label key={c.id} className="flex gap-2 items-start text-sm cursor-pointer"><input type="checkbox" checked={selected.includes(c.id)} onChange={()=>toggleChart(c.id)} className="mt-1 accent-[#D4A72C]" />{c.title}</label>)}</div></section></MobileDashboardSection>
       {needsExact&&exactControl}<div className="grid grid-cols-1 xl:grid-cols-2 gap-5">{charts(selected)}</div>{!selected.length&&<p className={`${CARD} text-sm`}>Choose a chart above to start exploring.</p>}
     </>}
     {preferences.view==='setups'&&<SetupComparisons sessions={filteredSessions} expanded />}

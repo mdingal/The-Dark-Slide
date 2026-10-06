@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
@@ -11,7 +11,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>('system');
+  const [theme, setThemeState] = useState<Theme>('dark');
 
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
 
@@ -20,11 +20,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const applyTheme = () => {
       let activeTheme: 'light' | 'dark' = 'dark';
-      if (theme === 'system') {
-        activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      } else {
-        activeTheme = theme;
-      }
+      activeTheme = theme;
 
       setResolvedTheme(activeTheme);
       root.style.colorScheme = activeTheme;
@@ -39,16 +35,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     applyTheme();
 
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const listener = () => applyTheme();
-      mediaQuery.addEventListener('change', listener);
-      return () => mediaQuery.removeEventListener('change', listener);
-    }
+
   }, [theme]);
 
   useEffect(() => {
-    const apply = (event: Event) => setThemeState((event as CustomEvent<Theme>).detail);
+    const apply = (event: Event) => setThemeState((event as CustomEvent).detail === 'light' ? 'light' : 'dark');
     window.addEventListener('rider-theme-loaded', apply);
     return () => window.removeEventListener('rider-theme-loaded', apply);
   }, []);
