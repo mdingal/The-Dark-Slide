@@ -1,3 +1,4 @@
+import {navigate,tabPaths} from '../domain/routes';
 import {requestDashboardView,requestLabStart} from '../domain/dashboardEntry';
 import {riderSetupAnswers} from '../domain/riderSetup';
 import {closePractice,remainingTime} from '../domain/sessionPlan';
@@ -76,6 +77,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const authEpoch = useRef(0);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'home' | 'generator' | 'history' | 'library' | 'settings'>('home');
+  useEffect(()=>{const sync=(e:Event)=>setActiveTab((e as CustomEvent).detail);window.addEventListener('route-tab-change',sync);return()=>window.removeEventListener('route-tab-change',sync);},[]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeSetup, setActiveSetupState] = useState<SetupData | null>(null);
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
@@ -95,7 +97,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const epoch = ++authEpoch.current;
     setAuthLoading(true); setAuthError(null); setIsLoggedIn(false);
     profileRef.current = null; setProfile(null); setSessions([]); setCurrentSession(null); setActiveSetupState(null);
-    setAuthUser(user); setActiveTab('home');
+    setAuthUser(user); setActiveTab((location.pathname.startsWith('/dashboard')?'history':Object.entries(tabPaths).find(([,p])=>p===location.pathname)?.[0]||'home') as typeof activeTab);
     try {
       if (!user || !user.emailVerified) return;
       let rider = await storageService.getProfile(user.uid);
@@ -198,7 +200,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const repeatChallenge = async (result: GeneratedTrickResult) => {
     await startNewSession(result);
-    setActiveTab('generator');
+    setActiveTab('generator'); navigate('/trick-lab');
     showToast('Same challenge, fresh session.');
   };
 
@@ -306,7 +308,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } else {
       setCurrentSession(session);
     }
-    setActiveTab('generator');
+    setActiveTab('generator'); navigate('/trick-lab');
     showToast(`Resumed "${session.trickResult.canonicalName}"`);
   };
 
@@ -380,7 +382,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <AppContext.Provider
       value={{
         activeTab,
-        setActiveTab: (tab) => { if(tab==='generator')requestLabStart(); if(tab==='history'){requestDashboardView('overview');window.dispatchEvent(new CustomEvent('dashboard-view-change',{detail:{...profile?.dashboardPreferences,view:'overview',category:'Progress'}}));} setActiveTab(tab); },
+        setActiveTab: (tab) => { navigate(tabPaths[tab]); if(tab==='generator')requestLabStart(); if(tab==='history'){requestDashboardView('overview');window.dispatchEvent(new CustomEvent('dashboard-view-change',{detail:{...profile?.dashboardPreferences,view:'overview',category:'Progress'}}));} setActiveTab(tab); },
         profile,
         activeSetup,
         setActiveSetup,

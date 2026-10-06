@@ -830,3 +830,16 @@ select[aria-label^="Learning status for"]{
 
 
 .mobile-progress-dashboard nav[aria-label="Dashboard views"]{border:0!important;padding:0!important;background:transparent;}
+
+
+@media(max-width:1023px){
+ .mobile-has-navigation:has(.community-challenge-dock-signed-in){padding-bottom:calc(84px + env(safe-area-inset-bottom));}
+ .community-challenge-dock-signed-in{position:static;inset:auto;z-index:auto;}
+ .community-challenge-dock-signed-in>div>div:first-child{display:flex;}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}
+button:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid #D4A72C;outline-offset:3px;}
+
+
+/* Keep desktop community placement above the intro; mobile stays below. */
+@media(min-width:1024px){.lab-start-layout>.community-challenge-dock{order:-1;}}

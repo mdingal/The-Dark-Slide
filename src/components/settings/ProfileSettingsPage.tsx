@@ -115,7 +115,7 @@ export const ProfileSettingsPage: React.FC = () => {
         </div>
       </div>
 
-      <section className="bg-white dark:bg-neutral-900 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-3"><h2 className="text-lg font-semibold">Rider Details</h2>{Object.entries(riderSetupAnswers(profile.onboarding?.answers,profile.savedSetups)).map(([k,v])=><p key={k} className="text-sm"><span className="capitalize text-neutral-500">{RIDER_DETAIL_LABELS[k]||k.replace(/([A-Z])/g,' $1')}: </span>{Array.isArray(v)?v.join(', '):v||'Skipped'}</p>)}<button className={HW_BUTTON} onClick={()=>setEditingDetails(true)}>Update rider details</button></section>
+      <section className="bg-white dark:bg-neutral-900 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-3"><h2 className="text-lg font-semibold">Rider Details</h2>{Object.entries(riderSetupAnswers(profile.onboarding?.answers,profile.savedSetups)).map(([k,v])=><p key={k} className="text-sm"><span className="capitalize text-neutral-500">{RIDER_DETAIL_LABELS[k]||k.replace(/([A-Z])/g,' $1')}: </span>{Array.isArray(v)?v.join(', '):v||'Skipped'}</p>)}<button className="cursor-pointer rounded-lg bg-[#D4A72C] text-neutral-950 px-4 py-2 text-sm font-semibold hover:bg-[#e5ba40] transition-colors disabled:opacity-40" onClick={()=>setEditingDetails(true)}>Update rider details</button></section>
       <HardwareManager />
       {/* Available Obstacles in Spot */}
       <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-4">

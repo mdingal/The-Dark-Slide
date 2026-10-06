@@ -1,3 +1,4 @@
+import {navigate,guideId} from '../../domain/routes';
 import { referenceChallenge } from '../../domain/referenceChallenge';
 import { useApp } from '../../context/AppContext';
 import { hasLandedReference } from '../../domain/referenceProgress';
@@ -61,42 +62,45 @@ const guides: Guide[] = [
 export const TrickGuide: React.FC = () => {
   const { sessions, profile, isLoggedIn } = useApp();
   const landed = (id:string) => isLoggedIn && hasLandedReference(id,sessions,profile?.trickLibrary || []);
-  const [query,setQuery]=useState(''), [family,setFamily]=useState('All'), [difficulty,setDifficulty]=useState('All'), [selected,setSelected]=useState<string | null>(null);
-  const [page,setPage]=useState(1);
+  const [query,setQuery]=useState(()=>new URLSearchParams(location.search).get('q')||''), [family,setFamily]=useState(()=>new URLSearchParams(location.search).get('family')||'All'), [difficulty,setDifficulty]=useState(()=>new URLSearchParams(location.search).get('difficulty')||'All'), [selected,setSelected]=useState<string | null>(guideId);
+  const [page,setPage]=useState(()=>Math.max(1,Number(new URLSearchParams(location.search).get('page'))||1));
+  React.useEffect(()=>{const sync=()=>{setSelected(guideId());const params=new URLSearchParams(location.search);setQuery(params.get('q')||'');setFamily(params.get('family')||'All');setDifficulty(params.get('difficulty')||'All');setPage(Math.max(1,Number(new URLSearchParams(location.search).get('page'))||1));};window.addEventListener('app-route-change',sync);window.addEventListener('popstate',sync);return()=>{window.removeEventListener('app-route-change',sync);window.removeEventListener('popstate',sync);};},[]);
   const pageSize=6;
+  const updateFilters=(patch:Record<string,string>)=>{const params=new URLSearchParams(location.search);for(const [key,value] of Object.entries(patch)){if(value&&value!=='All')params.set(key,value);else params.delete(key);}params.delete('page');navigate('/trick-guides'+(params.size?'?'+params:''),true);};
   const guide=guides.find(g=>g.id===selected);
   const results=guides.filter(g=>(family==='All'||g.family===family)&&(difficulty==='All'||g.level===difficulty)&&`${g.name} ${g.family}`.toLowerCase().includes(query.toLowerCase().trim()));
   const pageCount=Math.max(1,Math.ceil(results.length/pageSize));
   const currentPage=Math.min(page,pageCount);
   const pageResults=results.slice((currentPage-1)*pageSize,currentPage*pageSize);
   const goToPage=(next:number)=>{
-    setPage(Math.max(1,Math.min(next,pageCount)));
+    const params=new URLSearchParams(location.search);params.set('page',String(Math.max(1,Math.min(next,pageCount))));navigate('/trick-guides?'+params);
     requestAnimationFrame(()=>document.getElementById('trick-guide-list')?.scrollIntoView({block:'start',behavior:'instant'}));
   };
-  const open=(id:string)=>{setSelected(id);requestAnimationFrame(()=>document.getElementById('guide-detail-heading')?.focus());};
+  const open=(id:string)=>{navigate('/trick-guides/'+id+location.search);requestAnimationFrame(()=>document.getElementById('guide-detail-heading')?.focus());};
+  React.useEffect(()=>{if(guide){document.title=guide.name+' Fingerboard Guide | The Dark Slide';document.querySelector('meta[name="description"]')?.setAttribute('content',guide.intro+' Learn prerequisites, finger positioning, and common mistakes.');}},[guide]);
   const box='rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 bg-white/40 dark:bg-neutral-950/40';
   return <div className="trick-guide space-y-6">
     <div className="flex flex-wrap items-center gap-3"><span className="guide-pill">Base trick reference · 48 guides</span><span className="text-xs text-neutral-600 dark:text-neutral-400">Reference material, separate from your personal trick library.</span></div>
     {!guide ? <>
       <div id="trick-guide-list" style={{scrollMarginTop:140}} className="space-y-3">
-        <label className="relative block"><Search className="absolute left-3 top-3 w-4 h-4 text-neutral-500"/><span className="sr-only">Search trick guides</span><input value={query} onChange={e=>{setQuery(e.target.value);setPage(1);}} placeholder="Find a trick, e.g. kickflip" className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white/60 dark:bg-neutral-950/60 py-2.5 pl-10 pr-3 text-sm"/></label>
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by trick family">{['All','Fundamentals','Flip tricks','Spin tricks','Grinds & slides'].map(f=><button key={f} type="button" aria-pressed={family===f} onClick={()=>{setFamily(f);setPage(1);}} className={`guide-filter ${family===f?'guide-selected':''}`}>{f}</button>)}</div>
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by difficulty">{['All','Beginner','Intermediate','Advanced'].map(d=><button key={d} type="button" aria-pressed={difficulty===d} onClick={()=>{setDifficulty(d);setPage(1);}} className={`guide-filter ${difficulty===d?'guide-selected':''}`}>{d==='All'?'All difficulties':d}</button>)}</div>
+        <label className="relative block"><Search className="absolute left-3 top-3 w-4 h-4 text-neutral-500"/><span className="sr-only">Search trick guides</span><input value={query} onChange={e=>{updateFilters({q:e.target.value});}} placeholder="Find a trick, e.g. kickflip" className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white/60 dark:bg-neutral-950/60 py-2.5 pl-10 pr-3 text-sm"/></label>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by trick family">{['All','Fundamentals','Flip tricks','Spin tricks','Grinds & slides'].map(f=><button key={f} type="button" aria-pressed={family===f} onClick={()=>{updateFilters({family:f});}} className={`guide-filter ${family===f?'guide-selected':''}`}>{f}</button>)}</div>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by difficulty">{['All','Beginner','Intermediate','Advanced'].map(d=><button key={d} type="button" aria-pressed={difficulty===d} onClick={()=>{updateFilters({difficulty:d});}} className={`guide-filter ${difficulty===d?'guide-selected':''}`}>{d==='All'?'All difficulties':d}</button>)}</div>
         <p role="status" className="text-xs text-neutral-500 dark:text-neutral-400">{results.length ? `Showing ${(currentPage-1)*pageSize+1}–${Math.min(currentPage*pageSize,results.length)} of ${results.length} guides` : 'No guides found'}</p>
       </div>
       <div className="grid sm:grid-cols-2 gap-4">{pageResults.map(g=><article key={g.id} className={`${box} text-left guide-card space-y-3`}>
         <div className="flex justify-between items-center gap-3"><span className="text-xs text-neutral-500 dark:text-neutral-400">{g.family}</span><span className="uppercase text-xs text-neutral-500 dark:text-neutral-400">{g.level}</span></div>
-        <div className="flex flex-wrap items-center gap-2"><h2 className="text-xl font-bold">{g.name}</h2>{landed(g.id) && <span className="guide-landed" title="This exact practice challenge has a recorded landing or is marked Landed / Consistent in your trick library"><Check className="w-3 h-3"/>Landed</span>}</div><p className="text-sm leading-6 text-neutral-600 dark:text-neutral-300">{g.intro}</p><div className="flex flex-wrap items-center gap-3"><button type="button" onClick={()=>open(g.id)} aria-label={`Explore ${g.name} guide`} className="guide-outline-button inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold">Explore guide <ArrowRight className="w-3.5 h-3.5"/></button><GuidePracticeButton trickId={g.id}/></div>
+        <div className="flex flex-wrap items-center gap-2"><h2 className="text-xl font-bold">{g.name}</h2>{landed(g.id) && <span className="guide-landed" title="This exact practice challenge has a recorded landing or is marked Landed / Consistent in your trick library"><Check className="w-3 h-3"/>Landed</span>}</div><p className="text-sm leading-6 text-neutral-600 dark:text-neutral-300">{g.intro}</p><div className="flex flex-wrap items-center gap-3"><a href={`/trick-guides/${g.id}${location.search}`} onClick={e=>{if(!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey){e.preventDefault();open(g.id);}}} aria-label={`Explore ${g.name} guide`} className="guide-outline-button inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold">Explore guide <ArrowRight className="w-3.5 h-3.5"/></a><GuidePracticeButton trickId={g.id}/></div>
       </article>)}</div>
       {pageCount>1&&<nav aria-label="Trick guide pages" className="flex flex-wrap items-center justify-center gap-2">
         <button type="button" onClick={()=>goToPage(currentPage-1)} disabled={currentPage===1} className="guide-filter cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">Previous</button>
         {Array.from({length:pageCount},(_,i)=>i+1).map(number=><button key={number} type="button" aria-label={`Page ${number}`} aria-current={number===currentPage?'page':undefined} onClick={()=>goToPage(number)} className={`guide-filter min-w-9 cursor-pointer ${number===currentPage?'guide-selected':''}`}>{number}</button>)}
         <button type="button" onClick={()=>goToPage(currentPage+1)} disabled={currentPage===pageCount} className="guide-filter cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">Next</button>
       </nav>}
-      {!results.length&&<div className={`${box} text-center space-y-3`}><p>No guides match your search yet.</p><button type="button" className="guide-filter" onClick={()=>{setQuery('');setFamily('All');setDifficulty('All');setPage(1);}}>Clear filters</button></div>}
+      {!results.length&&<div className={`${box} text-center space-y-3`}><p>No guides match your search yet.</p><button type="button" className="guide-filter" onClick={()=>{navigate('/trick-guides',true);}}>Clear filters</button></div>}
       <div className={`${box} flex gap-3`}><BookOpen className="w-5 h-5 shrink-0 text-[#D4A72C]"/><p className="text-sm leading-6 text-neutral-600 dark:text-neutral-300">Start with Ollie for board control, then explore spins, flips, and obstacles. These are draft coaching notes and recommended learning paths, ready for rider review.</p></div>
     </> : <>
-      <button type="button" onClick={()=>setSelected(null)} className="inline-flex items-center gap-2 text-sm text-[#8A6500] dark:text-[#D4A72C]"><ArrowLeft className="w-4 h-4"/>All trick guides</button>
+      <button type="button" onClick={()=>navigate('/trick-guides'+location.search)} className="inline-flex items-center gap-2 text-sm text-[#8A6500] dark:text-[#D4A72C]"><ArrowLeft className="w-4 h-4"/>All trick guides</button>
       <div className="space-y-3"><div className="flex gap-2 text-xs text-neutral-500 dark:text-neutral-400"><span>{guide.family}</span><span>·</span><span className="uppercase text-xs text-neutral-500 dark:text-neutral-400">{guide.level}</span></div><h2 id="guide-detail-heading" tabIndex={-1} className="text-3xl sm:text-4xl font-bold focus:outline-none">{guide.name}</h2><p className="text-base leading-7 text-neutral-600 dark:text-neutral-300">{guide.intro}</p><div className="flex flex-wrap items-center gap-3"><GuidePracticeButton trickId={guide.id}/>{landed(guide.id) && <span className="guide-landed"><Check className="w-3 h-3"/>Landed</span>}</div><p className="text-xs text-neutral-500 dark:text-neutral-400">{guide.family==='Grinds & slides'?`Practice challenge: ${referenceChallenge(guide.id).canonicalName}. Clean exit; no added modifiers.`:'Practice challenge: regular stance, no added modifiers. Any rotation inherent to the named trick is retained.'}</p></div>
       <section className={`${box} space-y-4`}>
         <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Trick breakdown</h3>

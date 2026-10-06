@@ -1,3 +1,7 @@
+import {navigate,readTab,dashboardRoute} from './domain/routes';
+import {requestDashboardView} from './domain/dashboardEntry';
+import {AppErrorBoundary} from './components/common/AppErrorBoundary';
+import {BetaTools} from './components/common/BetaTools';
 import {RiderOnboarding} from './components/auth/RiderOnboarding';
 import React from 'react';
 import { InfoPage, InfoPageId, readInfoPage } from './components/info/InfoPage';
@@ -7,34 +11,42 @@ import { ThemeProvider } from './context/ThemeProvider';
 import { TopBar } from './components/common/TopBar';
 import { Toast } from './components/common/Toast';
 import { GeneratorPage } from './components/generator/GeneratorPage';
-import { HistoryDashboard } from './components/dashboard/HistoryDashboard';
-import { ProfileSettingsPage } from './components/settings/ProfileSettingsPage';
+const HistoryDashboard=React.lazy(()=>import('./components/dashboard/HistoryDashboard').then(m=>({default:m.HistoryDashboard})));
+const ProfileSettingsPage=React.lazy(()=>import('./components/settings/ProfileSettingsPage').then(m=>({default:m.ProfileSettingsPage})));
 import { LandingPage } from './components/landing/LandingPage';
-import { TrickLibraryPage } from './components/library/TrickLibraryPage';
+const TrickLibraryPage=React.lazy(()=>import('./components/library/TrickLibraryPage').then(m=>({default:m.TrickLibraryPage})));
 
 const AppContent: React.FC = () => {
   const { activeTab, setActiveTab, isLoggedIn, profile, authLoading, authError, refreshAccount } = useApp();
 
   const [infoPage, setInfoPage] = React.useState<InfoPageId | null>(readInfoPage);
+  const [,setRouteRevision]=React.useState(0);
+  const unknownRoute=!readInfoPage()&&!readTab();
   const needsOnboarding=isLoggedIn && !!profile?.onboarding && !profile.onboarding.completedAt;
-  const previousTab = React.useRef(activeTab);
-  const closeInfoPage = () => {
-    if (readInfoPage()) window.location.hash = '';
-    setInfoPage(null);
-  };
+  const closeInfoPage = () => { setInfoPage(null); };
   React.useEffect(() => {
-    const onHashChange = () => setInfoPage(readInfoPage());
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
-  React.useEffect(() => {
-    if (previousTab.current !== activeTab) {
-      previousTab.current = activeTab;
-      if (readInfoPage()) window.location.hash = '';
-      setInfoPage(null);
-    }
-  }, [activeTab]);
-
+    const sync=()=>{
+      setRouteRevision(v=>v+1);
+      const legacy=window.location.hash.replace(/^#\/?/,'');
+      if(legacy){navigate(legacy==='trick-guide'?'/trick-guides':'/'+legacy,true);return;}
+      setInfoPage(readInfoPage());
+      const tab=readTab();
+      if(tab){
+        // Route synchronization must not trigger a new practice configuration.
+        window.dispatchEvent(new CustomEvent('route-tab-change',{detail:tab}));
+        if(tab==='history'){const view=dashboardRoute();requestDashboardView(view);window.dispatchEvent(new CustomEvent('dashboard-view-change',{detail:{...profile?.dashboardPreferences,view,category:'Progress'}}));}
+      }
+      const title=location.pathname.startsWith('/trick-guides/')?decodeURIComponent(location.pathname.split('/')[2]).replaceAll('-',' '):location.pathname.split('/').filter(Boolean).join(' · ').replaceAll('-',' ')||'Fingerboard Trick Generator & Practice Tracker';
+      document.title=title+' | The Dark Slide';
+      document.querySelector('meta[name="description"]')?.setAttribute('content',location.pathname.startsWith('/trick-guides')?'Learn fingerboard tricks with prerequisites, finger positioning, practice tips, and common mistakes.':'Generate fingerboard tricks and combos, track practice sessions, and learn with The Dark Slide · Fingerboard Lab.');
+      let robots=document.querySelector<HTMLMetaElement>('meta[name="robots"]');if(!robots){robots=document.createElement('meta');robots.name='robots';document.head.appendChild(robots);}robots.content=/^\/(dashboard|rider-profile|trick-library|trick-lab)(\/|$)/.test(location.pathname)?'noindex,follow':'index,follow';
+      let canonical=document.querySelector<HTMLLinkElement>('link[rel="canonical"]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical);}canonical.href=location.origin+location.pathname;
+    };
+    sync();window.addEventListener('app-route-change',sync);window.addEventListener('popstate',sync);window.addEventListener('hashchange',sync);
+    const links=(e:MouseEvent)=>{const a=(e.target as HTMLElement).closest('a');if(!a||e.defaultPrevented||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href);if(u.origin===location.origin&&!u.hash){e.preventDefault();navigate(u.pathname+u.search);}};
+    document.addEventListener('click',links);
+    return()=>{window.removeEventListener('app-route-change',sync);window.removeEventListener('popstate',sync);window.removeEventListener('hashchange',sync);document.removeEventListener('click',links);};
+  },[profile?.dashboardPreferences]);
   React.useLayoutEffect(() => {
     const previous = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
@@ -53,7 +65,9 @@ const AppContent: React.FC = () => {
       </div>
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {needsOnboarding ? <RiderOnboarding key={profile?.id} /> : infoPage ? <InfoPage page={infoPage} onHome={() => { closeInfoPage(); setActiveTab('home'); }} /> : <>
+        <BetaTools />
+        <AppErrorBoundary><React.Suspense fallback={<p role="status" className="p-6 text-sm">Loading page…</p>}>
+        {unknownRoute ? <section className="rounded-xl border border-neutral-700 p-8 space-y-4"><h1 className="text-2xl font-bold">Page not found</h1><a href="/" className="underline text-[#D4A72C]">Return home</a></section> : needsOnboarding ? <RiderOnboarding key={profile?.id} /> : infoPage ? <InfoPage page={infoPage} onHome={() => { closeInfoPage(); setActiveTab('home'); }} /> : <>
         {authLoading && <p role="status" className="text-center py-8">Loading your account…</p>}
         {authError && <div role="alert" className="text-center py-4">{authError} <button className="underline" onClick={() => void refreshAccount()}>Retry</button></div>}
         {(!authLoading && (!isLoggedIn || activeTab === 'home')) && <LandingPage />}
@@ -62,6 +76,7 @@ const AppContent: React.FC = () => {
         {isLoggedIn && activeTab === 'library' && <TrickLibraryPage key={profile?.id} />}
         {isLoggedIn && activeTab === 'settings' && <ProfileSettingsPage />}
         </>}
+        </React.Suspense></AppErrorBoundary>
       </main>
 
       <SiteFooter currentPage={infoPage} className={isLoggedIn ? 'hidden lg:block' : ''} />

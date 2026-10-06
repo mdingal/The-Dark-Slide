@@ -1,3 +1,4 @@
+import {navigate,dashboardRoute} from '../../domain/routes';
 import {consumeDashboardView} from '../../domain/dashboardEntry';
 import {MobileDashboardSection} from './MobileDashboardSection';
 import {classLabel} from '../../domain/skateClasses';
@@ -20,15 +21,16 @@ const INITIAL_FILTERS:FilterState={search:'',status:'all',dateRange:'all',stance
 const INPUT='rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-sm min-w-0 max-w-full';
 const CARD='bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5';
 export const HistoryDashboard:React.FC=()=>{
-  const {sessions,profile,resumeSession,deleteSession,deleteSessions,saveDashboardPreferences,showToast}=useApp();
+  const {sessions,profile,resumeSession,deleteSession,deleteSessions,saveDashboardPreferences,showToast,setActiveTab}=useApp();
   const [surface,setSurface]=useState('all'),[tier,setTier]=useState('all'),[timerFilter,setTimerFilter]=useState('all'),[goalFilter,setGoalFilter]=useState('all'),[setupFilter,setSetupFilter]=useState('all');
   const [filters,setFilters]=useState<FilterState>(INITIAL_FILTERS),[mode,setMode]=useState('all');
-  const [preferences,setPreferences]=useState(()=>dashboardPreferences({...profile?.dashboardPreferences,view:consumeDashboardView(),category:'Progress'}));
+  const [preferences,setPreferences]=useState(()=>dashboardPreferences({...profile?.dashboardPreferences,view:dashboardRoute(),category:'Progress'}));
   const prefRef=React.useRef(preferences),revision=React.useRef(0);
   const [exact,setExact]=useState(''),[expanded,setExpanded]=useState<ChartDefinition|null>(null);
   const [inspectSession,setInspectSession]=useState<PracticeSession|null>(null);
   const [saving,setSaving]=useState(false);
   const save=(patch:Partial<DashboardPreferences>)=>{
+    if(patch.view)navigate(patch.view==='overview'?'/dashboard':'/dashboard/'+patch.view);
     const next=dashboardPreferences({...prefRef.current,...patch}),previous=prefRef.current,version=++revision.current;
     prefRef.current=next;setPreferences(next);setSaving(true);
     void saveDashboardPreferences(next).catch(()=>{if(revision.current===version){prefRef.current=previous;setPreferences(previous);}showToast('Could not save dashboard preferences. Please try again.');}).finally(()=>{if(revision.current===version)setSaving(false);});
@@ -173,6 +175,7 @@ export const HistoryDashboard:React.FC=()=>{
       <p className="text-xs text-neutral-600 dark:text-neutral-400">{filteredSessions.length} matching practice sessions · only started sessions appear here. Shared filters apply to every view; dates use session start.</p>
     </section></MobileDashboardSection>
     {preferences.view==='overview'&&<>
+      {!sessions.some(s=>s.sessionStartedAt)&&<section className={`${CARD} space-y-3`}><h2 className="font-semibold">Your progress starts with one session</h2><p className="text-sm text-neutral-500">Record your first attempts to unlock useful insights here.</p><button type="button" onClick={()=>setActiveTab('generator')} className="rounded-lg bg-[#D4A72C] text-black px-4 py-3 cursor-pointer">Start a practice session</button></section>}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{[
         ['Landing rate',totals.rate===null?'—':`${totals.rate}%`,`${totals.landings} landings / ${totals.attempts} attempts`],
         ['Active practice',formatDurationMs(totals.time),'Excludes paused time'],

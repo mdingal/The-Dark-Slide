@@ -12,8 +12,8 @@ it('counts only started sessions and weights landing rate by attempts',()=>{
 });
 it('handles empty accounts without demo stats or an invented featured setup',()=>{
  expect(homePracticeStats([])).toMatchObject({count:0,landings:0,rate:'—',best:0});
- const html=renderToStaticMarkup(<RiderHomeSummary/>);expect(html).toContain('Choose a featured setup');expect(html).toContain('Start your first session');
+ const html=renderToStaticMarkup(<RiderHomeSummary/>);expect(html).toContain('Choose featured setup');expect(html).toContain('Start your first session');
 });
 it('starts the signed-out demo with the guided flow',()=>{
- const html=renderToStaticMarkup(<TrickMatrixDemo onPromptAuth={()=>{}}/>);expect(html).toContain('Try a session');expect(html).not.toContain('Live Trick Generator Sandbox');expect(html).not.toContain('Generate New Challenge');
+ const html=renderToStaticMarkup(<TrickMatrixDemo onPromptAuth={()=>{}}/>);expect(html).toContain('Try a Session');expect(html).not.toContain('Live Trick Generator Sandbox');expect(html).not.toContain('Generate New Challenge');
 });

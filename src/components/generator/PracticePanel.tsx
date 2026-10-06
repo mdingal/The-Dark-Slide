@@ -357,6 +357,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
   return (
     <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-5">
       {startIntent&&<SessionStartWizard session={session} demoSetups={demo?.setups} onClose={()=>setStartIntent(null)} onStart={async configured=>{if(demo){setStartIntent(null);demo.onStart();return;}const next=startIntent==='start'?configured:recordCounterAction(configured,startIntent!,Date.now(),selectedMissTags);await onUpdateSession(next);setStartIntent(null);setSelectedMissTags([]);}}/>}
+
       {/* Header with Title, Status and Setup Selector */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800 gap-3">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 w-full">
@@ -385,6 +386,8 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           </button>
         )}
       </div>
+
+      {!session.sessionEndedAt&&<details className="rounded-lg border border-[#D4A72C]/25 p-3 text-sm"><summary className="cursor-pointer font-semibold">How to record attempts</summary><p className="mt-2 text-neutral-500">Add Attempt records a missed try. Successful Landing records one attempt and one landing—do not tap both for the same try. Undo reverses your last counter update, including streaks and miss tags. Your goal determines the result when you end the session.</p></details>}
 
       {/* Timer and Primary Metrics Row */}
       <div className="grid grid-cols-2 lg:grid-cols-[minmax(190px,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-950/40 border border-neutral-200/80 dark:border-neutral-800/80">
@@ -520,6 +523,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
         <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
           Session Notes & Observations
         </label>
+        <p className="text-xs text-neutral-500 mb-2">Notes are saved when you park or finish your session.</p>
         <textarea
           value={notesDraft}
           readOnly={isFinished}
@@ -528,6 +532,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           rows={2}
           className="w-full text-xs font-normal bg-neutral-50 dark:bg-neutral-950/40 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white resize-none"
         />
+
       </div>
 
       <Modal

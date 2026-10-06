@@ -3,6 +3,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {describe,it,expect,vi} from 'vitest';
 const state=vi.hoisted(()=>({profile:{id:'rider',displayName:'Rider',savedSetups:[],partsInventory:[],onboarding:{version:1,step:0,answers:{}}} as any,sessions:[] as any[]}));
 vi.mock('../context/AppContext',()=>({useApp:()=>({...state,updateProfile:vi.fn(),logout:vi.fn(),showToast:vi.fn(),isLoggedIn:true,activeTab:'settings'})}));
+vi.mock('../components/common/Modal',()=>({Modal:({isOpen,children,title}:any)=>isOpen?<section><h2>{title}</h2>{children}</section>:null}));
 import {RiderOnboarding} from '../components/auth/RiderOnboarding';
 import {HardwareManager,PartEditor} from '../components/settings/HardwareManager';
 import {SessionStartWizard} from '../components/generator/SessionStartWizard';
@@ -12,7 +13,7 @@ import {setupFromParts,partLabel} from '../domain/hardware';
 describe('onboarding and hardware entry points',()=>{
  it('makes questionnaire steps skippable but requires the final finish action',()=>{
   state.profile.onboarding.step=0;let html=renderToStaticMarkup(<RiderOnboarding/>);expect(html).toContain('Skip this step');expect(html).not.toContain('How many fingerboard setups');expect(html).toContain('Your parts inventory');expect(html.replace(/<!--.*?-->/g,'')).toContain('Step 1 / 6');
-  state.profile.onboarding.step=6;html=renderToStaticMarkup(<RiderOnboarding/>);expect(html).toContain('Finish rider setup');expect(html).not.toContain('Skip this step');
+  state.profile.onboarding.step=6;html=renderToStaticMarkup(<RiderOnboarding/>);expect(html).toContain('Finish Rider Setup');expect(html).not.toContain('Skip this step');
  });
  it('offers favorites and hides editing after a setup has been used',()=>{
   const setup=setupFromParts('Board',{},[]);state.profile.savedSetups=[{...setup,usedAt:'2026-10-04T10:00:00.000Z'}];const html=renderToStaticMarkup(<HardwareManager only="setups"/>);expect(html).toContain('Favorite');expect(html).toContain('Configuration fixed');expect(html).not.toContain('>Edit<');state.profile.savedSetups=[];

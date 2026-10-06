@@ -243,7 +243,6 @@ export const GeneratorPage: React.FC = () => {
 
   return (
     <div className={`space-y-6 ${flowStep===0?'lab-start-layout':''}`}>
-      {flowStep===0&&<SharedChallengeBar />}
       <div className={flowStep===0?'lab-start-combined':'block lg:contents'}>
       {flowStep===0&&<section aria-label="Your practice flow" className="practice-flow-visual rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 lg:p-8 space-y-6">
         <div className="space-y-2"><p className="text-xs uppercase tracking-widest text-[#8A6500] dark:text-[#D4A72C]">Your next session</p><h2 className="text-xl lg:text-2xl font-semibold">Make every session count.</h2></div>
@@ -256,6 +255,7 @@ export const GeneratorPage: React.FC = () => {
         {flowStep>0&&<div role="progressbar" aria-label="Challenge setup progress" aria-valuemin={0} aria-valuemax={totalSteps} aria-valuenow={shownStep} className="h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden"><div className="h-full bg-[#D4A72C]" style={{width:`${shownStep/totalSteps*100}%`}}/></div>}
       </header>
       </div>
+      {flowStep===0&&<SharedChallengeBar />}
       {flowStep===1&&<section className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5">
       <div className="session-mode-choices grid grid-cols-1 gap-3"><span className="text-base font-semibold col-span-full">Session mode</span>{([['single','Single Trick'],['combo','Two-Trick Combo'],['obstacle','Obstacle']] as const).map(([id,label])=><button key={id} aria-pressed={mode===id} onClick={()=>setMode(id)} className={`rounded-lg px-4 py-2 text-sm border cursor-pointer ${mode===id?'text-[#8A6500] dark:text-[#D4A72C] border-[#D4A72C] bg-[#D4A72C]/10':'border-neutral-300 dark:border-neutral-700'}`}>{label}</button>)}</div>
       </section>}

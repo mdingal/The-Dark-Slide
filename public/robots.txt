@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://the-dark-slide-fe8a4.web.app/sitemap.xml

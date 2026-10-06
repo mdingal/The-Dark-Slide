@@ -7,7 +7,7 @@ export function requireRider(id: string): void {
   if (typeof navigator !== 'undefined' && !navigator.onLine) throw new Error('You are offline. Connect before saving progress.');
 }
 const tools = ['savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary', 'partsInventory'] as const;
-export const storageService = {
+const rawStorageService = {
  async getProfile(id: string): Promise<UserProfile | null> {
   requireRider(id); const root = await getDocFromServer(doc(db, 'users', id));
   if (!root.exists()) return null;
@@ -55,3 +55,10 @@ export const storageService = {
  },
  async deleteSession(id: string, sessionId: string): Promise<void> { requireRider(id); await deleteDoc(doc(db, 'users', id, 'sessions', sessionId)); },
 };
+
+let pendingWrites=0;
+function saveSignal(state:string,message=''){if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('cloud-save-status',{detail:{state,message,pending:pendingWrites}}));}
+export const storageService:typeof rawStorageService=new Proxy(rawStorageService,{
+ get(target,key: keyof typeof rawStorageService){const fn=target[key];if(!['saveProfile','saveSession','deleteSession'].includes(key))return fn;
+ return async (...args:unknown[])=>{pendingWrites++;saveSignal('saving');try{const result=await (fn as (...args:unknown[])=>Promise<unknown>)(...args);pendingWrites--;saveSignal(pendingWrites?'saving':'saved');return result;}catch(error){pendingWrites--;saveSignal('error',error instanceof Error?error.message:'Could not save. Retry the action.');throw error;}};}
+});

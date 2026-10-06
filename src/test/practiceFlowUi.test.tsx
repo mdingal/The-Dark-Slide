@@ -10,7 +10,7 @@ vi.mock('../components/generator/PracticePanel',()=>({PracticePanel:()=> <div>Pr
 import {GeneratorPage} from '../components/generator/GeneratorPage';
 it('starts with one introduction instead of every configuration card',()=>{
  state.currentSession=null;const html=renderToStaticMarkup(<GeneratorPage/>);
- expect(html).toContain('Start a session');expect(html).not.toContain('Select your skate class');expect(html).not.toContain('Generate New Challenge');expect(html).not.toContain('Practice counters');
+ expect(html).toContain('START A SESSION');expect(html).not.toContain('Select your skate class');expect(html).not.toContain('Generate New Challenge');expect(html).not.toContain('Practice counters');
 });
 it('opens resumed sessions directly to practice and prevents replacing an active challenge',()=>{
  state.currentSession={id:'session',sessionStartedAt:'2026-10-04',trickResult:{mode:'single',canonicalName:'Kickflip',breakdown:[],warnings:[]}};
