@@ -20,6 +20,8 @@ const AppContent: React.FC = () => {
   const { activeTab, setActiveTab, isLoggedIn, profile, authLoading, authError, refreshAccount } = useApp();
 
   const [infoPage, setInfoPage] = React.useState<InfoPageId | null>(readInfoPage);
+  const dashboardPreferencesRef=React.useRef(profile?.dashboardPreferences);
+  dashboardPreferencesRef.current=profile?.dashboardPreferences;
   const [,setRouteRevision]=React.useState(0);
   const unknownRoute=!readInfoPage()&&!readTab();
   const needsOnboarding=isLoggedIn && !!profile?.onboarding && !profile.onboarding.completedAt;
@@ -34,7 +36,7 @@ const AppContent: React.FC = () => {
       if(tab){
         // Route synchronization must not trigger a new practice configuration.
         window.dispatchEvent(new CustomEvent('route-tab-change',{detail:tab}));
-        if(tab==='history'){const view=dashboardRoute();requestDashboardView(view);window.dispatchEvent(new CustomEvent('dashboard-view-change',{detail:{...profile?.dashboardPreferences,view,category:'Progress'}}));}
+        if(tab==='history'){const view=dashboardRoute();requestDashboardView(view);window.dispatchEvent(new CustomEvent('dashboard-view-change',{detail:{...dashboardPreferencesRef.current,view,category:'Progress'}}));}
       }
       const title=location.pathname.startsWith('/trick-guides/')?decodeURIComponent(location.pathname.split('/')[2]).replaceAll('-',' '):location.pathname.split('/').filter(Boolean).join(' · ').replaceAll('-',' ')||'Fingerboard Trick Generator & Practice Tracker';
       document.title=title+' | The Dark Slide';
@@ -46,7 +48,7 @@ const AppContent: React.FC = () => {
     const links=(e:MouseEvent)=>{const a=(e.target as HTMLElement).closest('a');if(!a||e.defaultPrevented||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href);if(u.origin===location.origin&&!u.hash){e.preventDefault();navigate(u.pathname+u.search);}};
     document.addEventListener('click',links);
     return()=>{window.removeEventListener('app-route-change',sync);window.removeEventListener('popstate',sync);window.removeEventListener('hashchange',sync);document.removeEventListener('click',links);};
-  },[profile?.dashboardPreferences]);
+  },[]);
   React.useLayoutEffect(() => {
     const previous = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
