@@ -14,7 +14,11 @@ import { GeneratorPage } from './components/generator/GeneratorPage';
 const HistoryDashboard=React.lazy(()=>import('./components/dashboard/HistoryDashboard').then(m=>({default:m.HistoryDashboard})));
 const ProfileSettingsPage=React.lazy(()=>import('./components/settings/ProfileSettingsPage').then(m=>({default:m.ProfileSettingsPage})));
 import { LandingPage } from './components/landing/LandingPage';
+const TrickTreePage=React.lazy(()=>import('./components/progression/TrickTreePage').then(m=>({default:m.TrickTreePage})));
+const DeckGamesPage=React.lazy(()=>import('./components/games/DeckGamesPage').then(m=>({default:m.DeckGamesPage})));
 const TrickLibraryPage=React.lazy(()=>import('./components/library/TrickLibraryPage').then(m=>({default:m.TrickLibraryPage})));
+
+const LocalFeaturePreview=import.meta.env.DEV?React.lazy(()=>import('./dev/FeaturePreviewPage')):null;
 
 const AppContent: React.FC = () => {
   const { activeTab, setActiveTab, isLoggedIn, profile, authLoading, authError, refreshAccount } = useApp();
@@ -41,7 +45,7 @@ const AppContent: React.FC = () => {
       const title=location.pathname.startsWith('/trick-guides/')?decodeURIComponent(location.pathname.split('/')[2]).replaceAll('-',' '):location.pathname.split('/').filter(Boolean).join(' · ').replaceAll('-',' ')||'Fingerboard Trick Generator & Practice Tracker';
       document.title=title+' | The Dark Slide';
       document.querySelector('meta[name="description"]')?.setAttribute('content',location.pathname.startsWith('/trick-guides')?'Learn fingerboard tricks with prerequisites, finger positioning, practice tips, and common mistakes.':'Generate fingerboard tricks and combos, track practice sessions, and learn with The Dark Slide · Fingerboard Lab.');
-      let robots=document.querySelector<HTMLMetaElement>('meta[name="robots"]');if(!robots){robots=document.createElement('meta');robots.name='robots';document.head.appendChild(robots);}robots.content=/^\/(dashboard|rider-profile|trick-library|trick-lab)(\/|$)/.test(location.pathname)?'noindex,follow':'index,follow';
+      let robots=document.querySelector<HTMLMetaElement>('meta[name="robots"]');if(!robots){robots=document.createElement('meta');robots.name='robots';document.head.appendChild(robots);}robots.content=/^\/(dashboard|rider-profile|trick-library|trick-lab|trick-tree|deck-games)(\/|$)/.test(location.pathname)?'noindex,follow':'index,follow';
       let canonical=document.querySelector<HTMLLinkElement>('link[rel="canonical"]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical);}canonical.href=location.origin+location.pathname;
     };
     sync();window.addEventListener('app-route-change',sync);window.addEventListener('popstate',sync);window.addEventListener('hashchange',sync);
@@ -61,7 +65,7 @@ const AppContent: React.FC = () => {
 
 
   return (
-    <div className={`${isLoggedIn&&!needsOnboarding?'mobile-has-navigation':''} cutting-mat-page min-h-screen flex flex-col bg-[#e8dfd1] dark:bg-neutral-950 text-[#292524] dark:text-neutral-100 transition-colors`}>
+    <div className={`${isLoggedIn&&!needsOnboarding?'mobile-has-navigation':''} ds-app cutting-mat-page min-h-screen flex flex-col bg-[#e8dfd1] dark:bg-neutral-950 text-[#292524] dark:text-neutral-100 transition-colors`}>
       <div className="sticky top-0 z-30">
       <TopBar onboarding={needsOnboarding} currentPage={infoPage} onNavigate={(tab) => { if(needsOnboarding)return; closeInfoPage(); setActiveTab(tab); window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }} />
       </div>
@@ -76,6 +80,8 @@ const AppContent: React.FC = () => {
         {isLoggedIn && activeTab === 'generator' && <GeneratorPage key={profile?.id} />}
         {isLoggedIn && activeTab === 'history' && <HistoryDashboard key={profile?.id} />}
         {isLoggedIn && activeTab === 'library' && <TrickLibraryPage key={profile?.id} />}
+        {isLoggedIn && activeTab === 'games' && <DeckGamesPage key={profile?.id} />}
+        {isLoggedIn && activeTab === 'tree' && <TrickTreePage key={profile?.id} />}
         {isLoggedIn && activeTab === 'settings' && <ProfileSettingsPage />}
         </>}
         </React.Suspense></AppErrorBoundary>
@@ -89,6 +95,7 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
+  if(LocalFeaturePreview&&window.location.pathname==='/feature-preview')return <React.Suspense fallback={<p>Loading preview…</p>}><LocalFeaturePreview/></React.Suspense>;
   return (
     <ThemeProvider>
       <AppProvider>

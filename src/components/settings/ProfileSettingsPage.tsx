@@ -1,3 +1,4 @@
+import './RiderProfile.css';
 import {RiderOnboarding} from '../auth/RiderOnboarding';
 import {riderSetupAnswers,RIDER_DETAIL_LABELS} from '../../domain/riderSetup';
 import {HardwareManager,HW_BUTTON} from './HardwareManager';
@@ -7,7 +8,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { SetupData, WheelMaterial, DeckShape, DeckMold, ObstacleType } from '../../domain/types';
 import { Modal } from '../common/Modal';
-import { Plus, Trash2, Instagram, AlertCircle, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, Instagram, AlertCircle, ExternalLink, UserRound, ClipboardList, SlidersHorizontal } from 'lucide-react';
 
 const DECK_WIDTH_PRESETS = [26, 29, 31, 32, 33, 33.6, 34, 36];
 
@@ -54,15 +55,13 @@ export const ProfileSettingsPage: React.FC = () => {
   if(editingDetails)return <RiderOnboarding editing onExit={()=>setEditingDetails(false)}/>;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="rider-profile-page max-w-4xl mx-auto space-y-6">
       <RiderShowcase />
       {/* Rider Profile & Instagram Link */}
-      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-4">
+      <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800 gap-3">
           <div>
-            <h2 className="text-sm font-semibold text-neutral-900 dark:text-white">
-              Rider Profile
-            </h2>
+            <h2 className="rider-section-title text-sm font-semibold text-neutral-900 dark:text-white"><span className="rider-section-medal" aria-hidden="true"><UserRound size={22}/></span><span><small>MAKE IT YOURS</small>Rider Profile</span></h2>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Personalize your skater name and connect your Instagram profile.
             </p>
@@ -115,14 +114,12 @@ export const ProfileSettingsPage: React.FC = () => {
         </div>
       </div>
 
-      <section className="bg-white dark:bg-neutral-900 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-3"><h2 className="text-lg font-semibold">Rider Details</h2>{Object.entries(riderSetupAnswers(profile.onboarding?.answers,profile.savedSetups)).map(([k,v])=><p key={k} className="text-sm"><span className="capitalize text-neutral-500">{RIDER_DETAIL_LABELS[k]||k.replace(/([A-Z])/g,' $1')}: </span>{Array.isArray(v)?v.join(', '):v||'Skipped'}</p>)}<button className="cursor-pointer rounded-lg bg-[#D4A72C] text-neutral-950 px-4 py-2 text-sm font-semibold hover:bg-[#e5ba40] transition-colors disabled:opacity-40" onClick={()=>setEditingDetails(true)}>Update rider details</button></section>
-      <HardwareManager />
+      <section className="ds-surface bg-white dark:bg-neutral-900 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-3"><h2 className="rider-section-title text-lg font-semibold"><span className="rider-section-medal" aria-hidden="true"><ClipboardList size={22}/></span><span><small>YOUR RIDING</small>Rider Details</span></h2>{Object.entries(riderSetupAnswers(profile.onboarding?.answers,profile.savedSetups)).map(([k,v])=><p key={k} className="text-sm"><span className="capitalize text-neutral-500">{RIDER_DETAIL_LABELS[k]||k.replace(/([A-Z])/g,' $1')}: </span>{Array.isArray(v)?v.join(', '):v||'Skipped'}</p>)}<button className="cursor-pointer rounded-lg bg-[#D4A72C] text-neutral-950 px-4 py-2 text-sm font-semibold hover:bg-[#e5ba40] transition-colors disabled:opacity-40" onClick={()=>setEditingDetails(true)}>Update rider details</button></section>
+      <HardwareManager profileStyle />
       {/* Available Obstacles in Spot */}
-      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-4">
+      <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-neutral-900 dark:text-white">
-            Available Obstacles in Your Lab
-          </h2>
+          <h2 className="rider-section-title text-sm font-semibold text-neutral-900 dark:text-white"><span className="rider-section-medal" aria-hidden="true"><SlidersHorizontal size={22}/></span><span><small>YOUR SPOT</small>Available Obstacles in Your Lab</span></h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
             Uncheck obstacles you do not own to keep generation realistic to your physical spot.
           </p>

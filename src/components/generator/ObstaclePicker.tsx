@@ -89,7 +89,7 @@ export const ObstaclePicker: React.FC<ObstaclePickerProps> = ({
   const rotationalEntries = currentAvailableTricks.filter((t) => t.category === 'rotational_entry');
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-5">
+    <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800 gap-2">
         <div>

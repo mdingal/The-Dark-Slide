@@ -1,3 +1,9 @@
+import {currentWildcard,WILDCARD_LABELS,deckModeLabel} from '../../domain/deckGame';
+import {formatSingleTrickName} from '../../domain/naming';
+import {personalWins,goalLabel} from '../../domain/practiceTargets';
+import {RewardBreakdown} from '../common/ProgressionReward';
+import {sessionRewards} from '../../domain/riderProgression';
+import {useApp} from '../../context/AppContext';
 import React from 'react';
 import { ChallengeActions } from '../common/ChallengeActions';
 import { getStreaks, MISS_TAGS } from '../../domain/progression';
@@ -20,7 +26,10 @@ export const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
   onClose,
   onResume,
 }) => {
+  const {sessions}=useApp();
   if (!session) return null;
+  const reward=sessionRewards(sessions,session.id);
+  const wins=personalWins(sessions,session.id);
 
   const landingRate =
     session.attemptCount > 0
@@ -43,8 +52,11 @@ export const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
           </div>
         </div>
 
-        <section className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-700 space-y-2"><h3 className="font-semibold">Practice plan</h3><p>Goal: {session.goal?`${session.goal.target} ${session.goal.type==='streak'?'in a row':'total landings'}`:'Not recorded'}</p><p>Timer: {session.practiceTimer?.type||'Not recorded'} {session.practiceTimer?.durationMs?formatDurationMs(session.practiceTimer.durationMs):''}</p><p>Surface: {session.practiceSurface||'Not recorded'}</p><p>{session.parkedAt?'Parked for later':session.sessionEndedAt?`Ended: ${session.endedReason||'Not recorded'}`:'In progress'}</p></section>
+        {session.deckGame&&<section className="p-3 rounded-lg border border-violet-500/30 space-y-2"><h3 className="font-semibold">Session Deck · {deckModeLabel(session.deckGame.mode)}</h3>{currentWildcard(session.deckGame)&&<p>{WILDCARD_LABELS[currentWildcard(session.deckGame)!]}</p>}{currentWildcard(session.deckGame)==='opposite_stance'&&session.history.filter(h=>h.attemptTrick).slice().reverse().map((h,i)=><p key={i}>Try {i+1}: {formatSingleTrickName(h.attemptTrick!)} · {h.action==='landing'?'Landed':'Missed'}</p>)}</section>}
+        <section className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-700 space-y-2"><h3 className="font-semibold">Practice plan</h3><p>Goal: {session.goal?goalLabel(session.goal):'Not recorded'}</p><p>Timer: {session.practiceTimer?.type||'Not recorded'} {session.practiceTimer?.durationMs?formatDurationMs(session.practiceTimer.durationMs):''}</p><p>Surface: {session.practiceSurface||'Not recorded'}</p><p>{session.parkedAt?'Parked for later':session.sessionEndedAt?`Ended: ${session.endedReason||'Not recorded'}`:'In progress'}</p></section>
         <details className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-700"><summary className="cursor-pointer font-semibold">Parts used — archived snapshot</summary><div className="mt-3 space-y-3">{PART_KINDS.map(k=><div key={k}><h4>{PART_LABELS[k]}: {session.setupSnapshot.partsSnapshot?.[k]?.name||'Not recorded'}</h4><p className="text-neutral-500">{session.setupSnapshot.partsSnapshot?.[k]?.brand}</p>{Object.entries(session.setupSnapshot.partsSnapshot?.[k]?.specs||{}).filter(([,v])=>v).map(([key,value])=><p key={key}>{key}: {value}</p>)}</div>)}</div></details>
+        {reward && <div className="rounded-xl border border-[#D4A72C]/30 p-4"><RewardBreakdown reward={reward}/></div>}
+        {wins.length>0&&<section className="rounded-xl border border-[#D4A72C]/30 p-4 space-y-2"><h3 className="font-semibold">Recorded improvements</h3>{wins.map(win=><p key={win}>{win}</p>)}</section>}
         {/* Breakdown */}
         <div>
           <div className="font-semibold text-neutral-700 dark:text-neutral-300 mb-1">

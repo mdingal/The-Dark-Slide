@@ -49,7 +49,7 @@ export const ParameterSelector: React.FC<ParameterSelectorProps> = ({
   );
 
   return (
-    <div className="mobile-parameter-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+    <div className="ds-surface mobile-parameter-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b border-neutral-200 dark:border-neutral-800 gap-2">
         <div>
           <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">

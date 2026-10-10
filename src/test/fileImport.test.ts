@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const mocks = vi.hoisted(() => ({ requireRider: vi.fn(), getProfile: vi.fn(), saveProfile: vi.fn(), records: new Map<string, unknown>(), writes: [] as unknown[] }));
+const mocks = vi.hoisted(() => ({ writeSessionSummary:vi.fn(), requireRider: vi.fn(), getProfile: vi.fn(), saveProfile: vi.fn(), records: new Map<string, unknown>(), writes: [] as unknown[] }));
 vi.mock('../services/firebase', () => ({ db: {} }));
-vi.mock('../services/firebaseStorageService', () => ({ requireRider: mocks.requireRider, cleanCloudData: (x: unknown) => JSON.parse(JSON.stringify(x)), storageService: mocks }));
+vi.mock('../services/firebaseStorageService', () => ({ writeSessionSummary:mocks.writeSessionSummary, requireRider: mocks.requireRider, cleanCloudData: (x: unknown) => JSON.parse(JSON.stringify(x)), storageService: mocks }));
 vi.mock('firebase/firestore', () => ({ doc: (_db: unknown, ...parts: string[]) => parts.join('/'), runTransaction: async (_db: unknown, fn: (tx: unknown) => unknown) => fn({ get: async (ref: string) => ({ exists: () => mocks.records.has(ref) }), set: (ref: string, value: unknown) => { mocks.records.set(ref, value); mocks.writes.push(value); } }) }));
 import { parseRiderExport, importRiderExport } from '../services/fileImport';
 import { INITIAL_PROFILES, INITIAL_SESSIONS_ALEX } from '../services/seedData';
@@ -9,6 +9,11 @@ const backup = () => ({ format: 'the-dark-slide-rider-export', version: 1, expor
 describe('JSON backup import', () => {
  beforeEach(() => { vi.clearAllMocks(); mocks.records.clear(); mocks.writes = []; });
  it('accepts a complete export including a BOM', () => { expect(parseRiderExport('\uFEFF' + JSON.stringify(backup())).sessions.length).toBe(INITIAL_SESSIONS_ALEX.length); });
+ it('accepts time-goal backups and rejects impossible minute bounds',()=>{
+  const data=structuredClone(backup());data.sessions=data.sessions.slice(0,1);data.sessions[0].goal={type:'time',target:10};
+  expect(parseRiderExport(JSON.stringify(data)).sessions[0].goal).toEqual({type:'time',target:10});
+  data.sessions[0].goal={type:'time',target:1441};expect(()=>parseRiderExport(JSON.stringify(data))).toThrow();
+ });
  it('rejects arbitrary JSON, unsupported versions, and invalid metrics', () => {
   expect(() => parseRiderExport('{}')).toThrow(); const data = backup(); data.version = 2; expect(() => parseRiderExport(JSON.stringify(data))).toThrow();
   const invalid = backup(); invalid.sessions = [{ ...invalid.sessions[0], landingCount: invalid.sessions[0].attemptCount + 1 }]; expect(() => parseRiderExport(JSON.stringify(invalid))).toThrow();
@@ -18,7 +23,7 @@ describe('JSON backup import', () => {
   const data = parseRiderExport(JSON.stringify(backup())); data.sessions = data.sessions.slice(0,1);
   mocks.getProfile.mockResolvedValue({ ...data.profile, id: 'destination', email: 'destination@example.com', displayName: 'Destination Rider', savedSetups: [], bookmarks: [], poolPresets: [], trickLibrary: [] });
   expect((await importRiderExport('destination', data)).added).toBe(1);
-  expect((await importRiderExport('destination', data)).skipped).toBe(1); expect(mocks.writes).toHaveLength(1);
+  expect((await importRiderExport('destination', data)).skipped).toBe(1); expect(mocks.writes).toHaveLength(1);expect(mocks.writeSessionSummary).toHaveBeenCalledTimes(1);
   const saved = mocks.writes[0] as { timerState: { isRunning: boolean } }; expect(saved.timerState.isRunning).toBe(false);
   expect(mocks.saveProfile.mock.calls[0][0].displayName).toBe('Destination Rider'); expect(mocks.saveProfile.mock.calls[0][0].email).toBe('destination@example.com');
  });

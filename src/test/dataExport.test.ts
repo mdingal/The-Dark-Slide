@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const cloud = vi.hoisted(() => ({ requireRider: vi.fn(), getProfile: vi.fn(), getSessions: vi.fn() }));
+const cloud = vi.hoisted(() => ({ requireRider: vi.fn(), getProfile: vi.fn(), getAllSessions: vi.fn() }));
 vi.mock('../services/firebaseStorageService', () => ({ requireRider: cloud.requireRider, storageService: cloud }));
 import { clearLegacyRiderData, csvCell, fetchRiderExport, sessionsCsv } from '../services/dataExport';
 import type { PracticeSession } from '../domain/types';
 describe('rider exports', () => {
  beforeEach(() => { vi.clearAllMocks(); });
  it('exports server profile and sessions and rechecks ownership after fetching', async () => {
-  cloud.getProfile.mockResolvedValue({ id: 'rider', bookmarks: [{ id: 'b1' }] }); cloud.getSessions.mockResolvedValue([{ id: 's1' }]);
+  cloud.getProfile.mockResolvedValue({ id: 'rider', bookmarks: [{ id: 'b1' }] }); cloud.getAllSessions.mockResolvedValue([{ id: 's1' }]);
   const data = await fetchRiderExport('rider'); expect(data.format).toBe('the-dark-slide-rider-export'); expect(data.profile.bookmarks).toHaveLength(1); expect(data.sessions).toEqual([{ id: 's1' }]); expect(cloud.requireRider).toHaveBeenCalledTimes(2);
  });
  it('does not export if the account changes during fetching', async () => {

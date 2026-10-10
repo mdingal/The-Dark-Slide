@@ -1,3 +1,4 @@
+import {DesignBadge} from './DesignBadge';
 import React, { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
@@ -11,9 +12,10 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   wide?: boolean;
+  titleClassName?: string;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, wide=false }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, wide=false, titleClassName='' }) => {
   const titleId=useId();
   const dialogRef=useRef<HTMLDivElement>(null),closeRef=useRef(onClose);closeRef.current=onClose;
   useEffect(()=>{
@@ -47,8 +49,8 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
     >
       <div className={`mobile-dialog-panel relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl ${wide ? 'max-w-6xl' : 'max-w-2xl'} w-full max-h-[calc(100dvh-2rem)] flex flex-col overflow-hidden shadow-xl text-neutral-900 dark:text-neutral-100`}>
         <div className="flex shrink-0 items-center justify-between gap-4 p-4 sm:px-6 border-b border-neutral-200 dark:border-neutral-800">
-          <h2 id={titleId} className="text-base font-semibold">
-            {title}
+          <h2 id={titleId} className={`ds-dialog-title ${titleClassName||'text-base'} font-semibold`}>
+            <DesignBadge/>{title}
           </h2>
           <button
             type="button"

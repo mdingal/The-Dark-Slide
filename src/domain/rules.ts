@@ -33,6 +33,10 @@ export function validateTrickParameters(params: SingleTrickParameters): Validati
     };
   }
 
+  if (Math.abs(resolveUnderlyingMovements(params).bodyRotationDeg) >= 360) {
+    errors.push('Tricks with a full 360-degree body rotation are not available.');
+  }
+
   // Stance check
   if (!base.allowedStances.includes(params.stance)) {
     errors.push(

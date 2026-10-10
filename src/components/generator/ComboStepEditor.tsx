@@ -53,7 +53,7 @@ export const ComboStepEditor: React.FC<ComboStepEditorProps> = ({
   const step2 = steps?.[1];
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-6">
+    <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-6">
       <div className="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800">
         <div>
           <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">

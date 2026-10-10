@@ -2,7 +2,7 @@ import { PracticeSession, UserProfile } from '../domain/types';
 import { storageService, requireRider } from './firebaseStorageService';
 import { doc, runTransaction } from 'firebase/firestore';
 import { db } from './firebase';
-import { cleanCloudData } from './firebaseStorageService';
+import { cleanCloudData, writeSessionSummary } from './firebaseStorageService';
 // Read-only migration. Never initializes demo data or writes browser records.
 export function localImportCandidates(): { profile: UserProfile; sessions: PracticeSession[] }[] {
   try {
@@ -23,7 +23,7 @@ export async function importLocalRider(current: UserProfile, legacy: UserProfile
     const copy = cleanCloudData({ ...session, id: prefix + session.id, cloudRevision: 1, timerState: { ...session.timerState, isRunning: false, lastStartedTimestamp: undefined, accumulatedMs: session.activeDurationMs || session.timerState.accumulatedMs } });
     const ref = doc(db, 'users', current.id, 'sessions', copy.id);
     // Retrying a partial import never overwrites already imported session edits.
-    await runTransaction(db, async tx => { const old = await tx.get(ref); if (!old.exists()) tx.set(ref, copy); });
+    await runTransaction(db, async tx => { const old = await tx.get(ref); if (!old.exists()) {await writeSessionSummary(tx,current.id,copy);tx.set(ref,copy);} });
   }
   const updated = { ...current, importedLocalProfiles: [...(current.importedLocalProfiles || []), legacy.id] };
   for (const key of ['savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary'] as const) {

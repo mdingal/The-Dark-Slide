@@ -1,7 +1,8 @@
+import {validDeckGame} from '../domain/deckGame';
 import {PART_KINDS} from '../domain/hardware';
 import { doc, runTransaction } from 'firebase/firestore';
 import { db } from './firebase';
-import { cleanCloudData, requireRider, storageService } from './firebaseStorageService';
+import { cleanCloudData, requireRider, storageService, writeSessionSummary } from './firebaseStorageService';
 import { RiderExport } from './dataExport';
 import { PracticeSession, UserProfile } from '../domain/types';
 const object = (x: unknown): x is Record<string, any> => !!x && typeof x === 'object' && !Array.isArray(x);
@@ -19,11 +20,12 @@ function trick(x: unknown): boolean {
  return x.mode === 'obstacle' && object(x.obstacleData) && ['ledge','rail','flatground','manual_pad'].includes(x.obstacleData.obstacleType) && ['frontside','backside'].includes(x.obstacleData.approach) && text(x.obstacleData.obstacleTrickId) && text(x.obstacleData.entryTrickId) && text(x.obstacleData.exitTrick);
 }
 function session(x: unknown): boolean {
+ if(object(x)&&x.deckGame!==undefined&&!validDeckGame(x.deckGame))return false;
  if (!object(x) || !id(x.id) || !trick(x.trickResult) || !setup(x.setupSnapshot) || !['pending','success','failed'].includes(x.status) || !date(x.generatedAt) || !count(x.attemptCount) || !count(x.landingCount) || x.landingCount > x.attemptCount || !number(x.activeDurationMs) || !text(x.notes) || !number(x.difficultyRating) || x.difficultyRating > 5 || !object(x.timerState) || typeof x.timerState.isRunning !== 'boolean' || !number(x.timerState.accumulatedMs) || !Array.isArray(x.history)) return false;
  if (x.history.some((h: unknown) => !object(h) || !['attempt','landing','status_change'].includes(h.action) || !number(h.timestamp) || !count(h.prevAttemptCount) || !count(h.prevLandingCount) || !['pending','success','failed'].includes(h.prevStatus))) return false;
  for (const key of ['firstLandingAttemptNumber','firstLandingElapsedMs','currentLandingStreak','bestLandingStreak','consistencyGoal']) if (x[key] !== undefined && !number(x[key])) return false;
  for (const key of ['sessionStartedAt','sessionEndedAt']) if (x[key] !== undefined && !date(x[key])) return false;
- if(x.goal!==undefined&&(!object(x.goal)||!['landings','streak'].includes(x.goal.type)||!count(x.goal.target)||x.goal.target<1||x.goal.target>10000))return false;
+ if(x.goal!==undefined&&(!object(x.goal)||!['landings','streak','time'].includes(x.goal.type)||!count(x.goal.target)||x.goal.target<1||x.goal.target>10000||(x.goal.type==='time'&&x.goal.target>1440)))return false;
  if(x.practiceTimer!==undefined&&(!object(x.practiceTimer)||!['regular','countdown'].includes(x.practiceTimer.type)||(x.practiceTimer.type==='countdown'&&(!number(x.practiceTimer.durationMs)||x.practiceTimer.durationMs<1000||x.practiceTimer.durationMs>86400000))))return false;
  return x.missTagCounts === undefined || (object(x.missTagCounts) && Object.values(x.missTagCounts).every(count));
 }
@@ -57,7 +59,7 @@ export async function importRiderExport(uid: string, data: RiderExport): Promise
   const ref = doc(db, 'users', uid, 'sessions', mappedId(record.id));
   const created = await runTransaction(db, async tx => {
    const existing = await tx.get(ref); if (existing.exists()) return false;
-   tx.set(ref, cleanCloudData({ ...record, setupSnapshot:{...record.setupSnapshot,id:mappedId(record.setupSnapshot.id)||record.setupSnapshot.id}, id: mappedId(record.id), cloudRevision: 1, timerState: { ...record.timerState, isRunning: false, lastStartedTimestamp: undefined, accumulatedMs: record.activeDurationMs } })); return true;
+   const copy=cleanCloudData({ ...record, setupSnapshot:{...record.setupSnapshot,id:mappedId(record.setupSnapshot.id)||record.setupSnapshot.id}, id: mappedId(record.id), cloudRevision: 1, timerState: { ...record.timerState, isRunning: false, lastStartedTimestamp: undefined, accumulatedMs: record.activeDurationMs } }); await writeSessionSummary(tx,uid,copy);tx.set(ref,copy);return true;
   }); if (created) added++; else skipped++;
  }
  const updated: UserProfile = { ...current };

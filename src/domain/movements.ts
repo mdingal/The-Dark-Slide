@@ -584,7 +584,7 @@ export function recognizeTrickFromMovements(
     // 360 Flip / Tre Flip: Kickflip + BS 360 shuvit
     else if (boardFlip === 'kickflip' && boardSpinDeg === 360 && boardSpinDir === 'backside') {
       baseName = 'Tre Flip';
-      formula = 'Kickflip + BS 360° Shuvit (360 Flip)';
+      formula = 'Kickflip + BS 360° Shuvit';
     }
     // Laser Flip: Heelflip + FS 360 shuvit
     else if (boardFlip === 'heelflip' && boardSpinDeg === 360 && boardSpinDir === 'frontside') {
@@ -651,7 +651,7 @@ export function recognizeTrickFromMovements(
   if (stance === 'switch') {
     fullCanonicalName = `Switch ${baseName}`;
   } else if (stance === 'nollie') {
-    fullCanonicalName = `Nollie ${baseName}`;
+    fullCanonicalName = baseName === 'Ollie' ? 'Nollie' : `Nollie ${baseName}`;
   } else if (stance === 'fakie') {
     // Only prefix if not already a Cab name
     if (!baseName.includes('Cab') && !baseName.startsWith('Fakie')) {

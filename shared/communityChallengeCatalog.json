@@ -1383,7 +1383,7 @@
       "breakdown": [
         "Stance: Regular",
         "Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation",
-        "Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip",
+        "Formula: Kickflip + BS 360° Shuvit ➔ Tre Flip",
         "Board Spin: Backside 360°",
         "Board Flip: Kickflip"
       ],
@@ -1987,7 +1987,7 @@
               "travelDirection": "forward",
               "boardPosition": "normal"
             },
-            "breakdown": "Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip",
+            "breakdown": "Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip",
             "movements": {
               "boardSpinDeg": 360,
               "boardSpinDir": "backside",
@@ -2049,7 +2049,7 @@
         ],
         "canonicalName": "Tre Flip ➔ Ollie",
         "breakdown": [
-          "Step 1: Tre Flip (Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip)",
+          "Step 1: Tre Flip (Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip)",
           "Transition: Lands in regular stance (normal)",
           "Step 2: Ollie (Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie)"
         ],
@@ -2740,7 +2740,7 @@
               "travelDirection": "forward",
               "boardPosition": "normal"
             },
-            "breakdown": "Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip",
+            "breakdown": "Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip",
             "movements": {
               "boardSpinDeg": 360,
               "boardSpinDir": "backside",
@@ -2802,7 +2802,7 @@
         ],
         "canonicalName": "Tre Flip ➔ Ollie",
         "breakdown": [
-          "Step 1: Tre Flip (Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit (360 Flip) ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip)",
+          "Step 1: Tre Flip (Stance: Regular · Movements: BS 360° Board Spin + Kickflip + 0° Body Rotation · Formula: Kickflip + BS 360° Shuvit ➔ Tre Flip · Board Spin: Backside 360° · Board Flip: Kickflip)",
           "Transition: Lands in regular stance (normal)",
           "Step 2: Ollie (Stance: Regular · Movements: 0° Board Spin + No Flip + 0° Body Rotation · Formula: Standard Ollie ➔ Ollie)"
         ],

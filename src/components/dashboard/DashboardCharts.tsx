@@ -221,7 +221,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ sessions }) =>
       {/* Row 1: Stance & Base Trick Frequencies */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Stance Chart */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+        <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
           <div className="mb-3">
             <h3 className="text-xs font-semibold text-neutral-900 dark:text-white uppercase tracking-wider font-mono">
               Stance Distribution
@@ -253,7 +253,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ sessions }) =>
         </div>
 
         {/* Base Trick Chart */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+        <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
           <div className="mb-3">
             <h3 className="text-xs font-semibold text-neutral-900 dark:text-white uppercase tracking-wider font-mono">
               Trick Frequency (Top Catalog Entries)
@@ -288,7 +288,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ sessions }) =>
       {/* Row 2: Status Distribution & Practice Activity Over Time */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Donut Chart */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+        <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
           <div className="mb-3">
             <h3 className="text-xs font-semibold text-neutral-900 dark:text-white uppercase tracking-wider font-mono">
               Session Status Distribution
@@ -334,7 +334,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ sessions }) =>
         </div>
 
         {/* Practice Activity Over Time */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+        <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
           <div className="mb-3">
             <h3 className="text-xs font-semibold text-neutral-900 dark:text-white uppercase tracking-wider font-mono">
               Practice Activity Over Time
@@ -389,7 +389,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ sessions }) =>
       {/* Row 3: Histograms (Attempts & Duration) & Setup Frequencies */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Attempts Histogram */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+        <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
           <div className="mb-3">
             <h3 className="text-xs font-semibold text-neutral-900 dark:text-white uppercase tracking-wider font-mono">
               Attempt Count Histogram
@@ -420,7 +420,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ sessions }) =>
         </div>
 
         {/* Practice Duration Histogram */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+        <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
           <div className="mb-3">
             <h3 className="text-xs font-semibold text-neutral-900 dark:text-white uppercase tracking-wider font-mono">
               Duration Histogram
@@ -451,7 +451,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ sessions }) =>
         </div>
 
         {/* Setup Parameters (Deck Widths & Obstacles) */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
+        <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs">
           <div className="mb-3">
             <h3 className="text-xs font-semibold text-neutral-900 dark:text-white uppercase tracking-wider font-mono">
               Deck Width Frequency

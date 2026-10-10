@@ -209,7 +209,7 @@ export const BASE_TRICKS: BaseTrickDefinition[] = [
       revert: true,
     },
     supportedObstacleTypes: ['flatground', 'ledge', 'rail', 'manual_pad'],
-    description: '360 Backside Shuvit combined with a Kickflip (360 Flip / Tre Flip).',
+    description: '360 Backside Shuvit combined with a Kickflip / Tre Flip.',
   },
   {
     id: 'laser_flip',
@@ -276,22 +276,6 @@ export const BASE_TRICKS: BaseTrickDefinition[] = [
     description: '540-degree shuvit accompanied by a 180-degree body rotation in the same direction.',
   },
   {
-    id: 'gazelle_spin',
-    name: 'Gazelle Spin',
-    allowedStances: ['regular', 'fakie', 'switch', 'nollie'],
-    applicableDirections: ['none', 'backside', 'frontside'],
-    boardRotationDeg: 540,
-    boardFlip: 'none',
-    difficulty: 5,
-    allowedModifiers: {
-      bodyVarial: false,
-      landingManual: true,
-      revert: true,
-    },
-    supportedObstacleTypes: ['flatground', 'ledge', 'manual_pad'],
-    description: '540-degree shuvit accompanied by a full 360-degree body rotation.',
-  },
-  {
     id: 'bigflip',
     name: 'Bigflip',
     allowedStances: ['regular', 'fakie', 'switch', 'nollie'],
@@ -322,22 +306,6 @@ export const BASE_TRICKS: BaseTrickDefinition[] = [
     },
     supportedObstacleTypes: ['flatground', 'ledge', 'manual_pad'],
     description: 'BS 540 shuvit + kickflip + BS 180 body rotation.',
-  },
-  {
-    id: 'gazelle_flip',
-    name: 'Gazelle Flip',
-    allowedStances: ['regular', 'fakie', 'switch', 'nollie'],
-    applicableDirections: ['none', 'backside'],
-    boardRotationDeg: 540,
-    boardFlip: 'kickflip',
-    difficulty: 5,
-    allowedModifiers: {
-      bodyVarial: false,
-      landingManual: true,
-      revert: true,
-    },
-    supportedObstacleTypes: ['flatground', 'ledge', 'manual_pad'],
-    description: 'BS 540 shuvit + kickflip + BS 360 body rotation.',
   },
   {
     id: 'bigheel',
@@ -401,3 +369,7 @@ export const BASE_TRICKS: BaseTrickDefinition[] = [
 export function getBaseTrickById(id: string): BaseTrickDefinition | undefined {
   return BASE_TRICKS.find((t) => t.id === id);
 }
+
+// Reserved records are data-only and intentionally separate from playable tricks.
+export { RESERVED_TRICKS, getReservedTrickById } from './reservedTrickCatalog';
+export type { ReservedTrickDefinition } from './reservedTrickCatalog';

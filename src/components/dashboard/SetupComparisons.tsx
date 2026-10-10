@@ -11,7 +11,7 @@ export const SetupComparisons:React.FC<{sessions:PracticeSession[];expanded?:boo
   const rows=compareSetups(sessions,group,exact||undefined);
   const input='rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-xs min-w-0';
   const Container=expanded?'section':'details';
-  return <Container className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+  return <Container className="ds-surface rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
     {expanded?<h2 className="text-lg font-semibold">Setup Comparisons</h2>:<summary className="text-sm font-semibold cursor-pointer">Setup Comparisons</summary>}
     <div className="mt-3 space-y-3">
       <p className="text-xs text-neutral-600 dark:text-neutral-300">Uses the hardware recorded in each session. Comparisons describe logged practice, not proof that one setup performs better. Choose the same exact challenge for a focused comparison. Unattempted sessions are excluded.</p>

@@ -427,3 +427,14 @@ describe('Evolved Trick Naming & Underlying Movements Engine', () => {
     });
   });
 });
+
+
+it('names the nollie foundation Nollie and retains modifiers and other stance names',()=>{
+ const p:SingleTrickParameters={stance:'nollie',direction:'none',baseTrickId:'ollie',bodyVarial:'none',landing:'normal',revert:'none'};
+ expect(formatSingleTrickName(p)).toBe('Nollie');
+ expect(formatSingleTrickName({...p,revert:'frontside'})).toBe('Nollie FS Revert');
+ expect(formatSingleTrickName({...p,landing:'manual'})).toBe('Nollie to Manual');
+ expect(formatSingleTrickName({...p,baseTrickId:'kickflip'})).toBe('Nollie Kickflip');
+ expect(formatSingleTrickName({...p,stance:'fakie'})).toBe('Fakie Ollie');
+ expect(formatSingleTrickName({...p,stance:'switch'})).toBe('Switch Ollie');
+});

@@ -5,7 +5,7 @@ import { ChallengeActions } from '../common/ChallengeActions';
 export const BookmarksPanel: React.FC = () => {
   const { profile } = useApp();
   const bookmarks = profile?.bookmarks || [];
-  return <details className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+  return <details className="ds-surface rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
     <summary className="cursor-pointer text-sm font-semibold">Bookmarked Challenges ({bookmarks.length})</summary>
     <div className="mt-3 space-y-3 max-h-80 overflow-y-auto">
       {!bookmarks.length && <p className="text-xs text-neutral-600 dark:text-neutral-300">Bookmark a challenge in Trick Lab or history to practice it again later.</p>}

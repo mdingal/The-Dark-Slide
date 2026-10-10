@@ -1,10 +1,11 @@
 import { GeneratedTrickResult, SingleTrickParameters, ComplexityFilter, ComplexityTier, ObstacleComponent } from './types';
-import { getBaseTrickById } from './catalog';
+import { getBaseTrickById, getReservedTrickById } from './catalog';
 import { getObstacleTrickById } from './obstacleCatalog';
 
 export function singleComplexity(p: SingleTrickParameters): number {
   const base = getBaseTrickById(p.baseTrickId);
-  return (base?.difficulty || 1) + (p.stance === 'switch' || p.stance === 'nollie' ? 1 : 0)
+  const reserved=getReservedTrickById(p.baseTrickId);
+  return (base?.difficulty ?? (reserved ? reserved.category==='core_late'?4:5 : 1)) + (p.stance === 'switch' || p.stance === 'nollie' ? 1 : 0)
     + (p.direction !== 'none' && !base?.boardRotationDeg ? 1 : 0)
     + (p.bodyVarial !== 'none' ? 1 : 0) + (p.landing !== 'normal' ? 1 : 0) + (p.revert !== 'none' ? 1 : 0);
 }

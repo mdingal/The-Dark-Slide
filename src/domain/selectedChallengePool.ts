@@ -1,7 +1,7 @@
 import { enumerateSingleOptions } from './challengeGeneration';
 import { resolveUnderlyingMovements } from './movements';
 import { BASE_TRICKS, CATALOG_VERSION, getBaseTrickById } from './catalog';
-import { generateBreakdown } from './rules';
+import { generateBreakdown, validateTrickParameters } from './rules';
 import { formatSingleTrickName } from './naming';
 import { getChallengeComplexity } from './complexity';
 import { trickKey } from './progression';
@@ -15,15 +15,22 @@ export function baseChallengePool(): GeneratedTrickResult[] {
 export function uniqueChallenges(items: GeneratedTrickResult[]): GeneratedTrickResult[] {
  return [...new Map(items.map(item=>[trickKey(item),item])).values()];
 }
+function supportedPoolChallenge(trick: GeneratedTrickResult): boolean {
+ if (trick.movements && Math.abs(trick.movements.bodyRotationDeg) >= 360) return false;
+ if (trick.singleTrick && !validateTrickParameters(trick.singleTrick).isValid) return false;
+ if (trick.comboSteps?.some(step => !validateTrickParameters(step.parameters).isValid || (step.movements && Math.abs(step.movements.bodyRotationDeg) >= 360))) return false;
+ if (trick.obstacleData && trick.obstacleData.entryTrickId !== 'none' && !getBaseTrickById(trick.obstacleData.entryTrickId)) return false;
+ return true;
+}
 export function selectPoolChallenge(items: GeneratedTrickResult[], mode: TrickMode, complexity: ComplexityFilter, random = Math.random): GeneratedTrickResult | {error:string} {
- const eligible=uniqueChallenges(items).filter(t=>t.mode===mode&&(complexity==='all'||getChallengeComplexity(t)===complexity));
+ const eligible=uniqueChallenges(items).filter(t=>supportedPoolChallenge(t)&&t.mode===mode&&(complexity==='all'||getChallengeComplexity(t)===complexity));
  if(!eligible.length)return {error:'No selected tricks match this session mode and complexity. Select more tricks or change the filters.'};
  const selected=eligible[Math.min(eligible.length-1,Math.floor(random()*eligible.length))];
  return {...structuredClone(selected),complexity:getChallengeComplexity(selected)};
 }
 
 export function expandSelectedVariations(items: GeneratedTrickResult[], stanceVariations: boolean, rotations: ('none'|'frontside'|'backside')[] | null, stances: SingleTrickParameters['stance'][] = ['regular','nollie','fakie','switch']): GeneratedTrickResult[] {
- return uniqueChallenges(items.flatMap(t=>{
+ return uniqueChallenges(items.filter(supportedPoolChallenge).flatMap(t=>{
   if(t.mode!=='single'||!t.singleTrick)return [t];
   const p=t.singleTrick,base=getBaseTrickById(p.baseTrickId);
   if(!base)return [];

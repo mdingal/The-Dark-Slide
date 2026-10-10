@@ -55,7 +55,7 @@ export const ItemPoolSelector: React.FC<ItemPoolSelectorProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 z-50 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-lg p-2.5 text-xs animate-in fade-in zoom-in-95">
+        <div className="ds-surface absolute right-0 mt-1 z-50 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-lg p-2.5 text-xs animate-in fade-in zoom-in-95">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-neutral-100 dark:border-neutral-800">
             <span className="font-semibold text-neutral-900 dark:text-white text-[11px]">
               Randomize In: {label}

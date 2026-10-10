@@ -1,0 +1,26 @@
+/* Achievement-style profile cards; scoped away from hardware editor portals. */
+.rider-profile-page>section,.rider-profile-page>div.bg-white,.rider-profile-page .rider-hardware-sections>section{background:var(--ds-surface);border-color:var(--ds-border);color:var(--ds-text);border-radius:16px;padding:24px;box-shadow:inset 0 1px 0 #ffffff05;}
+.rider-profile-page h1,.rider-profile-page h2,.rider-profile-page h3{color:var(--ds-text);}
+.rider-section-title{display:flex;align-items:center;gap:14px;min-width:0;margin-bottom:10px;font-size:19px;line-height:1.4;}
+.rider-section-title>span:last-child{min-width:0;}
+.rider-section-title small{display:block;margin-bottom:5px;font-size:9px;letter-spacing:.12em;font-weight:700;color:var(--ds-accent-ink);}
+.rider-section-medal{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:48px;height:57px;border:1px solid #d4a72c80;border-radius:24px 24px 16px 16px;background:linear-gradient(145deg,#efc755,#af8120);color:#171207;box-shadow:inset 0 0 0 3px #c09430;}
+.rider-profile-page .rider-hardware-sections article{background:var(--ds-inset);border-color:var(--ds-border);border-radius:12px;padding:18px;}
+.rider-profile-page label,.rider-profile-page .text-neutral-700,.rider-profile-page .text-neutral-900{color:var(--ds-text);}
+.rider-profile-page .text-neutral-500,.rider-profile-page .text-neutral-400{color:var(--ds-muted);}
+.rider-profile-page input:not([type="checkbox"]):not([type="color"]),.rider-profile-page select,.rider-profile-page textarea{background:var(--ds-control);color:var(--ds-text);border-color:var(--ds-border);min-height:44px;color-scheme:light dark;}
+.rider-profile-page select option{background:var(--ds-control);color:var(--ds-text);}
+.rider-profile-page input[type="checkbox"]{accent-color:var(--ds-accent-ink);}
+.rider-profile-page input:focus-visible,.rider-profile-page select:focus-visible,.rider-profile-page textarea:focus-visible{outline-color:var(--ds-accent-ink);}
+.rider-profile-page [aria-label="Parts categories"] button{min-height:44px;border-color:var(--ds-border);background:var(--ds-inset);color:var(--ds-text);}
+.rider-profile-page [aria-label="Parts categories"] button[aria-pressed="true"]{border-color:#d4a72c90;background:var(--ds-selected);color:var(--ds-accent-ink);}
+.rider-profile-page button[aria-pressed="true"]{border-color:#d4a72c80;}
+.rider-profile-page label:has(>input[type="checkbox"]){border-color:var(--ds-border);background:var(--ds-inset);}
+.rider-profile-page label:has(>input[type="checkbox"]:checked){border-color:#d4a72c80;background:#d4a72c0a;}
+.rider-profile-page .account-actions{border-color:var(--ds-border);}
+.rider-profile-page .account-actions>h2{font-size:19px;padding-bottom:12px;border-bottom:1px solid #323236;}
+.rider-profile-page .account-actions>div{border-color:var(--ds-border);}
+.rider-profile-page>section:first-child>div:first-child{padding-top:5px;padding-bottom:5px;}
+.rider-profile-page>section:first-child>div:first-child>p:first-child{color:var(--ds-accent-ink);font-size:10px;font-weight:700;letter-spacing:.12em;}
+.rider-profile-page>section:first-child>.grid.text-center>div{padding:15px 10px;border:1px solid var(--ds-border);border-radius:12px;background:var(--ds-inset);}
+@media(max-width:639px){.rider-profile-page>section,.rider-profile-page>div.bg-white,.rider-profile-page .rider-hardware-sections>section{padding:18px;border-radius:14px;}.rider-section-title{gap:12px;font-size:17px;}.rider-section-medal{width:42px;height:50px;border-radius:21px 21px 14px 14px;}.rider-profile-page .rider-hardware-sections article{padding:15px;}}

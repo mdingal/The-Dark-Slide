@@ -1,0 +1,30 @@
+/* Scoped to the setup form; the nested hardware editor retains its own header. */
+.mobile-dialog-panel:has(.session-start-dialog)>div:first-child{position:absolute;top:0;right:0;padding:5px;border:0;z-index:1;}
+.mobile-dialog-panel:has(.session-start-dialog)>div:first-child h2{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+.mobile-dialog-panel:has(.session-start-dialog)>div:first-child button{min-width:44px;min-height:44px;display:grid;place-items:center;}
+.session-start-intro{text-align:center;padding:8px 24px 0;}
+.session-start-medal{display:flex;align-items:center;justify-content:center;width:60px;height:70px;margin:0 auto 13px;border:1px solid #d4a72c;border-radius:30px 30px 18px 18px;background:linear-gradient(145deg,#efc755,#af8120);color:#171207;box-shadow:inset 0 0 0 3px #c09430;}
+.session-start-eyebrow{font-size:10px;font-weight:700;letter-spacing:.15em;color:#8a6500;}
+.dark .session-start-eyebrow{color:var(--ds-accent-ink);}
+.session-start-intro h3{font-size:23px;line-height:1.35;font-weight:700;margin:9px 0 8px;text-wrap:balance;overflow-wrap:anywhere;}
+.session-start-intro>p:not(.session-start-eyebrow){font-size:13px;line-height:1.7;color:#666;margin:0;}
+.dark .session-start-intro>p:not(.session-start-eyebrow){color:var(--ds-muted);}
+.session-start-timer{display:inline-flex;align-items:center;gap:7px;margin-top:13px;padding:6px 12px;border:1px solid #d4a72c50;border-radius:99px;font-size:11px;color:#8a6500;}
+.dark .session-start-timer{color:var(--ds-accent-ink);}
+.session-start-fields{display:grid;gap:14px;min-width:0;}
+.session-start-fields.is-deck-session{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;}
+.session-start-setting{height:100%;box-sizing:border-box;padding:17px 16px;border:1px solid var(--ds-border);border-radius:14px;background:var(--ds-surface);color:var(--ds-text);min-width:0;}
+.session-start-setting-heading{display:flex;align-items:center;gap:9px;margin-bottom:16px;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ds-accent-ink);}
+.session-start-setting label{display:block;font-size:13px;line-height:1.5;}
+.session-start-setting label+label{margin-top:12px;}
+.session-start-setting select,.session-start-setting input{margin-top:8px;background:var(--ds-control);color:var(--ds-text);border-color:var(--ds-border);min-height:44px;width:100%;}
+.session-start-setting option{background:var(--ds-control);color:var(--ds-text);}
+.session-start-setting>button{margin-top:9px;color:var(--ds-accent-ink);font-size:12px;text-underline-offset:4px;}
+.session-start-fields>details{background:var(--ds-surface);color:var(--ds-text);border-color:var(--ds-border);}
+.session-start-fields>details input,.session-start-fields>details select{background:var(--ds-control);color:var(--ds-text);border-color:var(--ds-border);}
+.session-start-actions{padding-top:3px;}
+.session-start-actions>button:last-child{display:flex;align-items:center;justify-content:center;gap:10px;}
+@media(max-width:639px){.session-start-fields.is-deck-session{grid-template-columns:1fr;gap:12px;}.session-start-intro{padding:7px 24px 0;}.session-start-intro h3{font-size:20px;}.session-start-medal{width:50px;height:59px;border-radius:25px 25px 16px 16px;}.session-start-setting{height:100%;box-sizing:border-box;padding:15px 16px;}.session-start-setting-heading{margin-bottom:12px;}}
+
+.session-start-surface-help{margin:14px 0 0;font-size:12px;line-height:1.7;color:var(--ds-muted);}
+.session-start-surface-help+label{margin-top:12px;}

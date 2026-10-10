@@ -1,5 +1,5 @@
 import { SingleTrickParameters, ComboStep, ObstacleComponent } from './types';
-import { getBaseTrickById } from './catalog';
+import { getBaseTrickById, getReservedTrickById } from './catalog';
 import { getObstacleTrickById } from './obstacleCatalog';
 import {
   resolveUnderlyingMovements,
@@ -13,6 +13,11 @@ import {
 } from './obstacleMechanics';
 
 export function formatSingleTrickName(params: SingleTrickParameters): string {
+  const reserved=getReservedTrickById(params.baseTrickId);
+  if(reserved) {
+    const stance=params.stance==='regular'?'':params.stance[0].toUpperCase()+params.stance.slice(1);
+    return [stance,reserved.name,params.bodyVarial==='none'?'':`${params.bodyVarial==='frontside'?'FS':'BS'} Body Varial`,params.landing==='normal'?'':params.landing==='manual'?'to Manual':'to Nose Manual',params.revert==='none'?'':`${params.revert==='frontside'?'FS':'BS'} Revert`].filter(Boolean).join(' ');
+  }
   if(['feather_flip','unpossible'].includes(params.baseTrickId)) {
     const name=params.baseTrickId==='feather_flip'?'Feather Flip':'Unpossible';
     return [params.stance==='regular'?'':params.stance,name,params.bodyVarial==='none'?'':`${params.bodyVarial==='frontside'?'FS':'BS'} Body Varial`,params.landing==='normal'?'':params.landing==='manual'?'Manual':'Nose Manual',params.revert==='none'?'':`${params.revert==='frontside'?'FS':'BS'} Revert`].filter(Boolean).join(' ');

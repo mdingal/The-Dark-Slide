@@ -4,7 +4,7 @@ import { requireRider, storageService } from './firebaseStorageService';
 export interface RiderExport { format: 'the-dark-slide-rider-export'; version: 1; exportedAt: string; profile: UserProfile; sessions: PracticeSession[] }
 export async function fetchRiderExport(uid: string): Promise<RiderExport> {
   requireRider(uid);
-  const [profile, sessions] = await Promise.all([storageService.getProfile(uid), storageService.getSessions(uid)]);
+  const [profile, sessions] = await Promise.all([storageService.getProfile(uid), storageService.getAllSessions(uid)]);
   requireRider(uid);
   if (!profile) throw new Error('Your cloud profile could not be found.');
   return { format: 'the-dark-slide-rider-export', version: 1, exportedAt: new Date().toISOString(), profile, sessions };

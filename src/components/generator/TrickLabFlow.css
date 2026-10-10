@@ -1,0 +1,50 @@
+/* Achievement-inspired session setup, scoped to Trick Lab. */
+.lab-achievement-flow .lab-step-header{position:relative;border-color:#d4a72c30;padding:24px;background:var(--ds-surface);color:var(--ds-text);text-align:center;}
+.lab-achievement-flow .lab-step-header h1{font-size:26px;line-height:1.35;text-wrap:balance;}
+.lab-step-medal{display:flex;align-items:center;justify-content:center;width:60px;height:70px;margin:0 auto 15px;border:1px solid #d4a72c;border-radius:30px 30px 18px 18px;background:linear-gradient(145deg,#efc755,#af8120);color:#171207;box-shadow:inset 0 0 0 3px #c09430;}
+.lab-achievement-flow .lab-step-header>p:first-of-type{color:var(--ds-accent-ink);font-size:10px;font-weight:700;letter-spacing:.14em;}
+.lab-achievement-flow .lab-step-header .lab-step-description,.lab-achievement-flow .lab-step-header>p.text-sm{font-size:13px;line-height:1.7;color:var(--ds-muted);}
+.lab-achievement-flow .lab-step-header [role="progressbar"]{max-width:300px;margin:17px auto 0;height:4px;background:#323236;}
+.lab-achievement-flow>section:not(.community-challenge-dock),.lab-achievement-flow>.mobile-parameter-card,.lab-achievement-flow>.pool-presets-disclosure{background:var(--ds-surface);border-color:var(--ds-border);color:var(--ds-text);}
+.lab-option-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.lab-choice-card{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:16px;padding:20px 18px;border:1px solid var(--ds-border);border-radius:14px;background:var(--ds-surface);color:var(--ds-text);text-align:left;cursor:pointer;transition:border-color .18s,background .18s;min-width:0;}
+.lab-choice-card:hover{border-color:#8b773f;}
+.lab-choice-card:focus-visible{outline:2px solid #d4a72c;outline-offset:3px;}
+.lab-choice-card.is-selected{border-color:#d4a72c90;background:var(--ds-selected);box-shadow:inset 0 1px 0 #e1b84120;}
+.lab-choice-top{display:flex;flex-direction:column;gap:15px;align-items:flex-start;}
+.lab-choice-medal{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:60px;height:70px;border:1px solid #46464b;border-radius:30px 30px 18px 18px;background:linear-gradient(155deg,#252528,#101012);color:#a0a0a5;box-shadow:inset 0 0 0 3px #151517;}
+.is-selected .lab-choice-medal{border-color:var(--ds-accent-ink);background:linear-gradient(145deg,#efc755,#af8120);color:#171207;box-shadow:inset 0 0 0 3px #c09430;}
+.lab-class-medal{font-size:27px;font-weight:800;}
+.lab-choice-heading{display:block;padding-right:15px;}
+.lab-choice-status{display:block;font-size:9px;letter-spacing:.12em;font-weight:700;color:#85858d;}
+.is-selected .lab-choice-status{color:var(--ds-accent-ink);}
+.lab-choice-heading strong{display:block;margin-top:5px;font-size:17px;line-height:1.4;}
+.lab-choice-check{position:absolute;top:20px;right:18px;display:grid;place-items:center;width:20px;height:20px;border:1px solid #46464b;border-radius:50%;color:var(--ds-accent-ink);}
+.is-selected .lab-choice-check{border-color:#d4a72c80;background:#d4a72c10;}
+.lab-choice-description{font-size:13px;line-height:1.75;color:var(--ds-muted);}
+.lab-choice-tag{display:block;margin-top:auto;padding-top:12px;border-top:1px solid #ffffff0b;font-size:9px;letter-spacing:.08em;color:#898990;}
+.is-selected .lab-choice-tag{color:var(--ds-accent-ink);}
+.lab-achievement-flow .lab-class-note{padding-top:8px;color:var(--ds-muted);line-height:1.7;}
+.lab-achievement-flow [aria-label="Generation source"]{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:12px;}
+.lab-achievement-flow section:has([aria-label="Generation source"])>div:first-child{flex-direction:column;align-items:stretch;}
+.lab-achievement-flow [aria-label="Generation source"] button{min-height:64px;padding:14px;border-radius:12px;border-color:var(--ds-border);background:var(--ds-surface);color:var(--ds-text);font-size:13px;text-align:left;}
+.lab-achievement-flow [aria-label="Generation source"] button[aria-pressed="true"]{border-color:#d4a72c90;background:var(--ds-selected);color:var(--ds-accent-ink);}
+.lab-achievement-flow .mobile-parameter-card h2,.lab-achievement-flow .pool-presets-disclosure summary{color:var(--ds-text);}
+.lab-step-navigation .lab-flow-continue{display:inline-flex;align-items:center;justify-content:center;gap:10px;color:#171207;background:#d4a72c;}
+.lab-step-navigation .lab-flow-continue:hover:not(:disabled){background:#e1b841;}
+.lab-step-navigation .lab-flow-continue:disabled{opacity:.45;}
+@media(min-width:1024px){.lab-achievement-flow .lab-start-combined{background:var(--ds-surface);border-color:var(--ds-border);}.lab-achievement-flow .lab-start-combined .practice-flow-visual{color:var(--ds-text);}.lab-achievement-flow .lab-start-combined .practice-flow-step{background:var(--ds-inset);border-color:var(--ds-border);}.lab-achievement-flow .lab-start-combined>.lab-step-header{align-items:center;text-align:center;}.lab-achievement-flow .lab-start-combined .practice-flow-step p{color:var(--ds-muted);}.lab-achievement-flow .lab-start-combined .practice-flow-visual>div:first-child>p{color:var(--ds-accent-ink);}}
+@media(max-width:639px){.lab-option-grid{grid-template-columns:1fr;gap:12px;}.lab-choice-card{gap:12px;padding:16px;}.lab-choice-top{flex-direction:row;align-items:center;gap:14px;}.lab-choice-medal{width:50px;height:59px;border-radius:25px 25px 16px 16px;}.lab-choice-heading strong{font-size:16px;}.lab-choice-check{top:16px;right:16px;}.lab-choice-heading{padding-right:24px;}.lab-achievement-flow .lab-step-header{padding:20px 18px;}.lab-achievement-flow .lab-step-header h1{font-size:23px;}.lab-step-medal{width:50px;height:59px;border-radius:25px 25px 16px 16px;margin-bottom:12px;}.lab-achievement-flow [aria-label="Generation source"]{grid-template-columns:1fr;gap:10px;}.lab-achievement-flow [aria-label="Generation source"] button{min-height:52px;}}
+@media(prefers-reduced-motion:reduce){.lab-choice-card{transition:none;}}
+
+.lab-achievement-flow .practice-flow-visual{background:var(--ds-surface);border-color:var(--ds-border);color:var(--ds-text);}
+.lab-achievement-flow .practice-flow-visual p{color:var(--ds-muted);}
+.lab-achievement-flow .practice-flow-visual>div:first-child>p{color:var(--ds-accent-ink);}
+.lab-achievement-flow .mobile-parameter-card>div:first-child p,.lab-achievement-flow section:has([aria-label="Generation source"])>p{color:var(--ds-muted);}
+.lab-achievement-flow .mobile-parameter-row{background:var(--ds-inset);border-color:var(--ds-border);}
+.lab-achievement-flow .mobile-parameter-row>div:first-child>label{color:var(--ds-accent-ink);}
+.lab-achievement-flow select,.lab-achievement-flow input:not([type="checkbox"]){background-color:var(--ds-control);color:var(--ds-text);border-color:var(--ds-border);color-scheme:light dark;}
+.lab-achievement-flow select option{background:var(--ds-control);color:var(--ds-text);}
+.lab-achievement-flow select:focus-visible,.lab-achievement-flow input:focus-visible{outline-color:var(--ds-accent-ink);}
+
+.lab-achievement-flow .mobile-parameter-row>div:first-child>label{padding-left:12px;}

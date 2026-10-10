@@ -48,9 +48,9 @@ export function BetaTools() {
   const input = 'mt-1 w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 p-3 text-base text-neutral-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4A72C]';
 
   return <>
-    <div className={save.state || !online ? 'flex justify-end mb-3 text-xs' : 'hidden'}>
+    <div className={save.state === 'saving' || save.state === 'error' || !online ? 'flex justify-end mb-3 text-xs' : 'hidden'}>
       <span role="status" aria-live="polite" className={save.state === 'error' || !online ? 'text-rose-600 dark:text-rose-400' : 'text-neutral-500'}>
-        {!online ? 'Offline · reconnect before saving' : save.state === 'saving' ? 'Saving…' : save.state === 'saved' ? 'Saved to your account' : save.state === 'error' ? save.message : ''}
+        {!online ? 'Offline · reconnect before saving' : save.state === 'saving' ? 'Saving…' : save.state === 'error' ? save.message : ''}
       </span>
     </div>
     {!dismissed && <aside aria-label="Beta feedback" className={`fixed right-3 left-3 sm:left-auto sm:right-5 sm:w-80 lg:right-6 z-40 rounded-2xl border border-[#D4A72C]/40 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md p-4 shadow-xl text-neutral-950 dark:text-white ${isLoggedIn ? 'bottom-[calc(88px+env(safe-area-inset-bottom,0px))] lg:bottom-6' : 'bottom-[calc(16px+env(safe-area-inset-bottom,0px))]'}`}>

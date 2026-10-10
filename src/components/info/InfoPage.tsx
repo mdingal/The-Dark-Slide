@@ -1,3 +1,4 @@
+import {DesignBadge} from '../common/DesignBadge';
 import React from 'react';
 import {FaqPage} from './FaqPage';
 import { TrickGuide } from '../reference/TrickGuide';
@@ -63,10 +64,10 @@ export const InfoPage: React.FC<{ page: InfoPageId; onHome: () => void }> = ({ p
       <a href="#" onClick={onHome} className="inline-flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300 hover:text-[#8A6500] dark:hover:text-[#D4A72C]">
         <ArrowLeft className="w-4 h-4" /> Back to Home
       </a>
-      <article className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-10 space-y-8">
+      <article className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-10 space-y-8">
         <div className="space-y-4">
           <p className="text-xs uppercase tracking-widest font-mono text-[#8A6500] dark:text-[#D4A72C]">The Dark Slide · Fingerboard Lab</p>
-          <h1 ref={heading} tabIndex={-1} className="text-3xl sm:text-4xl font-bold text-neutral-950 dark:text-white focus:outline-none">{content.title}</h1>
+          <h1 ref={heading} tabIndex={-1} className="ds-page-heading text-3xl sm:text-4xl font-bold text-neutral-950 dark:text-white focus:outline-none"><DesignBadge kind={page==='trick-guide'?'guides':'info'}/>{content.title}</h1>
           {(page === 'terms' || page === 'privacy') && <p className="text-xs text-neutral-600 dark:text-neutral-400">Last updated: {page === 'privacy' ? 'October 6, 2026' : 'October 4, 2026'}</p>}
           <p className="text-base leading-relaxed text-neutral-700 dark:text-neutral-300">{content.intro}</p>
         </div>

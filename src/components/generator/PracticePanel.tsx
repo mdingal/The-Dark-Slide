@@ -1,3 +1,4 @@
+import {goalLabel,MISS_TIPS} from '../../domain/practiceTargets';
 import {SessionStartWizard} from './SessionStartWizard';
 import {closePractice,goalReached,remainingTime} from '../../domain/sessionPlan';
 import React, { useEffect, useState, useRef } from 'react';
@@ -81,6 +82,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
   }, [session.timerState]);
 
   const [startIntent,setStartIntent]=useState<'start'|'attempt'|'landing'|null>(null);
+  useEffect(()=>{if(session.practiceTarget&&!session.sessionStartedAt)setStartIntent('start');},[session.id]);
   const [park,setPark]=useState(false);
   const openStart=(intent:'start'|'attempt'|'landing')=>{setStartIntent(intent);};
   const handleToggleTimer=()=>{
@@ -355,7 +357,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-5">
+    <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs space-y-5">
       {startIntent&&<SessionStartWizard session={session} demoSetups={demo?.setups} onClose={()=>setStartIntent(null)} onStart={async configured=>{if(demo){setStartIntent(null);demo.onStart();return;}const next=startIntent==='start'?configured:recordCounterAction(configured,startIntent!,Date.now(),selectedMissTags);await onUpdateSession(next);setStartIntent(null);setSelectedMissTags([]);}}/>}
 
       {/* Header with Title, Status and Setup Selector */}
@@ -437,11 +439,11 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white tabular-nums mt-0.5">
             {session.attemptCount}
           </div>
-          <div className="text-[11px] text-neutral-700 dark:text-neutral-300 mt-2 font-mono">
+          <details className="text-[11px] text-neutral-700 dark:text-neutral-300 mt-2 font-mono"><summary className="cursor-pointer">First landing details</summary>
             First land: {session.firstLandingAttemptNumber ? `#${session.firstLandingAttemptNumber}` : '—'}
             <div>Time to first land: {session.firstLandingElapsedMs !== undefined
               ? formatDurationMs(session.firstLandingElapsedMs) : '—'}</div>
-          </div>
+          </details>
         </div>
 
         {/* Landed */}
@@ -464,24 +466,8 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
         </p>
       )}
 
-      <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-3 space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs font-medium">Landing streak: <strong className="text-[#8A6500] dark:text-[#D4A72C]">{streaks.current}</strong> / {consistencyGoal} <span className="text-neutral-500">· Best: {streaks.best}</span></p>
-          <p className="text-xs">Goal: {session.goal?`${session.goal.target} ${session.goal.type==='streak'?'in a row':'total landings'}`:'Choose when starting'}{session.goal&&goalReached(session)?' · Reached!':''}</p>
-        </div>
-        {streaks.current >= consistencyGoal && <p role="status" className="text-xs text-emerald-600 dark:text-emerald-400">Consistency goal reached!</p>}
-        {!isFinished && <p className="text-[11px] text-neutral-500">Add Attempt records a miss and resets your current streak. Successful Landing extends it.</p>}
-      </div>
-      {!isFinished && <fieldset disabled={counterBusy} className="space-y-2">
-        <legend className="text-xs font-medium">Miss tags (optional, applied to your next Add Attempt)</legend>
-        <div className="flex flex-wrap gap-2">
-          {MISS_TAGS.map(tag => <label key={tag.id} className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800">
-            <input type="checkbox" checked={selectedMissTags.includes(tag.id)} onChange={() => setSelectedMissTags(tags =>
-              tags.includes(tag.id) ? tags.filter(t=>t!==tag.id) : [...tags,tag.id])} />{tag.label}
-          </label>)}
-        </div>
-      </fieldset>}
-
+      {session.practiceTarget?.focusTag&&<p className="rounded-lg border border-[#D4A72C]/30 p-3 text-sm leading-6"><strong>Focus:</strong> {MISS_TAGS.find(t=>t.id===session.practiceTarget!.focusTag)?.label}. {MISS_TIPS[session.practiceTarget.focusTag]}</p>}
+      {session.goal&&<section className="rounded-xl border border-[#D4A72C]/30 p-4 space-y-3" aria-label="Mission progress"><div className="flex flex-wrap justify-between gap-2"><h3 className="font-semibold text-sm">{goalLabel(session.goal)}</h3><span className="text-sm text-[#8A6500] dark:text-[#D4A72C]">{session.goal.type==='time'?`${Math.min(session.goal.target,displayDurationMs/60000).toFixed(1)} / ${session.goal.target} min`:session.goal.type==='streak'?`${Math.min(session.goal.target,streaks.best)} / ${session.goal.target} best streak`:`${Math.min(session.goal.target,session.landingCount)} / ${session.goal.target} landings`}</span></div><progress aria-label={goalLabel(session.goal)} className="w-full h-2 accent-[#D4A72C]" max={session.goal.target} value={Math.min(session.goal.target,session.goal.type==='time'?displayDurationMs/60000:session.goal.type==='streak'?streaks.best:session.landingCount)}/><p role="status" className="text-xs text-neutral-600 dark:text-neutral-400">{(session.goal.type==='time'?displayDurationMs>=session.goal.target*60000:goalReached(session))?'Goal reached. You can finish or keep practicing.':session.goal.type==='streak'?`Current streak: ${streaks.current}. A miss resets the current streak; your best stays recorded.`:session.goal.type==='time'?'Active practice only; pauses do not count. Record your attempts as you practice.':'Every successful landing moves you closer.'}</p></section>}
       {/* Interactive Counter Buttons */}
       {!isFinished && <div className="flex flex-wrap items-center gap-3">
         <button
@@ -518,8 +504,18 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
 
       {counterError && <p role="alert" className="text-xs text-rose-600">{counterError}</p>}
 
+      {!isFinished && <details className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-3"><summary className="cursor-pointer text-sm">Tag a miss {selectedMissTags.length>0?`(${selectedMissTags.length} selected)`:""}</summary><fieldset disabled={counterBusy} className="space-y-2">
+        <legend className="text-xs font-medium">Miss tags (optional, applied to your next Add Attempt)</legend>
+        <div className="flex flex-wrap gap-2">
+          {MISS_TAGS.map(tag => <label key={tag.id} className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800">
+            <input type="checkbox" checked={selectedMissTags.includes(tag.id)} onChange={() => setSelectedMissTags(tags =>
+              tags.includes(tag.id) ? tags.filter(t=>t!==tag.id) : [...tags,tag.id])} />{tag.label}
+          </label>)}
+        </div>
+      </fieldset></details>}
+
       {/* Practice Session Notes */}
-      <div className="session-notes-field">
+      <details open className="session-notes-field"><summary className="cursor-pointer text-sm font-semibold mb-3">Session notes</summary>
         <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
           Session Notes & Observations
         </label>
@@ -533,7 +529,7 @@ export const PracticePanel: React.FC<PracticePanelProps> = ({
           className="w-full text-xs font-normal bg-neutral-50 dark:bg-neutral-950/40 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white resize-none"
         />
 
-      </div>
+      </details>
 
       <Modal
         isOpen={isFinishOpen}

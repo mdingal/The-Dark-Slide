@@ -100,7 +100,7 @@ export const LandingPage: React.FC = () => {
 
       {/* Everything You Need to Progress Section */}
       {isLoggedIn ? <RiderHomeSummary/> : <section className="space-y-8">
-        <div className="homepage-practice-account-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl grid lg:grid-cols-2 overflow-hidden">
+        <div className="ds-surface homepage-practice-account-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl grid lg:grid-cols-2 overflow-hidden">
           <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
             <TrickMatrixDemo embedded onPromptAuth={handlePromptAuth} />
           </div>
@@ -117,7 +117,7 @@ export const LandingPage: React.FC = () => {
 
       {/* Feature groups keep the homepage easy to scan. */}
       {!isLoggedIn && (
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 lg:p-10 space-y-6 !mt-10 sm:!mt-12">
+        <div className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 lg:p-10 space-y-6 !mt-10 sm:!mt-12">
           <header className="space-y-3 pb-6 border-b border-neutral-200 dark:border-neutral-800">
             <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-[#8A6500] dark:text-[#D4A72C]">Explore the lab</p>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">Tools for Every Session</h2>
@@ -239,7 +239,7 @@ export const LandingPage: React.FC = () => {
           ].filter(feature => feature.group === featureGroup).map(({ title, description }, index) => (
             <div
               key={title}
-              className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 space-y-4"
+              className="ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 space-y-4"
             >
               <header className="flex w-full items-center justify-between gap-3"><span className="shrink-0 text-[10px] font-mono tracking-widest text-[#8A6500] dark:text-[#D4A72C]">{String(index+1).padStart(2,'0')}</span><span className="text-right text-[10px] uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{featureGroup}</span></header>
               <FeatureVisual title={title} />
@@ -256,7 +256,7 @@ export const LandingPage: React.FC = () => {
       )}
 
       {/* About the Project */}
-      <section className="homepage-about-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 lg:p-10 space-y-6 !mt-10 sm:!mt-12">
+      <section className="ds-surface homepage-about-card bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 lg:p-10 space-y-6 !mt-10 sm:!mt-12">
         <header className="space-y-3 pb-6 border-b border-neutral-200 dark:border-neutral-800">
           <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-[#8A6500] dark:text-[#D4A72C]">ABOUT THE PROJECT</p>
         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">

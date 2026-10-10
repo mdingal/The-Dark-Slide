@@ -1,3 +1,5 @@
+import {DesignBadge} from '../common/DesignBadge';
+import {DeckGameStats} from './DeckGameStats';
 import {navigate,dashboardRoute} from '../../domain/routes';
 import {consumeDashboardView} from '../../domain/dashboardEntry';
 import {MobileDashboardSection} from './MobileDashboardSection';
@@ -19,9 +21,9 @@ import { trickKey } from '../../domain/progression';
 
 const INITIAL_FILTERS:FilterState={search:'',status:'all',dateRange:'all',stance:'all',deckWidth:'all',wheelMaterial:'all',obstacle:'all',sortBy:'date',sortOrder:'desc'};
 const INPUT='rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-sm min-w-0 max-w-full';
-const CARD='bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5';
+const CARD='ds-surface bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5';
 export const HistoryDashboard:React.FC=()=>{
-  const {sessions,profile,resumeSession,deleteSession,deleteSessions,saveDashboardPreferences,showToast,setActiveTab}=useApp();
+  const {sessions,profile,loadSessionDetails,resumeSession,deleteSession,deleteSessions,saveDashboardPreferences,showToast,setActiveTab}=useApp();
   const [surface,setSurface]=useState('all'),[tier,setTier]=useState('all'),[timerFilter,setTimerFilter]=useState('all'),[goalFilter,setGoalFilter]=useState('all'),[setupFilter,setSetupFilter]=useState('all');
   const [filters,setFilters]=useState<FilterState>(INITIAL_FILTERS),[mode,setMode]=useState('all');
   const [preferences,setPreferences]=useState(()=>dashboardPreferences({...profile?.dashboardPreferences,view:dashboardRoute(),category:'Progress'}));
@@ -31,9 +33,19 @@ export const HistoryDashboard:React.FC=()=>{
   const [saving,setSaving]=useState(false);
   const save=(patch:Partial<DashboardPreferences>)=>{
     if(patch.view)navigate(patch.view==='overview'?'/dashboard':'/dashboard/'+patch.view);
-    const next=dashboardPreferences({...prefRef.current,...patch}),previous=prefRef.current,version=++revision.current;
-    prefRef.current=next;setPreferences(next);setSaving(true);
-    void saveDashboardPreferences(next).catch(()=>{if(revision.current===version){prefRef.current=previous;setPreferences(previous);}showToast('Could not save dashboard preferences. Please try again.');}).finally(()=>{if(revision.current===version)setSaving(false);});
+    const next=dashboardPreferences({...prefRef.current,...patch}),previous=prefRef.current;
+    prefRef.current=next;setPreferences(next);
+    // Navigation and browsing are local UI state, not database writes.
+    const savedKeys=Object.keys(patch).filter(key=>key!=='view'&&key!=='category') as (keyof DashboardPreferences)[];
+    if(!savedKeys.length)return;
+    const version=++revision.current;setSaving(true);
+    void saveDashboardPreferences(next).catch(()=>{
+      if(revision.current===version){
+        const rollback=Object.fromEntries(savedKeys.map(key=>[key,previous[key]]));
+        const restored=dashboardPreferences({...prefRef.current,...rollback});prefRef.current=restored;setPreferences(restored);
+      }
+      showToast('Could not save dashboard customization. Your current view is still available.');
+    }).finally(()=>{if(revision.current===version)setSaving(false);});
   };
   React.useEffect(()=>{const change=(event:Event)=>{const next=dashboardPreferences((event as CustomEvent).detail);prefRef.current=next;setPreferences(next);};window.addEventListener('dashboard-view-change',change);return()=>window.removeEventListener('dashboard-view-change',change);},[]);
   // Filter & Sort Sessions
@@ -156,17 +168,17 @@ export const HistoryDashboard:React.FC=()=>{
       {label:'Practice surface',value:surface,set:setSurface,options:[...new Set(sessions.filter(s=>s.sessionStartedAt).map(s=>s.practiceSurface).filter((s):s is string=>!!s))].map(s=>[s,s])},
       {label:'Skate class',value:tier,set:setTier,options:['Class C','Class B','Class A'].map(s=>[s,s])},
       {label:'Timer',value:timerFilter,set:setTimerFilter,options:[['regular','Regular'],['countdown','Countdown']]},
-      {label:'Goal',value:goalFilter,set:setGoalFilter,options:[['landings','Total landings'],['streak','In a row']]},
+      {label:'Goal',value:goalFilter,set:setGoalFilter,options:[['landings','Total landings'],['streak','In a row'],['time','Practice minutes']]},
       {label:'Fingerboard setup',value:setupFilter,set:setSetupFilter,options:[...new Map(sessions.filter(s=>s.sessionStartedAt).map(s=>[s.setupSnapshot.id,s.setupSnapshot.name])).entries()]}
     ].map(control=><label key={control.label} className="text-xs font-medium flex flex-col gap-1">{control.label}<select aria-label={control.label} className={INPUT} value={control.value} onChange={e=>control.set(e.target.value)}><option value="all">All</option>{control.options.map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>)}
     <button type="button" onClick={()=>{setFilters(INITIAL_FILTERS);setMode('all');setExact('');setSurface('all');setTier('all');setTimerFilter('all');setGoalFilter('all');setSetupFilter('all');}} className="text-xs underline underline-offset-4 self-end py-2">Reset filters</button>
   </div>;
-  const charts=(ids:string[])=>ids.map(id=>CHARTS.find(c=>c.id===id)).filter((c):c is ChartDefinition=>!!c).map(c=><MobileDashboardSection key={c.id} title={c.title}><AnalyticsChart definition={c} sessions={c.exact?exactSessions:filteredSessions} pinned={preferences.pinned.includes(c.id)} collapsed={preferences.collapsed.includes(c.id)} onPin={()=>pin(c.id)} onCollapse={()=>toggleCollapse(c.id)} onExpand={()=>setExpanded(c)} /></MobileDashboardSection>);
+  const charts=(ids:string[])=>ids.map(id=>CHARTS.find(c=>c.id===id)).filter((c):c is ChartDefinition=>!!c).map(c=><MobileDashboardSection key={c.id} title={c.title}><AnalyticsChart wrapped definition={c} sessions={c.exact?exactSessions:filteredSessions} pinned={preferences.pinned.includes(c.id)} collapsed={preferences.collapsed.includes(c.id)} onPin={()=>pin(c.id)} onCollapse={()=>toggleCollapse(c.id)} onExpand={()=>setExpanded(c)} /></MobileDashboardSection>);
   const activeCharts=preferences.view==='overview'?preferences.pinned:selected;
   const needsExact=activeCharts.some(id=>CHARTS.find(c=>c.id===id)?.exact);
   const views=[['overview','Overview'],['history','Session History'],['analytics','Analytics'],['setups','Setup Comparisons']] as const;
   return <div className="mobile-progress-dashboard space-y-6">
-    <div className="flex flex-wrap items-end justify-between gap-3"><div><h1 className="text-2xl sm:text-3xl font-bold">Your Progress Dashboard</h1><p className="text-sm text-neutral-600 dark:text-neutral-300 mt-2">Explore your practice, focus on a trick, and keep your favorite insights close.</p></div><p className="text-xs text-neutral-600 dark:text-neutral-400" aria-live="polite">{saving?'Saving preferences…':'Dashboard preferences saved with this rider'}</p></div>
+    <div className="flex flex-wrap items-end justify-between gap-3"><div><h1 className="ds-page-heading text-2xl sm:text-3xl font-bold"><DesignBadge kind="dashboard"/>Your Progress Dashboard</h1><p className="text-sm text-neutral-600 dark:text-neutral-300 mt-2">Explore your practice, focus on a trick, and keep your favorite insights close.</p></div><p className="text-xs text-neutral-600 dark:text-neutral-400" aria-live="polite">{saving?'Saving preferences…':'Chart customizations save to your account'}</p></div>
     <nav aria-label="Dashboard views" className="flex flex-wrap gap-2">{views.map(([id,label])=><button key={id} type="button" aria-current={preferences.view===id?'page':undefined} onClick={()=>save(id==='analytics'?{view:id,category:'Progress'}:{view:id})} className={`px-4 py-2 rounded-lg text-sm border ${preferences.view===id?'bg-[#D4A72C] text-neutral-950 border-[#D4A72C] font-semibold':'border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300'}`}>{label}</button>)}</nav>
     <MobileDashboardSection title={`Filters · ${filteredSessions.length} sessions`}><section className={`${CARD} space-y-4`} aria-label="Shared dashboard filters">
       {sharedControls}
@@ -175,6 +187,7 @@ export const HistoryDashboard:React.FC=()=>{
       <p className="text-xs text-neutral-600 dark:text-neutral-400">{filteredSessions.length} matching practice sessions · only started sessions appear here. Shared filters apply to every view; dates use session start.</p>
     </section></MobileDashboardSection>
     {preferences.view==='overview'&&<>
+      <DeckGameStats sessions={sessions}/>
       {!sessions.some(s=>s.sessionStartedAt)&&<section className={`${CARD} space-y-3`}><h2 className="font-semibold">Your progress starts with one session</h2><p className="text-sm text-neutral-500">Record your first attempts to unlock useful insights here.</p><button type="button" onClick={()=>setActiveTab('generator')} className="rounded-lg bg-[#D4A72C] text-black px-4 py-3 cursor-pointer">Start a practice session</button></section>}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{[
         ['Landing rate',totals.rate===null?'—':`${totals.rate}%`,`${totals.landings} landings / ${totals.attempts} attempts`],
@@ -188,8 +201,9 @@ export const HistoryDashboard:React.FC=()=>{
       {!preferences.pinned.length&&<p className={`${CARD} text-sm`}>No pinned charts. Open Analytics and use a chart’s pin button to add it here.</p>}
     </>}
     {preferences.view==='history'&&<>
+      <DeckGameStats sessions={sessions}/>
       <details open={!preferences.collapsed.includes('bookmarks')} onToggle={e=>{const open=e.currentTarget.open;if(open===preferences.collapsed.includes('bookmarks'))toggleCollapse('bookmarks');}} className={`${CARD} dashboard-bookmarks`}><summary className="font-semibold cursor-pointer">Bookmarked Challenges</summary><div className="mt-4"><BookmarksPanel /></div></details>
-      <HistoryTable sessions={filteredSessions} onResume={resumeSession} onOpenDetails={setInspectSession} onDelete={deleteSession} onBatchDelete={deleteSessions} />
+      <HistoryTable sessions={filteredSessions} onResume={resumeSession} onOpenDetails={session=>{void loadSessionDetails(session).then(setInspectSession).catch(e=>showToast(e.message));}} onDelete={deleteSession} onBatchDelete={deleteSessions} />
     </>}
     {preferences.view==='analytics'&&<>
       <nav aria-label="Analytics categories" className="flex flex-wrap gap-2">{CATEGORIES.map(c=><button type="button" key={c} aria-pressed={preferences.category===c} onClick={()=>save({category:c})} className={`px-3 py-2 text-sm rounded-lg border ${preferences.category===c?'border-[#D4A72C] text-[#8A6500] dark:text-[#D4A72C]':'border-neutral-300 dark:border-neutral-700'}`}>{c}</button>)}</nav>

@@ -19,6 +19,244 @@ service cloud.firestore {
         && highlightList(s.featuredTricks)
         && highlightList(s.featuredMilestones);
     }
+    function validPracticeTarget(t) {
+      return t == null || (t is map && t.keys().hasOnly(['id','createdAt','trickResult','goal','title','reason','sourceSessionId','focusTag'])
+        && t.keys().hasAll(['id','createdAt','trickResult','goal','title','reason'])
+        && t.id is string && t.id.size() <= 160 && t.createdAt is string && t.createdAt.size() <= 40
+        && t.title is string && t.title.size() <= 1000 && t.reason is string && t.reason.size() <= 2000
+        && t.trickResult is map && t.trickResult.mode in ['single','combo','obstacle']
+        && t.trickResult.canonicalName is string && t.trickResult.canonicalName.size() <= 1000
+        && t.goal is map && t.goal.keys().hasOnly(['type','target'])
+        && t.goal.type in ['landings','streak','time'] && t.goal.target is int && t.goal.target >= 1 && t.goal.target <= 10000
+        && (t.goal.type != 'time' || t.goal.target <= 1440)
+        && (!('sourceSessionId' in t) || (t.sourceSessionId is string && t.sourceSessionId.size() <= 160))
+        && (!('focusTag' in t) || t.focusTag in ['underflip','overflip','missed_catch','missed_lock_in','slipped_out']));
+    }
+    function deckCards(deckId) {
+      let decks = {
+        "fundamentals": [
+                "ollie",
+                "bs180",
+                "fs180",
+                "fakie_ollie",
+                "pop_shuv",
+                "fakie_pop_shuv",
+                "half_cab",
+                "fakie_fs180"
+        ],
+        "basic-flips": [
+                "kickflip",
+                "fakie_kickflip",
+                "varial_kickflip",
+                "fakie_varial_kickflip",
+                "tre_flip",
+                "fakie_tre_flip",
+                "heelflip",
+                "fakie_heelflip"
+        ],
+        "heelflips": [
+                "heelflip",
+                "fakie_heelflip",
+                "nollie_heelflip",
+                "switch_heelflip",
+                "fs_heelflip",
+                "bs_heelflip",
+                "fakie_fs_heelflip",
+                "fakie_bs_heelflip"
+        ],
+        "kickflips": [
+                "kickflip",
+                "fakie_kickflip",
+                "nollie_kickflip",
+                "switch_kickflip",
+                "fs_kickflip",
+                "bs_kickflip",
+                "fakie_fs_kickflip",
+                "fakie_bs_kickflip"
+        ],
+        "shuvits": [
+                "regular_pop_shuvit",
+                "fakie_pop_shuvit",
+                "nollie_pop_shuvit",
+                "switch_pop_shuvit",
+                "regular_frontside_pop_shuvit",
+                "fakie_frontside_pop_shuvit",
+                "nollie_frontside_pop_shuvit",
+                "switch_frontside_pop_shuvit"
+        ],
+        "spins": [
+                "regular_frontside_180",
+                "regular_backside_180",
+                "fakie_frontside_180",
+                "fakie_backside_180",
+                "nollie_frontside_180",
+                "nollie_backside_180",
+                "switch_frontside_180",
+                "switch_backside_180"
+        ],
+        "varial-flips": [
+                "regular_varial_kickflip",
+                "fakie_varial_kickflip",
+                "nollie_varial_kickflip",
+                "switch_varial_kickflip",
+                "regular_varial_heelflip",
+                "fakie_varial_heelflip",
+                "nollie_varial_heelflip",
+                "switch_varial_heelflip"
+        ],
+        "360-flips": [
+                "regular_tre_flip",
+                "fakie_tre_flip",
+                "nollie_tre_flip",
+                "switch_tre_flip",
+                "regular_laser_flip",
+                "fakie_laser_flip",
+                "nollie_laser_flip",
+                "switch_laser_flip"
+        ],
+        "hard-inward": [
+                "regular_hardflip",
+                "fakie_hardflip",
+                "nollie_hardflip",
+                "switch_hardflip",
+                "regular_inward_heelflip",
+                "fakie_inward_heelflip",
+                "nollie_inward_heelflip",
+                "switch_inward_heelflip"
+        ],
+        "big-flips": [
+                "regular_bigflip",
+                "fakie_bigflip",
+                "nollie_bigflip",
+                "switch_bigflip",
+                "regular_bigheel",
+                "fakie_bigheel",
+                "nollie_bigheel",
+                "switch_bigheel"
+        ],
+        "big-spins": [
+                "regular_bigspin",
+                "fakie_bigspin",
+                "nollie_bigspin",
+                "switch_bigspin",
+                "regular_bigger_spin",
+                "fakie_bigger_spin",
+                "nollie_bigger_spin",
+                "switch_bigger_spin"
+        ],
+        "double-impossible": [
+                "regular_double_kickflip",
+                "fakie_double_kickflip",
+                "nollie_double_kickflip",
+                "switch_double_kickflip",
+                "regular_impossible",
+                "fakie_impossible",
+                "nollie_impossible",
+                "switch_impossible"
+        ],
+        "regular-mix": [
+                "regular_ollie",
+                "regular_pop_shuvit",
+                "regular_frontside_pop_shuvit",
+                "regular_kickflip",
+                "regular_heelflip",
+                "regular_varial_kickflip",
+                "regular_tre_flip",
+                "regular_impossible"
+        ],
+        "fakie-mix": [
+                "fakie_ollie",
+                "fakie_pop_shuvit",
+                "fakie_frontside_pop_shuvit",
+                "fakie_kickflip",
+                "fakie_heelflip",
+                "fakie_varial_kickflip",
+                "fakie_tre_flip",
+                "fakie_impossible"
+        ],
+        "nollie-mix": [
+                "nollie_ollie",
+                "nollie_pop_shuvit",
+                "nollie_frontside_pop_shuvit",
+                "nollie_kickflip",
+                "nollie_heelflip",
+                "nollie_varial_kickflip",
+                "nollie_tre_flip",
+                "nollie_impossible"
+        ],
+        "switch-mix": [
+                "switch_ollie",
+                "switch_pop_shuvit",
+                "switch_frontside_pop_shuvit",
+                "switch_kickflip",
+                "switch_heelflip",
+                "switch_varial_kickflip",
+                "switch_tre_flip",
+                "switch_impossible"
+        ],
+        "better-late-than-sorry": [
+          "late_kickflip", "late_heelflip",
+          "late_shove_it", "late_frontside_shove_it", "late_double_kickflip",
+          "fakie_late_kickflip", "fakie_late_heelflip", "fakie_late_shove_it"
+        ],
+        "see-you-later-alligator": [
+          "pop_shove_it_late_kickflip", "pop_shove_it_late_heelflip", "kickflip_late_shove_it",
+          "heelflip_late_shove_it", "shove_it_360_late_kickflip", "tre_flip_late_kickflip",
+          "kickflip_late_impossible", "inward_heelflip_late_flip"
+        ]
+};
+      return decks.get(deckId, []);
+    }
+    function expectedDeckCards(g) {
+      let legacySix = ['late_kickflip_back_finger','late_kickflip_front_finger','late_heelflip','late_shove_it','late_frontside_shove_it','late_double_kickflip'];
+      let legacyFive = ['late_kickflip','late_heelflip','late_shove_it','late_frontside_shove_it','late_double_kickflip'];
+      return g.deckId == 'better-late-than-sorry' && g.order is list && g.order.hasAny(['late_kickflip_back_finger','late_kickflip_front_finger']) ? legacySix
+        : g.deckId == 'better-late-than-sorry' && g.order is list && g.order.size() == 5 ? legacyFive
+        : g.deckId == 'see-you-later-alligator' && g.order is list && g.order.size() == 9 ? deckCards(g.deckId).concat(['hardflip_late_flip'])
+        : g.deckId == 'see-you-later-alligator' && g.order is list && g.order.hasAny(['hardflip_late_flip']) ? ['pop_shove_it_late_kickflip','pop_shove_it_late_heelflip','kickflip_late_shove_it','heelflip_late_shove_it','shove_it_360_late_kickflip','tre_flip_late_kickflip','hardflip_late_flip','inward_heelflip_late_flip']
+        : deckCards(g.deckId);
+    }
+    function validWildcard(w, cardCount) {
+      return w is map && w.keys().hasOnly(['cardIndex','type']) && w.keys().hasAll(['cardIndex','type'])
+        && w.cardIndex is int && w.cardIndex >= 0 && w.cardIndex < cardCount
+        && w.type in ['revert','body_varial','double','triple','one_attempt','opposite_stance','sudden_death'];
+    }
+    function validWildcards(g) {
+      return g.wildcards is list && g.wildcards.size() == 3
+        && validWildcard(g.wildcards[0], g.order.size()) && validWildcard(g.wildcards[1], g.order.size()) && validWildcard(g.wildcards[2], g.order.size())
+        && g.wildcards[0].cardIndex != g.wildcards[1].cardIndex
+        && g.wildcards[0].cardIndex != g.wildcards[2].cardIndex
+        && g.wildcards[1].cardIndex != g.wildcards[2].cardIndex;
+    }
+    function wildcardType(g) {
+      return g.mode != 'wildcard' ? '' : g.wildcards[0].cardIndex == g.cardIndex ? g.wildcards[0].type
+        : g.wildcards[1].cardIndex == g.cardIndex ? g.wildcards[1].type
+        : g.wildcards[2].cardIndex == g.cardIndex ? g.wildcards[2].type : '';
+    }
+    function validDeckGame(s) {
+      let g = s.deckGame;
+      let expected = expectedDeckCards(g);
+      let kind = wildcardType(g);
+      let target = kind == 'triple' ? 3 : kind in ['double','opposite_stance'] ? 2 : 1;
+      let budget = g.mode == 'skate' ? (g.lettersBefore == 4 ? 2 : 1) : kind in ['one_attempt','sudden_death'] ? 1 : 5;
+      return g is map && g.keys().hasOnly(['gameId','deckId','mode','order','cardIndex','lettersBefore','gameStartedAt','endedEarly','wildcards'])
+        && g.keys().hasAll(['gameId','deckId','mode','order','cardIndex','lettersBefore','gameStartedAt','endedEarly'])
+        && g.gameId is string && g.gameId.size() > 0 && g.gameId.size() <= 160
+        && expected.size() >= 3 && g.mode in ['normal','skate','wildcard']
+        && (g.mode == 'wildcard' ? validWildcards(g) : !('wildcards' in g))
+        && g.order is list && g.order.size() == expected.size()
+        && g.order.toSet() == expected.toSet()
+        && g.cardIndex is int && g.cardIndex >= 0 && g.cardIndex < expected.size()
+        && g.lettersBefore is int && g.lettersBefore >= 0 && g.lettersBefore <= 4
+        && g.gameStartedAt is string && g.gameStartedAt.size() <= 40 && g.endedEarly is bool
+        && s.attemptCount is int && s.attemptCount >= 0
+        && (s.attemptCount <= budget || (kind == 'sudden_death' && resource != null
+          && 'deckGame' in resource.data && wildcardType(resource.data.deckGame) == 'sudden_death'
+          && resource.data.attemptCount > 1 && resource.data.attemptCount <= 5
+          && s.attemptCount == resource.data.attemptCount && s.landingCount == resource.data.landingCount))
+        && s.landingCount is int && s.landingCount >= 0 && s.landingCount <= target && s.landingCount <= s.attemptCount
+        && s.goal == {'type':'landings','target':target} && s.practiceTimer == {'type':'regular'};
+    }
     // Username/email lookup is private; only the trusted Worker and local Admin SDK manage it.
     match /usernames/{username} { allow read, write: if false; }
     match /usernameOwners/{uid} { allow read, write: if false; }
@@ -48,19 +286,36 @@ service cloud.firestore {
       allow create, update: if owns(uid)
         && request.resource.data.id == uid
         && request.resource.data.email == request.auth.token.email
-        && request.resource.data.keys().hasOnly(['id', 'email', 'displayName', 'instagramHandle', 'preferredTheme', 'defaultSetupId', 'availableObstacles', 'dashboardPreferences', 'showcase', 'toolIds', 'importedLocalProfiles', 'cloudRevision', 'preferredDifficultyRange', 'onboarding'])
+        && request.resource.data.keys().hasOnly(['id', 'email', 'displayName', 'instagramHandle', 'preferredTheme', 'defaultSetupId', 'availableObstacles', 'dashboardPreferences', 'showcase', 'toolIds', 'importedLocalProfiles', 'cloudRevision', 'preferredDifficultyRange', 'onboarding', 'practiceTarget'])
         && request.resource.data.displayName is string
         && request.resource.data.displayName.size() > 0
         && request.resource.data.displayName.size() <= 80
         && (!('onboarding' in request.resource.data) || (request.resource.data.onboarding is map && request.resource.data.onboarding.version == 1 && request.resource.data.onboarding.step is int && request.resource.data.onboarding.step >= 0 && request.resource.data.onboarding.step <= 6 && request.resource.data.onboarding.answers is map))
+        && (!('practiceTarget' in request.resource.data) || validPracticeTarget(request.resource.data.practiceTarget))
         && (!('showcase' in request.resource.data) || validShowcase(request.resource.data.showcase));
+      match /sessionIndexMeta/{recordId} {
+        allow read: if owns(uid);
+        allow create, update: if owns(uid) && recordId == 'state'
+          && request.resource.data.keys().hasOnly(['version','complete'])
+          && request.resource.data.version == 1 && request.resource.data.complete is bool;
+      }
+      match /sessionIndex/{recordId} {
+        allow read: if owns(uid);
+        allow create, update: if owns(uid)
+          && recordId.matches('[0-9a-f]{1,16}')
+          && request.resource.data.keys().hasOnly(['version','split','rows'])
+          && request.resource.data.version == 1 && request.resource.data.split is bool
+          && request.resource.data.rows is map;
+      }
       match /{bucket}/{recordId} {
         allow delete: if owns(uid) && bucket in ['sessions','savedSetups','bookmarks','poolPresets','trickLibrary','partsInventory'] && (bucket != 'savedSetups' || !('usedAt' in resource.data));
         allow read: if owns(uid) && bucket in ['sessions', 'savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary', 'partsInventory'];
         allow create, update: if owns(uid)
           && bucket in ['sessions', 'savedSetups', 'bookmarks', 'poolPresets', 'trickLibrary', 'partsInventory']
           && request.resource.data.id == recordId
-          && (bucket != 'sessions' || resource == null || !('sessionStartedAt' in resource.data) || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['setupSnapshot','goal','practiceTimer','practiceSurface']))
+          && (bucket != 'sessions' || !('deckGame' in request.resource.data) || validDeckGame(request.resource.data))
+          && (bucket != 'sessions' || resource == null || !('sessionStartedAt' in resource.data) || (('deckGame' in resource.data) ? ('deckGame' in request.resource.data && request.resource.data.deckGame.diff(resource.data.deckGame).affectedKeys().hasOnly(['endedEarly'])) : !('deckGame' in request.resource.data)))
+          && (bucket != 'sessions' || resource == null || !('sessionStartedAt' in resource.data) || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['setupSnapshot','goal','practiceTimer','practiceSurface','practiceTarget']))
           && (bucket != 'savedSetups' || resource == null || !('usedAt' in resource.data) || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['favorite']));
       }
     }

@@ -1,0 +1,93 @@
+/* Shared achievement-inspired visual language. Component-specific gameplay visuals
+   and layouts stay local; these tokens govern ordinary cards and controls. */
+:root{--ds-surface:linear-gradient(145deg,#f5eddf,#e9dece);--ds-inset:linear-gradient(145deg,#eee3d3,#e2d5c2);--ds-border:#cdbda7;--ds-text:#292524;--ds-muted:#746b60;--ds-control:#f4eadc;--ds-accent:#d4a72c;--ds-accent-ink:#8a6500;--ds-selected:linear-gradient(145deg,#eadcb4,#f0e6cd);}
+.dark{--ds-surface:linear-gradient(150deg,#151516,#080809);--ds-inset:linear-gradient(150deg,#1a1a1c,#0d0d0e);--ds-border:#323236;--ds-text:#f4f4f5;--ds-muted:#a1a1aa;--ds-control:#1c1c1f;--ds-accent-ink:#d4a72c;--ds-selected:linear-gradient(150deg,#28220f,#0d0d0b);}
+.ds-app main .ds-surface{background:var(--ds-surface);border-color:var(--ds-border);border-radius:16px;box-shadow:inset 0 1px 0 #ffffff05;color:var(--ds-text);}
+.ds-app .ds-surface>header,.ds-app .ds-surface>div[class*="border-b"]{border-color:var(--ds-border);}
+.ds-app .ds-surface h2{line-height:1.4;}
+.ds-page-heading{display:flex;align-items:center;gap:16px;line-height:1.35;}
+.ds-heading-badge{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:48px;height:57px;border:1px solid #d4a72c80;border-radius:24px 24px 16px 16px;background:linear-gradient(145deg,#efc755,#af8120);color:#171207;box-shadow:inset 0 0 0 3px #c09430;}
+.ds-app main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]),select,textarea),.ds-dialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]),select,textarea){border-color:var(--ds-border);background-color:var(--ds-control);color:var(--ds-text);border-radius:8px;}
+.ds-app main :is(input,select,textarea):focus-visible,.ds-dialog :is(input,select,textarea):focus-visible{outline:2px solid var(--ds-accent);outline-offset:2px;}
+.ds-app main :is(input[type="checkbox"],input[type="radio"]),.ds-dialog :is(input[type="checkbox"],input[type="radio"]){accent-color:var(--ds-accent);}
+.dark .ds-app main select,.dark .ds-dialog select{color-scheme:dark;}
+.ds-app main select option,.ds-dialog select option{background:var(--ds-control);color:var(--ds-text);}
+.ds-app main :is(button,a[role="button"]),.ds-dialog button{cursor:pointer;}
+.ds-app main button:disabled,.ds-dialog button:disabled{cursor:not-allowed;}
+.ds-app main button:focus-visible,.ds-app main a:focus-visible,.ds-dialog button:focus-visible{outline:2px solid var(--ds-accent);outline-offset:3px;}
+.ds-app main :is(nav[aria-label="Dashboard views"],nav[aria-label="Analytics categories"],nav[aria-label="Parts categories"]) button{min-height:44px;border-radius:10px;border-color:var(--ds-border);background:var(--ds-inset);color:var(--ds-muted);}
+.ds-app main :is(nav[aria-label="Dashboard views"],nav[aria-label="Analytics categories"],nav[aria-label="Parts categories"]) :is(button[aria-current="page"],button[aria-pressed="true"]){border-color:#d4a72c90;background:var(--ds-selected);color:var(--ds-accent-ink);box-shadow:inset 0 1px 0 #e1b84120;}
+.ds-app .mobile-dashboard-section{border:1px solid var(--ds-border);border-radius:14px;background:var(--ds-surface);overflow:hidden;}
+.ds-app .mobile-dashboard-section>button{color:var(--ds-text);padding:18px 20px;}
+.ds-app .mobile-dashboard-section>button>span{color:var(--ds-accent-ink);}
+.ds-app main .ds-surface article[class*="border"],.ds-app main .ds-surface details[class*="border"]{border-color:var(--ds-border);border-radius:12px;background:var(--ds-inset);}
+.ds-dialog.mobile-dialog-panel{border-color:var(--ds-border);border-radius:16px;background:var(--ds-surface);color:var(--ds-text);}
+.ds-dialog>div:first-child{border-color:var(--ds-border);}
+.ds-dialog-title{display:flex;align-items:center;gap:13px;min-width:0;line-height:1.4;}
+.ds-dialog-title .ds-heading-badge{width:40px;height:48px;border-radius:20px 20px 14px 14px;}
+.ds-dialog-title .ds-heading-badge svg{width:20px;height:20px;}
+.ds-dialog>div:first-child>button{min-width:44px;min-height:44px;display:grid;place-items:center;}
+/* Custom centered medal dialogs already supply a heading badge. */
+.ds-dialog:has(:is(.deck-mode-dialog,.session-start-dialog)) .ds-dialog-title .ds-heading-badge{display:none;}
+.ds-app .guide-card{background:var(--ds-inset);border-color:var(--ds-border);}
+.ds-app .guide-pill{border-color:#d4a72c60;color:var(--ds-accent-ink);}
+@media(max-width:639px){.ds-app main .ds-surface{border-radius:14px;}.ds-page-heading{gap:12px;}.ds-heading-badge{width:42px;height:50px;border-radius:21px 21px 14px 14px;}.ds-dialog.mobile-dialog-panel{border-radius:14px;}.ds-dialog-title{font-size:16px;}.ds-app .mobile-dashboard-section>button{padding:16px;}}
+
+.ds-app>div.sticky>header,.ds-app>footer{background:linear-gradient(150deg,#eee5d7f5,#e8dfd1f5);border-color:var(--ds-border);backdrop-filter:blur(16px);}
+.dark .ds-app>div.sticky>header,.dark .ds-app>footer{background:linear-gradient(150deg,#151516f5,#080809f5);}
+.ds-app .desktop-navigation-dropdown>div{border-color:var(--ds-border);backdrop-filter:blur(18px);}
+.ds-app .ds-faq [id^="faq-category-"]{background:var(--ds-inset);border-color:var(--ds-border);border-radius:14px;}
+.ds-app .ds-faq details+details{border-color:var(--ds-border);}
+.ds-app .ds-faq summary:hover{color:var(--ds-accent-ink);}
+.ds-app aside[aria-label="Beta feedback"]{background:var(--ds-surface);border-color:#d4a72c60;}
+@media(prefers-reduced-motion:reduce){.ds-app :is(.ds-surface,.ds-heading-badge){transition:none;}}
+
+.session-start-intro>p.session-start-confirmation{font-size:11px;margin-top:10px;color:#85858d;}
+
+/* Single chart heading comes from the disclosure; retain chart actions below it. */
+.ds-app main .mobile-dashboard-section .analytics-chart-card.is-wrapped{border:0;border-radius:0;background:transparent;box-shadow:none;}
+.analytics-chart-card.is-wrapped>div:first-child{justify-content:flex-end;margin-bottom:0;}
+.ds-progress{display:block;width:100%;height:8px;appearance:none;border:0;border-radius:999px;overflow:hidden;background:var(--ds-border);}
+.ds-progress::-webkit-progress-bar{background:var(--ds-border);border-radius:999px;}
+.ds-progress::-webkit-progress-value{background:#d4a72c;border-radius:999px;}
+.ds-progress::-moz-progress-bar{background:#d4a72c;border-radius:999px;}
+.ds-app main .progression-disclosure{padding:16px;}
+.ds-app main .progression-disclosure>summary{line-height:1.6;}
+/* Shared workspace styling must follow the active theme too. */
+:root:not(.dark) .lab-achievement-flow .lab-start-combined,:root:not(.dark) .lab-achievement-flow .trick-practice-workspace{background:var(--ds-surface);color:var(--ds-text);border-color:var(--ds-border);}
+:root:not(.dark) .lab-achievement-flow .lab-step-header h1,:root:not(.dark) .lab-achievement-flow .practice-flow-visual h2,:root:not(.dark) .lab-achievement-flow .practice-flow-visual h3{color:var(--ds-text);}
+:root:not(.dark) .lab-achievement-flow .lab-choice-status,:root:not(.dark) .lab-achievement-flow .lab-choice-tag{color:var(--ds-muted);}
+:root:not(.dark) .lab-achievement-flow .is-selected .lab-choice-status,:root:not(.dark) .lab-achievement-flow .is-selected .lab-choice-tag{color:var(--ds-accent-ink);}
+:root:not(.dark) .rider-profile-page :is(h1,h2,h3,p,label,dd){color:var(--ds-text);}
+:root:not(.dark) .rider-profile-page .text-neutral-500,:root:not(.dark) .rider-profile-page .text-neutral-400,:root:not(.dark) .rider-profile-page dt{color:var(--ds-muted);}
+:root:not(.dark) .rider-profile-page .rider-section-title small{color:var(--ds-accent-ink);}
+:root:not(.dark) .rider-profile-page :is(input,select,textarea){color-scheme:light;}
+:root:not(.dark) .lab-achievement-flow :is(input,select,textarea),:root:not(.dark) .session-start-dialog :is(input,select,textarea){color-scheme:light;}
+
+:root:not(.dark) .lab-achievement-flow .lab-choice-medal:not(.is-selected .lab-choice-medal){background:var(--ds-inset);border-color:var(--ds-border);color:var(--ds-muted);box-shadow:inset 0 0 0 3px #d8cbb7;}
+:root:not(.dark) .lab-achievement-flow .lab-choice-check{border-color:var(--ds-border);}
+
+/* Low-priority defaults: component transitions and Tailwind utilities win. */
+@layer base {
+  :where(.ds-app,.ds-dialog) :where(button,a[href],summary,input,select,textarea,[role="button"]) {
+    transition-property:color,background-color,border-color,box-shadow,opacity,scale;
+    transition-duration:160ms;
+    transition-timing-function:cubic-bezier(.2,.7,.3,1);
+  }
+  /* Keep card gameplay, tree nodes, previews and animated CTAs on their own motion. */
+  :where(.ds-app,.ds-dialog) :where(button,a[role="button"],summary):not(:disabled):not([aria-disabled="true"]):not(:where([class*="deck-"], [class*="deck-"] *, .trick-tree-page *, .feature-preview *, .demo-start-cta, .homepage-launch-cta, .mustard-outline-cta)):active {
+    scale:.98;
+  }
+  :where(.ds-app,.ds-dialog) details[open]>:not(summary) {
+    animation:ds-disclosure-reveal 160ms ease-out;
+  }
+  @keyframes ds-disclosure-reveal {
+    from {opacity:0;translate:0 3px;}
+    to {opacity:1;translate:0 0;}
+  }
+  @media(prefers-reduced-motion:reduce) {
+    :where(.ds-app,.ds-dialog) :where(button,a[href],summary,input,select,textarea,[role="button"]){transition:none;}
+    :where(.ds-app,.ds-dialog) :where(button,a[role="button"],summary):active{scale:1;}
+    :where(.ds-app,.ds-dialog) details[open]>:not(summary){animation:none;}
+  }
+}

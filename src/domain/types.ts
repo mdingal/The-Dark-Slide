@@ -1,3 +1,5 @@
+import type {DeckGameLink} from './deckGame';
+import type {PracticeTarget} from './practiceTargets';
 import type {InventoryPart,PartKind,OnboardingData} from './hardware';
 import type {SharedChallengeLink} from './communityChallenges';
 import type { DashboardPreferences } from './dashboardAnalytics';
@@ -216,6 +218,7 @@ export interface SetupData {
 }
 
 export interface CounterActionHistoryItem {
+  attemptTrick?:SingleTrickParameters;
   action: 'attempt' | 'landing' | 'status_change';
   timestamp: number;
   prevAttemptCount: number;
@@ -230,7 +233,10 @@ export interface CounterActionHistoryItem {
 }
 
 export interface PracticeSession {
-  goal?: {type:'landings'|'streak';target:number};
+  summaryOnly?:boolean; // Cloud summary; load the full record before editing or resuming.
+  deckGame?:DeckGameLink;
+  practiceTarget?: Pick<PracticeTarget,'id'|'reason'|'focusTag'>;
+  goal?: {type:'landings'|'streak'|'time';target:number};
   practiceTimer?: {type:'regular'|'countdown';durationMs?:number};
   practiceSurface?:string;
   parkedAt?:string;
@@ -307,6 +313,7 @@ export interface TrickLibraryEntry {
 export interface RiderShowcaseSettings { bio:string; goal:string; accent:'mustard'|'blue'|'purple'|'green'; featuredTricks:string[]; featuredMilestones:string[]; featuredSetupId:string; showStats:boolean; }
 
 export interface UserProfile {
+  practiceTarget?: PracticeTarget | null;
   partsInventory?: InventoryPart[];
   onboarding?: OnboardingData;
   showcase?: RiderShowcaseSettings;

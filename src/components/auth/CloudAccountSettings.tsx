@@ -12,7 +12,7 @@ export const CloudAccountSettings: React.FC = () => {
   const [busy, setBusy] = useState(false), [message, setMessage] = useState('');
   if (!profile) return null;
   const run = async (task: () => Promise<void>) => { setBusy(true); setMessage(''); try { await task(); } catch(error) { setMessage(accountError(error)); } finally { setBusy(false); } };
-  return <section className="account-actions bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 space-y-4">
+  return <section className="ds-surface account-actions bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 space-y-4">
     <h2 className="font-semibold">Cloud account</h2><p className="text-sm">{profile.email} {'\u00b7'} Email verified</p>
     <p className="text-xs text-neutral-500">Your records are saved to Firebase. An internet connection is required to save changes. Your sign-in persistence follows the authentication settings for this app.</p>
     <button disabled={busy} className="account-action-button text-sm mr-3 mb-2" onClick={() => void run(refreshAccount)}>Reload cloud data</button>

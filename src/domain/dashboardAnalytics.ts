@@ -1,3 +1,4 @@
+import {goalLabel} from './practiceTargets';
 import {classLabel} from './skateClasses';
 import {goalReached} from './sessionPlan';
 import {PART_KINDS,PART_LABELS,PART_FIELDS} from './hardware';
@@ -84,7 +85,7 @@ export function chartData(id:string, sessions:PracticeSession[], now=new Date())
     rows=group(attempted,s=>id==='surfaceRate'?s.practiceSurface||'Not recorded':kind?(field==='Brand'?(s.setupSnapshot.partsSnapshot?.[kind]?.brand||s.setupSnapshot.partsSnapshot?.[kind]?.name):field==='Model'?s.setupSnapshot.partsSnapshot?.[kind]?.name:s.setupSnapshot.partsSnapshot?.[kind]?.specs[field!])||'Not recorded':'Not recorded').map(([k,s])=>row(k,rate(s),{Sessions:s.length,Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));
   } else if(id==='sessionGoals'||id==='timerGoals') {
     const finished=sessions.filter(s=>s.sessionEndedAt&&s.goal);
-    rows=group(finished,s=>id==='timerGoals'?s.practiceTimer?.type||'Not recorded':`${s.goal!.target} ${s.goal!.type==='streak'?'in a row':'total landings'}`).map(([k,s])=>row(k,s.filter(goalReached).length/s.length*100,{Achieved:s.filter(goalReached).length,Sessions:s.length}));
+    rows=group(finished,s=>id==='timerGoals'?s.practiceTimer?.type||'Not recorded':goalLabel(s.goal!)).map(([k,s])=>row(k,s.filter(goalReached).length/s.length*100,{Achieved:s.filter(goalReached).length,Sessions:s.length}));
   } else if(id==='timerEnds') rows=group(sessions,s=>s.sessionEndedAt?s.endedReason||'Legacy / not recorded':s.parkedAt?'Parked':'Active').map(([k,s])=>row(k,s.length));
   else if(id==='landing') rows=daily.map(([d,s])=>row(d,rate(s),{Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));
   else if(id==='activity') rows=daily.map(([d,s])=>row(d,sum(s,'attemptCount'),{Attempts:sum(s,'attemptCount'),Landings:sum(s,'landingCount')}));

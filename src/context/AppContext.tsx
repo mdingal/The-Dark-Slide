@@ -1,5 +1,9 @@
+import {DeckGameLink,newDeckCard,latestDeckResume,finishLegacySuddenDeath} from '../domain/deckGame';
+import {PracticeTarget} from '../domain/practiceTargets';
+import {sessionRewards,SessionReward} from '../domain/riderProgression';
+import {ProgressionReward} from '../components/common/ProgressionReward';
 import {navigate,tabPaths} from '../domain/routes';
-import {requestDashboardView,requestLabStart} from '../domain/dashboardEntry';
+import {requestDashboardView,requestLabStart,consumeLabStart} from '../domain/dashboardEntry';
 import {riderSetupAnswers} from '../domain/riderSetup';
 import {closePractice,remainingTime} from '../domain/sessionPlan';
 import {SharedChallengeLink} from '../domain/communityChallenges';
@@ -28,16 +32,19 @@ export const DEFAULT_FALLBACK_SETUP: SetupData = {
 };
 
 interface AppContextType {
-  activeTab: 'home' | 'generator' | 'history' | 'library' | 'settings';
-  setActiveTab: (tab: 'home' | 'generator' | 'history' | 'library' | 'settings') => void;
+  activeTab: 'home' | 'generator' | 'history' | 'library' | 'tree' | 'games' | 'settings';
+  setActiveTab: (tab: 'home' | 'generator' | 'history' | 'library' | 'tree' | 'games' | 'settings') => void;
   profile: UserProfile | null;
   activeSetup: SetupData | null;
   setActiveSetup: (setup: SetupData) => void;
   sessions: PracticeSession[];
+  loadSessionDetails: (session:PracticeSession)=>Promise<PracticeSession>;
   currentSession: PracticeSession | null;
   setCurrentSession: (session: PracticeSession | null) => void;
   startNewSession: (result: GeneratedTrickResult, sharedChallenge?: SharedChallengeLink) => Promise<PracticeSession>;
+  startDeckCard: (game:DeckGameLink,setup:SetupData,surface:string)=>Promise<PracticeSession>;
   updateSession: (updated: PracticeSession) => Promise<void>;
+  startPracticeTarget: (target:PracticeTarget) => Promise<void>;
   repeatChallenge: (result: GeneratedTrickResult) => Promise<void>;
   toggleBookmark: (result: GeneratedTrickResult) => Promise<void>;
   savePoolPreset: (name: string, config: GeneratorPresetConfig) => Promise<void>;
@@ -76,11 +83,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [authUser, setAuthUser] = useState<User | null>(null);
   const authEpoch = useRef(0);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'generator' | 'history' | 'library' | 'settings'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'generator' | 'history' | 'library' | 'tree' | 'games' | 'settings'>('home');
   useEffect(()=>{const sync=(e:Event)=>setActiveTab((e as CustomEvent).detail);window.addEventListener('route-tab-change',sync);return()=>window.removeEventListener('route-tab-change',sync);},[]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeSetup, setActiveSetupState] = useState<SetupData | null>(null);
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
+  const [practiceReward,setPracticeReward] = useState<SessionReward|null>(null);
+  const sessionRecordsRef = useRef(sessions);
+  sessionRecordsRef.current = sessions;
   const [currentSession, setCurrentSession] = useState<PracticeSession | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const profileRef = useRef(profile);
@@ -93,20 +103,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }, 3200);
   }, []);
 
-  const loadAccount = useCallback(async (user: User | null) => {
+  const loadAccount = useCallback(async (user: User | null, forceRefresh=false) => {
+    if(profileRef.current?.id&&profileRef.current.id!==user?.uid)storageService.clearMemory();
     const epoch = ++authEpoch.current;
+    setPracticeReward(null);
     setAuthLoading(true); setAuthError(null); setIsLoggedIn(false);
     profileRef.current = null; setProfile(null); setSessions([]); setCurrentSession(null); setActiveSetupState(null);
     setAuthUser(user); setActiveTab((location.pathname.startsWith('/dashboard')?'history':Object.entries(tabPaths).find(([,p])=>p===location.pathname)?.[0]||'home') as typeof activeTab);
     try {
-      if (!user || !user.emailVerified) return;
+      if (!user || !user.emailVerified) {storageService.clearMemory();return;}
       let rider = await storageService.getProfile(user.uid);
       const first = !rider;
       if (!rider) {
         rider = { id: user.uid, email: user.email || '', displayName: user.displayName || 'Rider', instagramHandle: '', preferredTheme: 'system', onboarding: {version:1,step:0,answers:{}}, partsInventory: [], savedSetups: [], availableObstacles: ['ledge', 'rail'], bookmarks: [], poolPresets: [], trickLibrary: [] };
         await storageService.saveProfile(rider);
       }
-      const records = await storageService.getSessions(user.uid);
+      const records = await storageService.getSessions(user.uid,forceRefresh);
+      for(let i=0;i<records.length;i++){
+        const fixed=finishLegacySuddenDeath(records[i]);
+        if(fixed!==records[i]){await storageService.saveSession(user.uid,fixed);records[i]=fixed;}
+      }
       const fixedSetups=rider.savedSetups.map(setup=>{const used=records.find(s=>s.setupSnapshot.id===setup.id&&s.sessionStartedAt);return !setup.usedAt&&used?{...setup,usedAt:used.sessionStartedAt}:setup;});
       if(fixedSetups.some((setup,i)=>setup!==rider!.savedSetups[i])){rider={...rider,savedSetups:fixedSetups};await storageService.saveProfile(rider);}
 
@@ -129,7 +145,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [loadAccount]);
   const refreshAccount = async () => {
     if (auth.currentUser) { await reload(auth.currentUser); await getIdToken(auth.currentUser, true); }
-    await loadAccount(auth.currentUser);
+    await loadAccount(auth.currentUser,true);
   };
   const resendVerification = async () => {
     if (!auth.currentUser) throw new Error('Sign in first.');
@@ -144,7 +160,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setActiveSetupState(setup);
   };
 
-  const startNewSession = async (result: GeneratedTrickResult, sharedChallenge?: SharedChallengeLink): Promise<PracticeSession> => {
+  const startNewSession = async (result: GeneratedTrickResult, sharedChallenge?: SharedChallengeLink, target?:PracticeTarget): Promise<PracticeSession> => {
     if (!profile) {
       throw new Error('Profile missing');
     }
@@ -158,6 +174,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await storageService.saveSession(profile.id, previous);
     }
     const newSession = createPracticeSession(result, currentSetupSnapshot);
+    if(target){newSession.goal={...target.goal};newSession.practiceTarget={id:target.id,reason:target.reason,...(target.focusTag?{focusTag:target.focusTag}:{})};if(target.goal.type==='time')newSession.practiceTimer={type:'countdown',durationMs:target.goal.target*60000};}
     if(sharedChallenge)newSession.sharedChallenge=structuredClone(sharedChallenge);
     await storageService.saveSession(profile.id, newSession);
     if (auth.currentUser?.uid !== profile.id) throw new Error("Account changed.");
@@ -167,6 +184,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return newSession;
   };
 
+  const startDeckCard=async(game:DeckGameLink,setup:SetupData,surface:string)=>{
+    if(!profile)throw Error('Sign in to start a deck.');
+    if(game.cardIndex>0&&latestDeckResume(sessionRecordsRef.current)?.game.gameId!==game.gameId)throw Error('This saved game was replaced by a newer session.');
+    const previous=sessionRecordsRef.current.find(s=>s.id===currentSession?.id);
+    if(previous?.timerState.isRunning&&!previous.sessionEndedAt){const timerState=stopTimer(previous.timerState);await updateSession({...previous,timerState,activeDurationMs:timerState.accumulatedMs,parkedAt:new Date().toISOString()});}
+    const session=newDeckCard(game,setup,surface);
+    await storageService.saveSession(profile.id,session);
+    if(auth.currentUser?.uid!==profile.id)throw Error('Account changed.');
+    sessionRecordsRef.current=[session,...sessionRecordsRef.current];setSessions(sessionRecordsRef.current);setCurrentSession(session);
+    const current=profileRef.current;if(current){const next={...current,savedSetups:current.savedSetups.map(s=>s.id===setup.id&&!s.usedAt?{...s,usedAt:session.sessionStartedAt}:s)};profileRef.current=next;setProfile(next);}
+    return session;
+  };
+
   const updateSession = async (updated: PracticeSession): Promise<void> => {
     if (!profile) throw new Error('Profile missing');
     await storageService.saveSession(profile.id, updated);
@@ -174,7 +204,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const current=profileRef.current; if(current) {const next={...current,savedSetups:current.savedSetups.map(s=>s.id===updated.setupSnapshot.id?{...s,usedAt:updated.sessionStartedAt}:s)};profileRef.current=next;setProfile(next);}
     }
     if (auth.currentUser?.uid !== profile.id) return;
-    const earned = newlyEarnedMilestones(sessions, sessions.map(s=>s.id===updated.id?updated:s));
+    const previousRecords = sessionRecordsRef.current;
+    const previousRecord = previousRecords.find(record=>record.id===updated.id);
+    const nextRecords = previousRecords.map(record=>record.id===updated.id?updated:record);
+    sessionRecordsRef.current = nextRecords;
+    if (!updated.deckGame && previousRecord && updated.sessionEndedAt && updated.status!=='pending' && !updated.outcomeReviewPending && (!previousRecord.sessionEndedAt || previousRecord.outcomeReviewPending)) {
+      const reward = sessionRewards(nextRecords,updated.id);
+      if (reward) setPracticeReward(reward);
+    }
+    const earned = newlyEarnedMilestones(previousRecords, nextRecords);
     if(earned.length){const m=earned.find(m=>m.kind==='first')||earned.find(m=>m.kind==='rate')||earned[0];showToast(`${m.title}: ${m.trickName} · ${m.detail}`);}
     setSessions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
     if (currentSession?.id === updated.id) {
@@ -197,6 +235,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     tick();const interval=setInterval(tick,500);return()=>clearInterval(interval);
   },[sessions]);
+
+  const startPracticeTarget = async (target:PracticeTarget) => {
+    await startNewSession(target.trickResult,undefined,target);
+    consumeLabStart();setActiveTab('generator');navigate('/trick-lab');
+    window.dispatchEvent(new Event('lab-target-entry'));
+    window.scrollTo({top:0,behavior:'instant'});
+  };
 
   const repeatChallenge = async (result: GeneratedTrickResult) => {
     await startNewSession(result);
@@ -300,7 +345,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast(`Deleted ${ids.length} session record${ids.length > 1 ? 's' : ''}.`);
   };
 
+  const loadSessionDetails=async(session:PracticeSession):Promise<PracticeSession>=>{
+    if(!profile)throw Error('Sign in to load the session.');
+    if(!session.summaryOnly)return session;
+    const row=await storageService.getSession(profile.id,session.id);
+    if(!row)throw Error('This session no longer exists. Refresh your account.');
+    if(auth.currentUser?.uid!==profile.id)throw Error('Account changed.');
+    setSessions(prev=>prev.map(s=>s.id===row.id?row:s));return row;
+  };
   const resumeSession = (session: PracticeSession) => {
+    if(session.summaryOnly){void loadSessionDetails(session).then(resumeSession).catch(e=>showToast(e.message));return;}
+    if(session.deckGame){if(latestDeckResume(sessionRecordsRef.current)?.game.gameId!==session.deckGame.gameId){showToast('This game is no longer resumable. Start a new deck instead.');return;}setCurrentSession(session);setActiveTab('games');navigate('/deck-games?game='+encodeURIComponent(session.deckGame.gameId));return;}
     if (session.status === 'pending' && session.sessionEndedAt) {
       const resumed = { ...session, sessionEndedAt: undefined };
       setCurrentSession(resumed);
@@ -391,12 +446,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setCurrentSession,
         startNewSession,
         repeatChallenge,
+        startPracticeTarget,
         toggleBookmark,
         savePoolPreset,
         deletePoolPreset,
         setTrickLearningStatus,
         saveDashboardPreferences,
         updateSession,
+        startDeckCard,
+        loadSessionDetails,
         deleteSession,
         deleteSessions,
         resumeSession,
@@ -414,6 +472,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }}
     >
       {children}
+      <ProgressionReward records={sessions} onSaveTarget={target=>mutateSavedTools(current=>({...current,practiceTarget:target}))} reward={practiceReward} onClose={()=>setPracticeReward(null)} onProgress={()=>{setPracticeReward(null);navigate('/');setActiveTab('home');window.scrollTo({top:0,behavior:'instant'});}}/>
     </AppContext.Provider>
   );
 };

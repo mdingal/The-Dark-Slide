@@ -19,7 +19,7 @@ describe('onboarding and hardware entry points',()=>{
   const setup=setupFromParts('Board',{},[]);state.profile.savedSetups=[{...setup,usedAt:'2026-10-04T10:00:00.000Z'}];const html=renderToStaticMarkup(<HardwareManager only="setups"/>);expect(html).toContain('Favorite');expect(html).toContain('Configuration fixed');expect(html).not.toContain('>Edit<');state.profile.savedSetups=[];
  });
  it('requires selection at the session entry point and offers adding setups and parts',()=>{
-  const s=createPracticeSession(baseChallengePool()[0],setupFromParts('Placeholder',{},[]));const html=renderToStaticMarkup(<SessionStartWizard session={s} onStart={async()=>{}} onClose={()=>{}}/>);expect(html).toContain('Choose your fingerboard');expect(html).toContain('Add setup / parts');expect(html).toContain('Your timer starts after setup is complete');
+  const s=createPracticeSession(baseChallengePool()[0],setupFromParts('Placeholder',{},[]));const html=renderToStaticMarkup(<SessionStartWizard session={s} onStart={async()=>{}} onClose={()=>{}}/>);expect(html).toContain('Ready to practice?');expect(html).toContain('Choose a setup');expect(html).toContain('Add setup / parts');expect(html).toContain('timer starts only when you confirm');expect(html).toContain('Goal ·');expect(html).toContain('Timer ·');expect(html).toContain('Surface Material');expect(html).not.toContain('Step 1 / 4');
  });
 });
 
@@ -33,4 +33,10 @@ it('uses one part name and whole-number plies, with no location or quantity fiel
  const html=renderToStaticMarkup(<PartEditor kind="deck" onCancel={()=>{}} onSave={async()=>{}}/>);
  expect(html).toContain('Name/Brand');expect(html).not.toContain('Currently');expect(html).not.toContain('Quantity');expect(html).toContain('min="1"');expect(html).toContain('step="1"');expect(html).toContain('value="5"');expect(html).toContain('value="6"');expect(html).toContain('value="7"');expect(html).toContain('<option>Low</option>');
  expect(partLabel({id:'d',kind:'deck',name:'Ethical',brand:'Ethical',specs:{'Width (mm)':'34'}})).toBe('Ethical - 34mm');
+});
+
+it('deck game setup asks only for setup and surface, without configurable session goals',()=>{
+ const s=createPracticeSession(baseChallengePool()[0],setupFromParts('Placeholder',{},[]));
+ const html=renderToStaticMarkup(<SessionStartWizard session={s} gameSetup="Fundamentals · Normal" onStart={async()=>{}} onClose={()=>{}}/>);
+ expect(html).toContain('Fundamentals · Normal');expect(html).toContain('Fingerboard setup');expect(html).toContain('Surface Material');expect(html).not.toContain('Goal type');expect(html).not.toContain('Countdown — ends automatically');
 });
