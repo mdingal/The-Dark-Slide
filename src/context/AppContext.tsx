@@ -1,3 +1,4 @@
+import {createTarget} from '../domain/practiceTargets';
 import {DeckGameLink,newDeckCard,latestDeckResume,finishLegacySuddenDeath} from '../domain/deckGame';
 import {PracticeTarget} from '../domain/practiceTargets';
 import {sessionRewards,SessionReward} from '../domain/riderProgression';
@@ -472,7 +473,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }}
     >
       {children}
-      <ProgressionReward records={sessions} onSaveTarget={target=>mutateSavedTools(current=>({...current,practiceTarget:target}))} reward={practiceReward} onClose={()=>setPracticeReward(null)} onProgress={()=>{setPracticeReward(null);navigate('/');setActiveTab('home');window.scrollTo({top:0,behavior:'instant'});}}/>
+      <ProgressionReward onRetry={session=>startPracticeTarget(createTarget(session.trickResult,session.goal||{type:'landings',target:5},'Repeat your last session goal.'))} records={sessions} onSaveTarget={target=>mutateSavedTools(current=>({...current,practiceTarget:target}))} reward={practiceReward} onClose={()=>setPracticeReward(null)} onProgress={()=>{setPracticeReward(null);navigate('/');setActiveTab('home');window.scrollTo({top:0,behavior:'instant'});}}/>
     </AppContext.Provider>
   );
 };

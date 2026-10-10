@@ -23,7 +23,7 @@ it('masters at exactly 100 cumulative landings without rate or streak requiremen
  expect(node.mastered).toBe(true);expect(node.totalLandings).toBe(100);
  const one={...records[0],attemptCount:100,landingCount:100};expect(trickTree([one],NOW).find(n=>n.id==='ollie')?.mastered).toBe(true);
 });
-it('unlocks children only after all their prerequisites are mastered',()=>{
+it('unlocks children only after all their prerequisites have recorded progress',()=>{
  const history=[...mastered('ollie'),...mastered('kickflip',3)];
  let node=trickTree(history,NOW).find(n=>n.id==='varial_kickflip')!;expect(node.state).toBe('locked');expect(node.missingPrerequisites).toEqual(['pop-shuvit']);
  node=trickTree([...history,...mastered('pop-shuvit',5)],NOW).find(n=>n.id==='varial_kickflip')!;expect(node.state).toBe('unlocked');
@@ -37,9 +37,9 @@ it('treats stance nodes independently and never infers mastery of unrecorded pre
  expect(nodes.find(n=>n.id==='kickflip:fakie')?.mastered).toBe(false);
 });
 it('ignores parked, generated and duplicate records and revokes unlocks after correction',()=>{
- const records=mastered('ollie');expect(trickTree([records[0],records[0]],NOW).find(n=>n.id==='kickflip')?.state).toBe('locked');
+ const records=mastered('ollie');const six={...records[0],landingCount:6};expect(trickTree([six,six],NOW).find(n=>n.id==='kickflip')?.state).toBe('locked');
  expect(trickTree(records.map(s=>({...s,status:'pending'})),NOW).find(n=>n.id==='kickflip')?.state).toBe('locked');
- const corrected=[records[0],{...records[1],landingCount:0,bestLandingStreak:0}];expect(trickTree(corrected,NOW).find(n=>n.id==='kickflip')?.state).toBe('locked');
+ const corrected=records.map(s=>({...s,landingCount:4,bestLandingStreak:0}));expect(trickTree(corrected,NOW).find(n=>n.id==='kickflip')?.state).toBe('locked');
 });
 it('includes ancestor context in branch and search filters and reveals stance branches',()=>{
  const nodes=trickTree([],NOW),search=treeView(nodes,'All','tre flip');
@@ -51,7 +51,7 @@ it('detects invalid dependency graphs instead of drawing a broken tree',()=>{
  expect(()=>treeDepths([{id:'a',name:'A',family:'F',prerequisites:['b']},{id:'b',name:'B',family:'F',prerequisites:['a']}])).toThrow('Circular');
 });
 it('reports only the new unlocks supported by the finishing session',()=>{
- const history=mastered('ollie');expect(newlyUnlockedTricks(history,history[0].id,NOW)).toEqual([]);
+ const history=mastered('ollie').map((s,i)=>({...s,landingCount:i===0?6:4}));expect(newlyUnlockedTricks(history,history[0].id,NOW)).toEqual([]);
  const unlocked=newlyUnlockedTricks(history,history[1].id,NOW);expect(unlocked.some(n=>n.id==='kickflip')).toBe(true);expect(unlocked.some(n=>n.id==='tre_flip')).toBe(false);
 });
 
@@ -109,4 +109,21 @@ it('links stance tree nodes to the matching stance guide, preserving the regular
    expect(treeGuideId(node)).toBe(`${stance}:${base}`);
   }
  }
+});
+
+it('unlocks at ten prerequisite landings while mastery still requires one hundred',()=>{
+ const record={...mastered('ollie')[0],landingCount:9};
+ expect(trickTree([record],NOW).find(n=>n.id==='kickflip')!.unlocked).toBe(false);
+ const nodes=trickTree([{...record,landingCount:10}],NOW);
+ expect(nodes.find(n=>n.id==='ollie')).toMatchObject({established:true,mastered:false});
+ expect(nodes.find(n=>n.id==='kickflip')!.unlocked).toBe(true);
+ expect(nodes.find(n=>n.id==='kickflip:switch')!.unlocked).toBe(false);
+ expect(newlyUnlockedTricks([{...record,landingCount:10}],record.id,NOW).map(n=>n.id)).toContain('kickflip');
+ expect(trickTree([{...record,status:'pending',landingCount:10}],NOW).find(n=>n.id==='kickflip')!.unlocked).toBe(false);
+});
+it('requires ten lands of every prerequisite in the same stance',()=>{
+ const a={...mastered('kickflip:switch')[0],landingCount:10};
+ const b={...mastered('pop-shuvit:switch')[0],landingCount:9};
+ expect(trickTree([a,b],NOW).find(n=>n.id==='varial_kickflip:switch')!.unlocked).toBe(false);
+ expect(trickTree([a,{...b,landingCount:10}],NOW).find(n=>n.id==='varial_kickflip:switch')!.unlocked).toBe(true);
 });

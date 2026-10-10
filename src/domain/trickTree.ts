@@ -10,10 +10,11 @@ import {trickKey,getStreaks} from './progression';
 import {createTarget} from './practiceTargets';
 import {progressionSessions} from './riderProgression';
 export const TREE_MASTERY_LANDINGS=100;
+export const TREE_UNLOCK_LANDINGS=10;
 export type TreeState='locked'|'unlocked'|'learning'|'mastered';
 export interface TrickTreeNode extends TrickTreeDefinition {
  challenge:GeneratedTrickResult; depth:number; state:TreeState; unlocked:boolean; mastered:boolean;
- totalLandings:number; sessionCount:number; landingSessions:number; bestStreak:number; bestRate:number|null;
+ totalLandings:number; established:boolean; sessionCount:number; landingSessions:number; bestStreak:number; bestRate:number|null;
  criteria:{label:string;done:boolean;detail:string}[]; missingPrerequisites:string[];
 }
 export function treeGuideId(node:TrickTreeDefinition):string {
@@ -53,10 +54,10 @@ export function trickTree(records:PracticeSession[],now=Date.now()):TrickTreeNod
   const bestRate=rates.length?Math.max(...rates):null;
   const totalLandings=history.reduce((sum,s)=>sum+s.landingCount,0);
   const criteria=[{label:'100 successful landings',done:totalLandings>=TREE_MASTERY_LANDINGS,detail:`${totalLandings}/${TREE_MASTERY_LANDINGS} successful landings across finished sessions`}];
-  return {...node,challenge,depth:depths.get(node.id)!,mastered:criteria.every(c=>c.done),totalLandings,sessionCount:history.length,landingSessions:landed.length,bestStreak,bestRate,criteria};
+  return {...node,challenge,depth:depths.get(node.id)!,mastered:criteria.every(c=>c.done),established:totalLandings>=TREE_UNLOCK_LANDINGS,totalLandings,sessionCount:history.length,landingSessions:landed.length,bestStreak,bestRate,criteria};
  });
- const mastered=new Set(nodes.filter(n=>n.mastered).map(n=>n.id));
- return nodes.map(node=>{const missingPrerequisites=node.prerequisites.filter(id=>!mastered.has(id));const unlocked=node.mastered||missingPrerequisites.length===0;const state:TreeState=node.mastered?'mastered':!unlocked?'locked':node.sessionCount>0?'learning':'unlocked';return {...node,missingPrerequisites,unlocked,state};});
+ const established=new Set(nodes.filter(n=>n.established).map(n=>n.id));
+ return nodes.map(node=>{const missingPrerequisites=node.prerequisites.filter(id=>!established.has(id));const unlocked=node.established||missingPrerequisites.length===0;const state:TreeState=node.mastered?'mastered':!unlocked?'locked':node.sessionCount>0?'learning':'unlocked';return {...node,missingPrerequisites,unlocked,state};});
 }
 export function newlyUnlockedTricks(records:PracticeSession[],sessionId:string,now=Date.now()):TrickTreeNode[]{
  const history=progressionSessions(records,now),index=history.findIndex(s=>s.id===sessionId);if(index<0)return [];
